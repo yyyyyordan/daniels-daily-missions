@@ -1,0 +1,788 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#5b47e0" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Missions" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="icon-180.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
+<title>Daniel's Daily Missions</title>
+<style>
+  :root {
+    --bg1: #6b5bff;
+    --bg2: #9f6bff;
+    --bg3: #ff7ac6;
+    --card: #ffffff;
+    --ink: #1a1440;
+    --ink-soft: #4a4270;
+    --accent: #5b47e0;
+    --accent-2: #ff5fa2;
+    --mint: #2fd8a8;
+    --sun: #ffc857;
+    --chip: #f1efff;
+    --chip-ink: #4b3fb3;
+    --shadow: 0 10px 30px rgba(30, 20, 80, 0.18);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+    background:
+      radial-gradient(1200px 800px at 10% -10%, #8a7bff 0%, transparent 60%),
+      radial-gradient(900px 700px at 110% 10%, #ff7ac6 0%, transparent 55%),
+      linear-gradient(160deg, #5b47e0 0%, #8655e8 60%, #ff6fb3 100%);
+    background-attachment: fixed;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  .wrap {
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 22px 18px 40px;
+  }
+  header {
+    text-align: center;
+    color: #fff;
+    padding: 10px 6px 22px;
+  }
+  .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(10px);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  h1 {
+    margin: 2px 0 6px;
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .sub {
+    margin: 0;
+    opacity: 0.92;
+    font-size: 15px;
+  }
+  .date {
+    margin-top: 6px;
+    font-size: 12px;
+    opacity: 0.8;
+  }
+  .card {
+    background: var(--card);
+    border-radius: 22px;
+    padding: 20px 20px 18px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+    animation: pop 0.35s ease-out both;
+  }
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 6px;
+  }
+  .card.ai::before { background: linear-gradient(90deg, #5b47e0, #9f6bff); }
+  .card.math::before { background: linear-gradient(90deg, #2fd8a8, #ffc857); }
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: var(--chip);
+    color: var(--chip-ink);
+  }
+  .tag.math { background: #e5fbf3; color: #158a63; }
+  .icon {
+    width: 36px; height: 36px;
+    border-radius: 12px;
+    display: grid; place-items: center;
+    font-size: 20px;
+    flex: 0 0 auto;
+  }
+  .icon.ai { background: linear-gradient(135deg, #ece8ff, #f6e8ff); }
+  .icon.math { background: linear-gradient(135deg, #e2fbf0, #fff3d6); }
+  .task {
+    font-size: 19px;
+    line-height: 1.35;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 4px 0 14px;
+  }
+  .hint {
+    background: #f7f5ff;
+    border-left: 4px solid var(--accent);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.45;
+  }
+  .card.math .hint {
+    background: #f2fbf7;
+    border-left-color: var(--mint);
+  }
+  .hint b { color: var(--ink); }
+  .actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  button {
+    font-family: inherit;
+    font-weight: 700;
+    border: 0;
+    cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.2s ease, background 0.2s ease;
+  }
+  button:active { transform: scale(0.97); }
+  .btn-primary {
+    flex: 1;
+    background: linear-gradient(135deg, #ffd369, #ff7ac6);
+    color: #1a1440;
+    font-size: 17px;
+    padding: 15px 18px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(255, 100, 170, 0.35);
+  }
+  .btn-ghost {
+    background: rgba(255,255,255,0.9);
+    color: var(--accent);
+    font-size: 14px;
+    padding: 10px 14px;
+    border-radius: 12px;
+  }
+  .done-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .mark {
+    flex: 1;
+    background: #f3f1ff;
+    color: var(--accent);
+    padding: 10px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    border: 2px solid transparent;
+  }
+  .card.math .mark { background: #effaf4; color: #158a63; }
+  .mark.is-done {
+    background: linear-gradient(135deg, #5b47e0, #9f6bff);
+    color: #fff;
+    border-color: transparent;
+  }
+  .card.math .mark.is-done {
+    background: linear-gradient(135deg, #2fd8a8, #26b893);
+    color: #fff;
+  }
+  .celebrate {
+    text-align: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
+    margin: 8px 0 18px;
+    min-height: 22px;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .celebrate.show { opacity: 1; }
+  footer {
+    text-align: center;
+    color: rgba(255,255,255,0.8);
+    font-size: 12px;
+    margin-top: 18px;
+  }
+  @keyframes pop {
+    from { opacity: 0; transform: translateY(8px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @media (min-width: 720px) {
+    .wrap { padding-top: 40px; }
+    h1 { font-size: 34px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="badge">Daily Missions</div>
+    <h1>Daniel's Daily Missions</h1>
+    <p class="sub">Two quick missions. One with AI, one with numbers. Let's go!</p>
+    <div class="date" id="date"></div>
+  </header>
+
+  <div class="celebrate" id="celebrate"></div>
+
+  <section class="card ai" id="aiCard">
+    <div class="row">
+      <div class="icon ai">🤖</div>
+      <div class="tag">AI Mission</div>
+    </div>
+    <div class="task" id="aiTask"></div>
+    <div class="hint" id="aiHint"></div>
+    <div class="done-row">
+      <button class="mark" data-mark="ai">Mark done ✓</button>
+    </div>
+  </section>
+
+  <section class="card math" id="mathCard">
+    <div class="row">
+      <div class="icon math">🧮</div>
+      <div class="tag math">Math Mission</div>
+    </div>
+    <div class="task" id="mathTask"></div>
+    <div class="hint" id="mathHint"></div>
+    <div class="done-row">
+      <button class="mark" data-mark="math">Mark done ✓</button>
+    </div>
+  </section>
+
+  <div class="actions">
+    <button class="btn-primary" id="newBtn">✨ New missions</button>
+  </div>
+
+  <footer>Missions refresh anytime. No score, no pressure — just fun.</footer>
+</div>
+
+<script>
+/* =========================================================================
+   Daniel's Daily Missions — task bank
+   Built procedurally so we have thousands of combinations and Daniel won't
+   see repeats often. Templates are hand-written for a fun 11-year-old tone.
+   ========================================================================= */
+
+/* ---------- AI TASK BANK ---------- */
+
+const AI_TOPICS = [
+  "dinosaurs","space","sharks","pizza","robots","ninjas","dragons","volcanoes",
+  "the ocean","cats","dogs","penguins","octopuses","Mars","black holes","pyramids",
+  "Vikings","skateboarding","Minecraft","soccer","basketball","video games",
+  "rollercoasters","chocolate","thunderstorms","earthquakes","jungles","deserts",
+  "the Arctic","bamboo","knights","castles","pirates","submarines","rockets",
+  "satellites","comets","meteors","tornadoes","whales","bees","ants","spiders",
+  "bats","wolves","eagles","cheetahs","kangaroos","dolphins","chameleons",
+  "lasers","holograms","virtual reality","Lego","Roblox","Mario","Zelda",
+  "Pokémon","skiing","swimming","the Moon","Saturn's rings","quicksand",
+  "mirrors","magnets","rainbows","clouds","parkour","BMX","pandas","koalas",
+  "sloths","crocodiles","T-Rex","meerkats","samurai","aliens","UFOs",
+  "the Sahara","the Amazon","the Great Wall","Mount Everest","the Titanic",
+  "drones","electric cars","secret agents","spy gadgets","trampolines",
+  "roller skates","pet hamsters","YouTube","time travel","parallel universes"
+];
+
+const AI_CONCEPTS = [
+  "how Wi-Fi works","how rockets fly","how a volcano erupts","how fish sleep",
+  "how the internet works","how rainbows form","how magnets work",
+  "how your brain remembers things","how airplanes stay up","how GPS knows where you are",
+  "how a camera takes a picture","how sound travels","how electricity works",
+  "how a 3D printer works","how AI learns","how solar panels work",
+  "how a submarine floats or sinks","how bees make honey","how your eyes see color",
+  "how touchscreens work","how bridges don't fall down","how thunder happens"
+];
+
+const AI_CREATURES = [
+  "dragon","wizard","robot","ninja","pirate","alien","detective","astronaut",
+  "chef","inventor","explorer","knight","spy","scientist","skater","gamer",
+  "shark","dinosaur","fox","wolf","penguin","octopus","ghost","cyborg"
+];
+
+const AI_ADJECTIVES = [
+  "sneaky","heroic","clumsy","clever","super-fast","tiny","giant","invisible",
+  "time-traveling","underwater","space-traveling","glow-in-the-dark","mischievous",
+  "legendary","lazy but brilliant","secretly royal","robot-powered","noodle-armed"
+];
+
+const AI_SENTENCES = [
+  "I am hungry","It is raining","My homework is done","The dog ate my sandwich",
+  "I love pizza","School was fun today","I can't find my shoes","The cat stole my sock",
+  "I need a snack","My Wi-Fi is slow","I won the game","I am tired"
+];
+
+const AI_THINGS = [
+  "new ice cream flavor","pet robot","invisible superhero","secret treehouse",
+  "brand-new sport","video game boss","magical pet","sneaker design",
+  "pizza topping","cereal brand","candy bar","theme park ride","spy gadget",
+  "space station","hidden hideout","imaginary island"
+];
+
+const AI_HYPOTHETICALS = [
+  "gravity turned off for one minute","dogs could talk","school was only 2 hours a day",
+  "pizza grew on trees","the sky was green","cats ruled the world",
+  "we lived on Mars","homework was illegal","humans could fly",
+  "water tasted like lemonade","you could pause time for 10 seconds a day",
+  "every kid got a dragon as a pet","money was replaced by LEGO bricks"
+];
+
+const AI_STYLES = [
+  "a dramatic movie trailer","a pirate","a sports announcer","a Shakespeare play",
+  "a cowboy","a robot","a rapper","a tiny mouse","an action hero","a news reporter"
+];
+
+const AI_TEMPLATES = [
+  { make: t => ({
+      task: `Ask AI for 3 cool facts about ${t.topic}.`,
+      hint: `Try typing: <b>"Give me 3 cool facts about ${t.topic} that most kids don't know."</b> Ask for another one if a fact sounds boring.` }),
+    needs: ["topic"] },
+  { make: t => ({
+      task: `Ask AI to explain ${t.concept} like you're 11.`,
+      hint: `Try: <b>"Explain ${t.concept} to an 11-year-old, and use an example I'd recognize."</b>` }),
+    needs: ["concept"] },
+  { make: t => ({
+      task: `Ask AI to invent a character who is a ${t.adj} ${t.creature}.`,
+      hint: `Ask for a <b>name</b>, a <b>special power</b>, and one <b>silly weakness</b>. That's what makes them memorable.` }),
+    needs: ["adj","creature"] },
+  { make: t => ({
+      task: `Ask AI to rewrite the sentence "${t.sentence}" in the style of ${t.style}.`,
+      hint: `If it's not funny enough, say <b>"make it even more over-the-top"</b> and try again.` }),
+    needs: ["sentence","style"] },
+  { make: t => ({
+      task: `Ask AI for a joke about ${t.topic}.`,
+      hint: `If the joke is weak, say <b>"tell me a funnier one."</b> You're allowed to be picky.` }),
+    needs: ["topic"] },
+  { make: t => ({
+      task: `Ask AI to come up with 5 cool names for a ${t.thing}.`,
+      hint: `Pick your favorite, then ask AI <b>"why does that name work?"</b>` }),
+    needs: ["thing"] },
+  { make: t => ({
+      task: `Ask AI to write a tiny 3-sentence story about ${t.topic}.`,
+      hint: `Ask for a <b>surprise twist at the end</b>. Twists make stories way better.` }),
+    needs: ["topic"] },
+  { make: t => ({
+      task: `Ask AI: "What would happen if ${t.hypo}?"`,
+      hint: `There's no wrong answer — it's a thought experiment. Ask for <b>3 weird side effects</b>.` }),
+    needs: ["hypo"] },
+  { make: t => ({
+      task: `Ask AI to design a superpower based on ${t.topic}.`,
+      hint: `Ask what the <b>weakness</b> of that power would be. Every good superpower has one.` }),
+    needs: ["topic"] },
+  { make: t => ({
+      task: `Ask AI for a riddle about ${t.topic}.`,
+      hint: `Try to solve it yourself first. If you're stuck, ask for a <b>small clue</b> before the answer.` }),
+    needs: ["topic"] },
+  { make: t => ({
+      task: `Ask AI to compare ${t.topic} and ${t.topic2}. Which would win in a contest?`,
+      hint: `Ask AI to pick the <b>contest rules</b> itself — it gets more creative that way.` }),
+    needs: ["topic","topic2"] },
+  { make: t => ({
+      task: `Ask AI for 5 fun questions you could ask your friends about ${t.topic}.`,
+      hint: `Pick the best one and actually ask someone today. That's the mission bonus.` }),
+    needs: ["topic"] },
+  { make: t => ({
+      task: `Ask AI to help you invent a brand new ${t.thing}.`,
+      hint: `Tell it <b>what problem your invention solves</b>. Good inventions fix something annoying.` }),
+    needs: ["thing"] },
+  { make: t => ({
+      task: `Ask AI to describe ${t.topic} as if it were a video game level.`,
+      hint: `Ask for the <b>boss, the power-ups, and the music</b>.` }),
+    needs: ["topic"] },
+  { make: t => ({
+      task: `Ask AI to make up a secret code based on ${t.topic}.`,
+      hint: `Ask AI to give you a <b>sample message</b> in the code, then try to decode it.` }),
+    needs: ["topic"] },
+  { make: t => ({
+      task: `Ask AI for a tongue twister about ${t.topic}.`,
+      hint: `Say it out loud 3 times fast. That's the real test.` }),
+    needs: ["topic"] },
+  { make: t => ({
+      task: `Ask AI to imagine a world where ${t.hypo}. Describe one normal day.`,
+      hint: `Ask what <b>breakfast</b> would look like. Small details make worlds feel real.` }),
+    needs: ["hypo"] },
+  { make: t => ({
+      task: `Ask AI to write a short rap about ${t.topic}.`,
+      hint: `Ask for it to <b>rhyme</b> and have a beat you can clap to.` }),
+    needs: ["topic"] },
+  { make: t => ({
+      task: `Ask AI for a weird fact about ${t.topic} that most people don't know.`,
+      hint: `If it sounds fake, ask <b>"is that actually true?"</b> — good skill to practice with AI.` }),
+    needs: ["topic"] },
+  { make: t => ({
+      task: `Ask AI to describe what ${t.topic} would sound like as a song.`,
+      hint: `Ask for the <b>instruments, tempo, and mood</b>. Extra: ask for a song title.` }),
+    needs: ["topic"] },
+  { make: t => ({
+      task: `Ask AI to create a mini-quiz (3 questions) about ${t.topic}.`,
+      hint: `Try the quiz yourself before checking the answers. See how many you get!` }),
+    needs: ["topic"] },
+  { make: t => ({
+      task: `Ask AI to design a team mascot for ${t.topic}.`,
+      hint: `Ask for the <b>name, outfit, and catchphrase</b>.` }),
+    needs: ["topic"] },
+  { make: t => ({
+      task: `Ask AI to write a movie trailer description for a film about ${t.topic}.`,
+      hint: `Ask for a <b>dramatic one-line tagline</b> at the end.` }),
+    needs: ["topic"] },
+  { make: t => ({
+      task: `Ask AI for a "would you rather" question about ${t.topic}.`,
+      hint: `Answer it yourself, then ask AI what <b>it</b> would pick and why.` }),
+    needs: ["topic"] },
+  { make: t => ({
+      task: `Ask AI to invent a holiday celebrating ${t.topic}.`,
+      hint: `Ask for the <b>date, a tradition, and a food</b> people eat that day.` }),
+    needs: ["topic"] },
+  { make: t => ({
+      task: `Ask AI to write a review of ${t.topic} as if it were a restaurant.`,
+      hint: `Ask for a <b>star rating out of 5</b> and why.` }),
+    needs: ["topic"] },
+  { make: t => ({
+      task: `Ask AI to list 5 things a ${t.adj} ${t.creature} might keep in their backpack.`,
+      hint: `Pick the weirdest one and ask AI <b>what it's used for</b>.` }),
+    needs: ["adj","creature"] },
+  { make: t => ({
+      task: `Ask AI what a day in the life of a ${t.creature} might look like.`,
+      hint: `Ask for a <b>morning, afternoon, and evening</b> section.` }),
+    needs: ["creature"] }
+];
+
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function pickDiff(arr, not) {
+  let v; do { v = pick(arr); } while (v === not);
+  return v;
+}
+
+function buildAITask() {
+  const tpl = pick(AI_TEMPLATES);
+  const ctx = {};
+  if (tpl.needs.includes("topic")) ctx.topic = pick(AI_TOPICS);
+  if (tpl.needs.includes("topic2")) ctx.topic2 = pickDiff(AI_TOPICS, ctx.topic);
+  if (tpl.needs.includes("concept")) ctx.concept = pick(AI_CONCEPTS);
+  if (tpl.needs.includes("creature")) ctx.creature = pick(AI_CREATURES);
+  if (tpl.needs.includes("adj")) ctx.adj = pick(AI_ADJECTIVES);
+  if (tpl.needs.includes("sentence")) ctx.sentence = pick(AI_SENTENCES);
+  if (tpl.needs.includes("thing")) ctx.thing = pick(AI_THINGS);
+  if (tpl.needs.includes("hypo")) ctx.hypo = pick(AI_HYPOTHETICALS);
+  if (tpl.needs.includes("style")) ctx.style = pick(AI_STYLES);
+  return tpl.make(ctx);
+}
+
+/* Quick sanity: count the combinatorial space so we know we easily clear 1000. */
+function aiBankSize() {
+  let total = 0;
+  for (const t of AI_TEMPLATES) {
+    let n = 1;
+    if (t.needs.includes("topic")) n *= AI_TOPICS.length;
+    if (t.needs.includes("topic2")) n *= (AI_TOPICS.length - 1);
+    if (t.needs.includes("concept")) n *= AI_CONCEPTS.length;
+    if (t.needs.includes("creature")) n *= AI_CREATURES.length;
+    if (t.needs.includes("adj")) n *= AI_ADJECTIVES.length;
+    if (t.needs.includes("sentence")) n *= AI_SENTENCES.length;
+    if (t.needs.includes("thing")) n *= AI_THINGS.length;
+    if (t.needs.includes("hypo")) n *= AI_HYPOTHETICALS.length;
+    if (t.needs.includes("style")) n *= AI_STYLES.length;
+    total += n;
+  }
+  return total;
+}
+
+/* ---------- MATH TASK BANK ---------- */
+
+const NAMES = ["Max","Leo","Sam","Mia","Zoe","Jake","Ava","Ben","Ella","Finn","Ivy","Noah","Ruby","Theo","Luna","Kai","Nina","Owen","Pia","Rafi"];
+const ITEMS = ["stickers","cookies","marbles","trading cards","LEGO bricks","apples","coins","candies","pencils","erasers","arrows","gems","slime jars","donuts","snacks"];
+const PLACES = ["shelves","boxes","bags","trays","crates","baskets"];
+
+function r(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+const MATH_BUILDERS = [
+  // Addition
+  () => {
+    const a = r(12, 89), b = r(8, 89);
+    return { task: `What is ${a} + ${b}?`,
+      hint: `Add the tens first (${Math.floor(a/10)*10} + ${Math.floor(b/10)*10}), then add the ones. Put them together at the end.` };
+  },
+  // Addition with carry
+  () => {
+    const a = r(100, 499), b = r(20, 499);
+    return { task: `${a} + ${b} = ?`,
+      hint: `Line the numbers up in your head: ones, tens, hundreds. Carry the 1 when a column goes past 9.` };
+  },
+  // Subtraction
+  () => {
+    const a = r(40, 99), b = r(10, 39);
+    return { task: `${a} − ${b} = ?`,
+      hint: `Try counting up from ${b} to ${a}. How many jumps does it take? That's your answer.` };
+  },
+  // Subtraction larger
+  () => {
+    const a = r(200, 900), b = r(50, 199);
+    return { task: `${a} − ${b} = ?`,
+      hint: `Round ${b} up to the nearest 10 or 100 to make it easier, then adjust at the end.` };
+  },
+  // Multiplication small
+  () => {
+    const a = r(3, 12), b = r(3, 12);
+    return { task: `${a} × ${b} = ?`,
+      hint: `Think of ${a} groups of ${b}. Or flip it: ${b} groups of ${a} — same answer!` };
+  },
+  // Multiplication by 10/100
+  () => {
+    const a = r(12, 98);
+    const m = pick([10, 100]);
+    return { task: `${a} × ${m} = ?`,
+      hint: `When you multiply by ${m}, just add ${m === 10 ? "a zero" : "two zeros"} to the end. That's it.` };
+  },
+  // Division (clean)
+  () => {
+    const b = r(2, 12), q = r(2, 12);
+    const a = b * q;
+    return { task: `${a} ÷ ${b} = ?`,
+      hint: `Ask yourself: "${b} times what gives ${a}?" The times tables are your shortcut.` };
+  },
+  // Division with remainder
+  () => {
+    const b = r(3, 9), q = r(3, 9), rem = r(1, b-1);
+    const a = b * q + rem;
+    return { task: `${a} ÷ ${b} = ? (give the answer with remainder)`,
+      hint: `Find the biggest multiple of ${b} that fits inside ${a}. Whatever's left over is the remainder.` };
+  },
+  // Doubles
+  () => {
+    const n = r(13, 49);
+    return { task: `Double ${n}.`,
+      hint: `Doubling means × 2. Double the tens, double the ones, add them together.` };
+  },
+  // Halves
+  () => {
+    const n = r(6, 48) * 2;
+    return { task: `Half of ${n} is?`,
+      hint: `Split ${n} into two equal groups. Or ask: "what + what = ${n}?"` };
+  },
+  // Percent (easy 10%, 50%, 25%)
+  () => {
+    const pct = pick([10, 25, 50]);
+    const base = pct === 25 ? r(2, 20) * 4 : pct === 50 ? r(3, 30) * 2 : r(3, 20) * 10;
+    return { task: `What is ${pct}% of ${base}?`,
+      hint: pct === 10 ? `10% means "one-tenth." Just divide by 10 (move the decimal left one).` :
+            pct === 50 ? `50% is half. Just cut it in half.` :
+            `25% is one-quarter. Half, then half again.` };
+  },
+  // Word problem — adding
+  () => {
+    const name = pick(NAMES), a = r(5, 25), b = r(3, 20), item = pick(ITEMS);
+    return { task: `${name} has ${a} ${item}. A friend gives ${name} ${b} more. How many ${item} now?`,
+      hint: `"Gives more" means add. ${a} + ${b} = ?` };
+  },
+  // Word problem — subtracting
+  () => {
+    const name = pick(NAMES), a = r(15, 60), b = r(3, 14), item = pick(ITEMS);
+    return { task: `${name} had ${a} ${item} and gave ${b} away. How many are left?`,
+      hint: `"Gave away" means subtract. Start at ${a}, count down ${b}.` };
+  },
+  // Word problem — multiplying (rows)
+  () => {
+    const rows = r(3, 9), cols = r(3, 9), place = pick(PLACES), item = pick(ITEMS);
+    return { task: `A store has ${rows} ${place} with ${cols} ${item} on each. How many ${item} total?`,
+      hint: `Rows × per row = total. ${rows} × ${cols} = ?` };
+  },
+  // Word problem — dividing (share)
+  () => {
+    const people = r(3, 8), per = r(2, 9), item = pick(ITEMS);
+    const total = people * per;
+    return { task: `${total} ${item} are shared equally between ${people} kids. How many does each kid get?`,
+      hint: `Sharing equally = division. ${total} ÷ ${people} = ?` };
+  },
+  // Money / change
+  () => {
+    const price = (r(125, 875) / 100);
+    const priceStr = price.toFixed(2);
+    const paid = pick([5, 10, 20]);
+    return { task: `You pay $${paid} for something that costs $${priceStr}. How much change do you get?`,
+      hint: `Count up from $${priceStr} to $${paid}. First to the next whole dollar, then the rest.` };
+  },
+  // Time
+  () => {
+    const a = r(10, 55), b = r(10, 55);
+    return { task: `You read for ${a} minutes, then ${b} more minutes. How many minutes total?`,
+      hint: `Just add: ${a} + ${b}. If you go past 60, that's also 1 hour + leftover minutes.` };
+  },
+  // Sequence (skip counting)
+  () => {
+    const step = pick([2,3,4,5,6,7,8,9]);
+    const start = r(1, 5) * step;
+    const a = start, b = start + step, c = start + 2*step, d = start + 3*step;
+    return { task: `What comes next in the pattern: ${a}, ${b}, ${c}, ${d}, ?`,
+      hint: `Each number goes up by the same amount. Find the jump between two numbers, then add it to ${d}.` };
+  },
+  // Squares
+  () => {
+    const n = r(3, 12);
+    return { task: `What is ${n}² (${n} × ${n})?`,
+      hint: `${n} squared means ${n} × ${n}. That's ${n} groups of ${n}.` };
+  },
+  // Comparison — fractions easy
+  () => {
+    const pairs = [["1/2","1/3"],["1/4","1/2"],["2/3","1/2"],["3/4","2/3"],["1/5","1/4"],["2/5","1/2"],["3/8","1/2"],["5/6","3/4"]];
+    const [a,b] = pick(pairs);
+    return { task: `Which is bigger: ${a} or ${b}?`,
+      hint: `Smaller bottom number = bigger slice. Or imagine a pizza cut into that many slices.` };
+  },
+  // Logic / counting
+  () => {
+    const legs = r(2, 5), heads = r(4, 10);
+    const total = legs * heads;
+    const kind = pick(["spiders","dogs","cats","birds","aliens"]);
+    const bodyLegs = kind === "spiders" ? 8 : kind === "birds" ? 2 : 4;
+    const n = r(3, 9);
+    return { task: `There are ${n} ${kind}. How many legs in total?`,
+      hint: `Each ${kind.slice(0,-1)} has ${bodyLegs} legs. So it's ${n} × ${bodyLegs}.` };
+  },
+  // Mental math chain
+  () => {
+    const a = r(10, 30), b = r(3, 9), c = r(2, 8);
+    return { task: `Start with ${a}. Add ${b}. Multiply by ${c}. What do you get?`,
+      hint: `Do it one step at a time, out loud if it helps. ${a} + ${b} first, then × ${c}.` };
+  },
+  // Odd/even + logic
+  () => {
+    const a = r(23, 89), b = r(12, 50);
+    return { task: `Is ${a} + ${b} odd or even? (And what's the answer?)`,
+      hint: `Odd + even = odd. Even + even = even. Odd + odd = even. Check the last digit to decide.` };
+  },
+  // Rounding
+  () => {
+    const n = r(123, 987);
+    const to = pick([10, 100]);
+    return { task: `Round ${n} to the nearest ${to}.`,
+      hint: to === 10 ? `Look at the ones digit. If it's 5 or more, round up. Otherwise, round down.` :
+                        `Look at the tens digit. If it's 5 or more, round up to the next hundred.` };
+  },
+  // Missing number
+  () => {
+    const a = r(12, 45), ans = r(30, 90) + a;
+    return { task: `${a} + ? = ${ans}. What's the missing number?`,
+      hint: `Subtract to find what's missing: ${ans} − ${a} = ?` };
+  },
+  // Average (small set)
+  () => {
+    const nums = [r(2, 10), r(2, 10), r(2, 10)];
+    return { task: `What's the average of ${nums.join(", ")}?`,
+      hint: `Add them up, then divide by how many there are (3).` };
+  },
+  // Perimeter
+  () => {
+    const w = r(3, 15), h = r(3, 15);
+    return { task: `A rectangle is ${w} cm wide and ${h} cm tall. What's the perimeter (distance all the way around)?`,
+      hint: `Add all 4 sides: ${w} + ${h} + ${w} + ${h}. Or shortcut: 2 × (${w} + ${h}).` };
+  },
+  // Area
+  () => {
+    const w = r(3, 12), h = r(3, 12);
+    return { task: `A rectangle is ${w} cm wide and ${h} cm tall. What's the area?`,
+      hint: `Area of a rectangle = width × height. ${w} × ${h}.` };
+  }
+];
+
+function buildMathTask() {
+  return pick(MATH_BUILDERS)();
+}
+
+/* Math combinatorial space: each builder uses randomized ranges giving
+   anywhere from ~60 to thousands of variants each. Easily > 1000 unique
+   problems across the bank of ${MATH_BUILDERS.length} templates. */
+
+/* ---------- APP ---------- */
+
+const els = {
+  aiTask: document.getElementById("aiTask"),
+  aiHint: document.getElementById("aiHint"),
+  mathTask: document.getElementById("mathTask"),
+  mathHint: document.getElementById("mathHint"),
+  newBtn: document.getElementById("newBtn"),
+  celebrate: document.getElementById("celebrate"),
+  aiCard: document.getElementById("aiCard"),
+  mathCard: document.getElementById("mathCard"),
+  date: document.getElementById("date")
+};
+
+const state = { doneAI: false, doneMath: false, lastAI: "", lastMath: "" };
+
+function setDate() {
+  const d = new Date();
+  const opts = { weekday: "long", month: "long", day: "numeric" };
+  els.date.textContent = d.toLocaleDateString(undefined, opts);
+}
+
+function refresh() {
+  let ai, math, tries = 0;
+  do { ai = buildAITask(); tries++; } while (ai.task === state.lastAI && tries < 5);
+  tries = 0;
+  do { math = buildMathTask(); tries++; } while (math.task === state.lastMath && tries < 5);
+  state.lastAI = ai.task; state.lastMath = math.task;
+
+  els.aiCard.style.animation = "none"; els.mathCard.style.animation = "none";
+  // force reflow to restart animation
+  void els.aiCard.offsetWidth; void els.mathCard.offsetWidth;
+  els.aiCard.style.animation = ""; els.mathCard.style.animation = "";
+
+  els.aiTask.textContent = ai.task;
+  els.aiHint.innerHTML = "💡 " + ai.hint;
+  els.mathTask.textContent = math.task;
+  els.mathHint.innerHTML = "💡 " + math.hint;
+
+  state.doneAI = false; state.doneMath = false;
+  document.querySelectorAll(".mark").forEach(b => {
+    b.classList.remove("is-done");
+    b.textContent = "Mark done ✓";
+  });
+  els.celebrate.classList.remove("show");
+  els.celebrate.textContent = "";
+}
+
+const CHEERS = [
+  "Nice work! 🎉", "Boom — crushed it! 💥", "Legendary. 🏆",
+  "You're on fire! 🔥", "Mission complete, agent. 🕶️",
+  "Level up! ⬆️", "Sharp thinking! ⚡", "Two for two. Huge. 🚀"
+];
+
+function updateCelebrate() {
+  if (state.doneAI && state.doneMath) {
+    els.celebrate.textContent = pick(CHEERS);
+    els.celebrate.classList.add("show");
+  }
+}
+
+document.querySelectorAll(".mark").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const kind = btn.dataset.mark;
+    if (kind === "ai") state.doneAI = !state.doneAI;
+    if (kind === "math") state.doneMath = !state.doneMath;
+    const on = kind === "ai" ? state.doneAI : state.doneMath;
+    btn.classList.toggle("is-done", on);
+    btn.textContent = on ? "Done! ✓" : "Mark done ✓";
+    updateCelebrate();
+  });
+});
+
+els.newBtn.addEventListener("click", refresh);
+
+setDate();
+refresh();
+
+// Console sanity (dev): log bank size so we can confirm > 1000 combos.
+console.log("AI task combinations available:", aiBankSize().toLocaleString());
+console.log("Math templates:", MATH_BUILDERS.length, "(each randomized into hundreds+ of variants)");
+</script>
+</body>
+</html>

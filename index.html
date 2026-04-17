@@ -511,72 +511,80 @@ function r(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min;
 function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
 
 const MATH_BUILDERS = [
-  // 3-digit addition with carries
+  // 4-digit addition with carries
   () => {
-    const a = r(245, 899), b = r(178, 899);
+    const a = r(1450, 8999), b = r(1375, 8999);
     return { task: `${a} + ${b} = ?`,
-      hint: `Stack them in your head: ones, tens, hundreds. Don't forget to carry when a column goes over 9.` };
+      hint: `Stack them column by column: ones, tens, hundreds, thousands. Carry whenever a column tops 9.` };
   },
-  // 3-digit subtraction with borrowing
+  // 4-digit subtraction with borrowing
   () => {
-    const a = r(500, 999), b = r(150, 499);
+    const a = r(3500, 9999), b = r(1250, 3499);
     return { task: `${a} − ${b} = ?`,
       hint: `Try rounding ${b} up to a nicer number, subtract that, then add back the difference.` };
   },
-  // 2-digit × 1-digit
+  // 3-digit × 1-digit
   () => {
-    const a = r(13, 49), b = r(4, 9);
+    const a = r(124, 899), b = r(4, 9);
     return { task: `${a} × ${b} = ?`,
-      hint: `Split ${a} into tens and ones: (${Math.floor(a/10)*10} × ${b}) + (${a%10} × ${b}).` };
+      hint: `Split: (${Math.floor(a/100)*100} × ${b}) + (${Math.floor((a%100)/10)*10} × ${b}) + (${a%10} × ${b}). Then add.` };
   },
-  // 2-digit × 2-digit
+  // 2-digit × 2-digit (wider range)
   () => {
-    const a = r(12, 39), b = r(11, 29);
+    const a = r(23, 69), b = r(14, 49);
     return { task: `${a} × ${b} = ?`,
-      hint: `Break ${b} apart: ${a} × ${Math.floor(b/10)*10} plus ${a} × ${b%10}. Add the two pieces.` };
+      hint: `Box method: split ${b} into ${Math.floor(b/10)*10} + ${b%10}. Do ${a} × ${Math.floor(b/10)*10}, then ${a} × ${b%10}, then add.` };
   },
-  // Multiplication with larger factor
+  // 3-digit × 2-digit (stretch)
   () => {
-    const a = r(101, 499), b = r(3, 9);
+    const a = r(105, 299), b = r(12, 29);
     return { task: `${a} × ${b} = ?`,
-      hint: `Multiply each digit of ${a} by ${b}, carrying as you go. Or split: (${Math.floor(a/100)*100} × ${b}) + (${a%100} × ${b}).` };
+      hint: `Split ${b} into tens + ones. Multiply ${a} by each piece separately, then add the two results.` };
   },
-  // Long division with remainder
+  // Long division (2-digit divisor)
   () => {
-    const b = r(6, 12), q = r(12, 49), rem = r(1, b-1);
+    const b = r(12, 19), q = r(18, 79), rem = r(0, b-1);
     const a = b * q + rem;
-    return { task: `${a} ÷ ${b} = ? (answer with remainder)`,
-      hint: `How many times does ${b} fit into ${a}? Find the biggest multiple, then whatever's left is the remainder.` };
+    return { task: `${a} ÷ ${b} = ? ${rem === 0 ? "" : "(give quotient and remainder)"}`,
+      hint: `Estimate first: how many ${b}s fit roughly into ${a}? Refine, then find what's left over.` };
   },
-  // Order of operations
+  // Order of operations with exponent
   () => {
-    const a = r(3, 9), b = r(2, 9), c = r(3, 12), d = r(2, 8);
-    return { task: `${a} + ${b} × ${c} − ${d} = ?`,
-      hint: `PEMDAS/BODMAS: do the × first, then go left to right with + and −.` };
+    const a = r(3, 9), b = r(2, 6), c = r(3, 12), d = r(2, 15);
+    return { task: `${a} + ${b}² × ${c} − ${d} = ?`,
+      hint: `PEMDAS: exponents first (${b}²), then the multiplication, THEN work left to right with + and −.` };
   },
-  // Parentheses
+  // Parentheses + division
   () => {
-    const a = r(3, 12), b = r(4, 15), c = r(2, 9);
-    return { task: `(${a} + ${b}) × ${c} = ?`,
-      hint: `Parentheses go first. Solve what's inside, then multiply.` };
+    const a = r(3, 12), b = r(4, 18), c = r(2, 6), d = r(2, 5);
+    const inner = a + b;
+    const div = d * r(2, 6);
+    return { task: `(${a} + ${b}) × ${c} − ${div} ÷ ${d} = ?`,
+      hint: `Two jobs at once: solve (${a} + ${b}) and ${div} ÷ ${d} FIRST, then do × and − left to right.` };
   },
-  // Exponents
+  // Exponents (bigger)
   () => {
-    const n = r(4, 15);
+    const n = r(11, 20);
     return { task: `What is ${n}²?`,
-      hint: `${n}² = ${n} × ${n}. Tip: (${n-1})² is ${(n-1)*(n-1)}, and squares go up by 2n−1 each step.` };
+      hint: `${n}² = ${n} × ${n}. Trick: (${n})² = (${n-1})² + (${n-1}) + (${n}) — or just split ${n} into ${Math.floor(n/10)*10} + ${n%10} and expand.` };
   },
-  // Cubes (small)
+  // Cubes (bigger)
   () => {
-    const n = r(3, 7);
+    const n = r(5, 10);
     return { task: `What is ${n}³?`,
-      hint: `${n}³ = ${n} × ${n} × ${n}. Do ${n} × ${n} first, then multiply by ${n} again.` };
+      hint: `${n}³ = ${n} × ${n} × ${n}. Do ${n} × ${n} = ${n*n} first, then ${n*n} × ${n}.` };
   },
-  // Square roots (perfect)
+  // Square roots (perfect — including up to 20²)
   () => {
-    const n = pick([36, 49, 64, 81, 100, 121, 144, 169, 196, 225]);
+    const n = pick([81, 121, 144, 169, 196, 225, 256, 289, 324, 361, 400]);
     return { task: `√${n} = ?`,
-      hint: `What number times itself gives ${n}? Think of the squares: 6²=36, 7²=49, 8²=64, 9²=81, 10²=100, 11²=121, 12²=144…` };
+      hint: `What number times itself gives ${n}? Useful squares: 13²=169, 14²=196, 15²=225, 16²=256, 17²=289, 18²=324, 19²=361, 20²=400.` };
+  },
+  // Powers of 2 / recognizing
+  () => {
+    const exp = r(6, 10);
+    return { task: `What is 2^${exp}?`,
+      hint: `Double it step by step: 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024. Count ${exp} doublings starting from 2¹=2.` };
   },
   // Negative numbers
   () => {
@@ -590,34 +598,59 @@ const MATH_BUILDERS = [
     return { task: `−${a} + ${b} = ?`,
       hint: `Think of a number line. Start at −${a}, then jump ${b} to the right. Does it cross zero?` };
   },
-  // Simple algebra
+  // Algebra — x on both sides
   () => {
-    const x = r(6, 25), a = r(3, 9), b = r(5, 40);
-    const rhs = a * x + b;
-    return { task: `Solve for x:  ${a}x + ${b} = ${rhs}`,
-      hint: `First undo the +${b} (subtract it from both sides). Then undo the × ${a} (divide).` };
+    const x = r(4, 15), a = r(3, 7), b = r(1, a-1), c = r(2, 20);
+    // a*x + c = b*x + (a-b)*x*... let's keep it cleaner:
+    // Build: a*x + c = b*x + d  where d = (a-b)*x + c
+    const d = (a - b) * x + c;
+    return { task: `Solve for x:  ${a}x + ${c} = ${b}x + ${d}`,
+      hint: `Get all the x's on one side. Subtract ${b}x from both sides, then isolate x.` };
   },
-  // Algebra with subtraction
+  // Algebra — two-step with division
   () => {
-    const x = r(7, 20), a = r(2, 7), b = r(4, 15);
-    const rhs = a * x - b;
-    return { task: `Solve for x:  ${a}x − ${b} = ${rhs}`,
-      hint: `Add ${b} to both sides first, then divide both sides by ${a}.` };
+    const x = r(4, 20), a = r(2, 6), b = r(3, 15);
+    const rhs = (x + b) * a; // so  a(x + b) = rhs => x = rhs/a - b
+    return { task: `Solve for x:  ${a}(x + ${b}) = ${rhs}`,
+      hint: `Two ways: either distribute the ${a} first, or divide both sides by ${a} to undo it.` };
   },
-  // Fractions — add same denominator (not always simplified)
+  // Algebra — negative coefficient
   () => {
-    const d = r(5, 12), a = r(1, d-1), b = r(1, d-1);
-    return { task: `${a}/${d} + ${b}/${d} = ?  (simplify if you can)`,
-      hint: `Same denominator — just add the tops. Then check if top and bottom share a common factor.` };
+    const x = r(3, 12), a = r(2, 6), b = r(5, 25);
+    const rhs = b - a * x;
+    return { task: `Solve for x:  ${b} − ${a}x = ${rhs}`,
+      hint: `Subtract ${b} from both sides (careful with signs!), then divide by −${a}.` };
   },
-  // Fractions — add different denominators (one multiple of the other)
+  // Fractions — add different denominators (coprime)
   () => {
-    const d1 = pick([2, 3, 4, 5]);
-    const k = pick([2, 3, 4]);
-    const d2 = d1 * k;
+    const pairs = [[2,3],[2,5],[3,4],[3,5],[4,5],[3,7],[4,7],[5,6],[5,7],[5,8]];
+    const [d1, d2] = pick(pairs);
     const a = r(1, d1 - 1), b = r(1, d2 - 1);
-    return { task: `${a}/${d1} + ${b}/${d2} = ?`,
-      hint: `Find a common denominator. Since ${d2} is a multiple of ${d1}, convert ${a}/${d1} to something over ${d2}, then add.` };
+    return { task: `${a}/${d1} + ${b}/${d2} = ?  (as a fraction, simplified)`,
+      hint: `Common denominator = ${d1} × ${d2} = ${d1*d2}. Rewrite both fractions over ${d1*d2}, then add.` };
+  },
+  // Fractions — subtract mixed numbers
+  () => {
+    const d = pick([3, 4, 5, 6, 8]);
+    const w1 = r(3, 8), w2 = r(1, w1 - 1);
+    const n1 = r(1, d-1), n2 = r(n1+1, d);
+    // ensure w1 n1/d > w2 n2/d — if n2 > n1 we'll need a borrow, which is the point
+    return { task: `${w1} ${n1}/${d} − ${w2} ${n2 === d ? d-1 : n2}/${d} = ?`,
+      hint: `Top fraction is smaller, so borrow 1 from the whole number (that's ${d}/${d} extra on top). Then subtract.` };
+  },
+  // Fraction × fraction
+  () => {
+    const n1 = r(1, 5), d1 = r(n1+1, 8);
+    const n2 = r(1, 5), d2 = r(n2+1, 8);
+    return { task: `${n1}/${d1} × ${n2}/${d2} = ?  (simplify)`,
+      hint: `Multiply tops, multiply bottoms. Then simplify by dividing top and bottom by any shared factor.` };
+  },
+  // Fraction ÷ fraction
+  () => {
+    const n1 = r(1, 5), d1 = r(n1+1, 8);
+    const n2 = r(1, 4), d2 = r(n2+1, 7);
+    return { task: `${n1}/${d1} ÷ ${n2}/${d2} = ?  (simplify)`,
+      hint: `Dividing fractions = multiply by the reciprocal. Flip the second fraction upside down, then multiply.` };
   },
   // Fraction of a number
   () => {
@@ -627,19 +660,34 @@ const MATH_BUILDERS = [
     return { task: `What is ${n}/${d} of ${whole}?`,
       hint: `Divide ${whole} by ${d} first to find 1/${d}. Then multiply by ${n}.` };
   },
-  // Percent harder (15%, 20%, 75%)
+  // Percent (trickier %)
   () => {
-    const pct = pick([15, 20, 30, 40, 60, 75, 80]);
-    const base = pick([20, 40, 60, 80, 100, 120, 150, 200, 240]);
+    const pct = pick([12, 15, 18, 22, 35, 45, 65, 85]);
+    const base = pick([40, 60, 80, 120, 150, 200, 240, 300]);
     return { task: `What is ${pct}% of ${base}?`,
-      hint: `Find 10% first (divide by 10), then scale. E.g. 15% = 10% + half of 10%. 75% = three quarters.` };
+      hint: `Find 10% (divide by 10) and 1% (divide by 100). Build ${pct}% by combining. E.g. 18% = 10% + 5% + 3%.` };
   },
-  // Percent — reverse
+  // Percent — reverse (harder)
   () => {
-    const pct = pick([10, 20, 25, 50]);
-    const part = pick([6, 8, 10, 12, 15, 18, 20, 25]);
+    const pct = pick([15, 20, 25, 30, 40, 60]);
+    const whole = pick([40, 60, 80, 100, 120, 150, 200]);
+    const part = (pct * whole) / 100;
     return { task: `${part} is ${pct}% of what number?`,
-      hint: `If ${pct}% is ${part}, then 100% is ${pct === 50 ? "double" : pct === 25 ? "four times" : pct === 20 ? "five times" : "ten times"} ${part}.` };
+      hint: `Set it up: part ÷ percent × 100 = whole. Or: "1% = part ÷ ${pct}", then × 100.` };
+  },
+  // Percent change / increase
+  () => {
+    const base = pick([40, 50, 60, 80, 100, 120, 150, 200]);
+    const pct = pick([15, 20, 25, 30, 40]);
+    return { task: `A $${base} jacket is marked up by ${pct}%. What's the new price?`,
+      hint: `New price = original + (${pct}% of original). Or shortcut: multiply by 1.${pct < 10 ? "0"+pct : pct}.` };
+  },
+  // Percent discount
+  () => {
+    const base = pick([40, 60, 80, 120, 150, 200, 250]);
+    const pct = pick([15, 20, 25, 30, 35, 40]);
+    return { task: `A $${base} game is ${pct}% off. What's the sale price?`,
+      hint: `Sale price = original − (${pct}% of original). Or: pay (${100-pct}%) of $${base}.` };
   },
   // Decimals
   () => {
@@ -664,9 +712,9 @@ const MATH_BUILDERS = [
   },
   // Multi-step word problem
   () => {
-    const name = pick(NAMES), pack = r(6, 12), packs = r(4, 9), gave = r(3, 12), item = pick(ITEMS);
-    return { task: `${name} buys ${packs} packs of ${item}. Each pack has ${pack}. ${name} gives ${gave} away. How many are left?`,
-      hint: `Two steps: first total = packs × per-pack. Then subtract what was given away.` };
+    const name = pick(NAMES), pack = r(8, 16), packs = r(5, 12), gave = r(5, 20), kept = r(3, 9), item = pick(ITEMS);
+    return { task: `${name} buys ${packs} packs of ${item}, ${pack} per pack. ${name} gives ${gave} to a friend and splits the rest equally among ${kept} cousins. How many does each cousin get?`,
+      hint: `Three steps: (1) total = packs × per-pack, (2) subtract the ${gave} given away, (3) divide what's left by ${kept}.` };
   },
   // Rate / speed
   () => {

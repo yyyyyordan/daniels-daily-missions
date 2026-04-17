@@ -174,6 +174,55 @@
     padding: 10px 14px;
     border-radius: 12px;
   }
+  .answer-row {
+    display: flex;
+    gap: 8px;
+    margin: 0 0 10px;
+  }
+  .answer-input {
+    flex: 1;
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ink);
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 2px solid #e3dffc;
+    background: #fbfaff;
+    outline: none;
+    min-width: 0;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .answer-input:focus { border-color: var(--mint); background: #fff; }
+  .answer-input.ok { border-color: #2fd8a8; background: #eafbf4; }
+  .answer-input.no { border-color: #ff7a9a; background: #fff1f5; }
+  .check-btn {
+    background: linear-gradient(135deg, #2fd8a8, #26b893);
+    color: #fff;
+    font-size: 15px;
+    padding: 0 18px;
+    border-radius: 12px;
+    box-shadow: 0 6px 14px rgba(47, 216, 168, 0.35);
+  }
+  .feedback {
+    min-height: 20px;
+    margin: 0 0 10px;
+    font-size: 14px;
+    font-weight: 700;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  .feedback.show { opacity: 1; }
+  .feedback.ok { color: #158a63; }
+  .feedback.no { color: #c23866; }
+  .feedback .reveal-link {
+    display: inline-block;
+    margin-left: 6px;
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: underline;
+    cursor: pointer;
+  }
   .done-row {
     display: flex;
     gap: 8px;
@@ -255,6 +304,13 @@
       <div class="tag math">Math Mission</div>
     </div>
     <div class="task" id="mathTask"></div>
+    <div class="answer-row">
+      <input id="mathInput" class="answer-input" type="text" inputmode="text"
+             autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+             placeholder="Type your answer" />
+      <button class="check-btn" id="checkBtn">Check</button>
+    </div>
+    <div class="feedback" id="mathFeedback"></div>
     <div class="hint" id="mathHint"></div>
     <div class="done-row">
       <button class="mark" data-mark="math">Mark done ✓</button>
@@ -508,219 +564,402 @@ const PLACES = ["shelves","boxes","bags","trays","crates","baskets"];
 
 function r(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
-function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); return b === 0 ? a : gcd(b, a % b); }
+
+/* ---------- Answer normalization + checkers ---------- */
+
+function norm(s) {
+  return String(s == null ? "" : s).trim().toLowerCase()
+    .replace(/\s+/g, " ")
+    .replace(/×/g, "*").replace(/÷/g, "/").replace(/−/g, "-")
+    .replace(/[,$€£]/g, "");
+}
+
+function simplifyFrac(n, d) {
+  if (d === 0) return [n, d];
+  if (d < 0) { n = -n; d = -d; }
+  const g = gcd(n, d) || 1;
+  return [n / g, d / g];
+}
+
+function parseFrac(raw) {
+  const s = norm(raw);
+  if (!s) return null;
+  let m = s.match(/^(-?\d+)\s+(\d+)\/(\d+)$/); // mixed "3 1/4"
+  if (m) {
+    const w = parseInt(m[1]), n = parseInt(m[2]), d = parseInt(m[3]);
+    const sign = w < 0 ? -1 : 1;
+    if (d === 0) return null;
+    return [sign * (Math.abs(w) * d + n), d];
+  }
+  m = s.match(/^(-?\d+)\/(-?\d+)$/);
+  if (m) { const d = parseInt(m[2]); if (d === 0) return null; return [parseInt(m[1]), d]; }
+  m = s.match(/^-?\d+$/);
+  if (m) return [parseInt(s), 1];
+  m = s.match(/^(-?)(\d*)\.(\d+)$/);
+  if (m) {
+    const sign = m[1] === "-" ? -1 : 1;
+    const whole = m[2] === "" ? 0 : parseInt(m[2]);
+    const frac = m[3];
+    const denom = Math.pow(10, frac.length);
+    return [sign * (whole * denom + parseInt(frac)), denom];
+  }
+  return null;
+}
+
+// Answer-maker helpers. Each returns { check(input), canonical }.
+function ansNum(v) {
+  return {
+    check: (s) => {
+      const t = norm(s);
+      if (t === "") return false;
+      const n = Number(t);
+      if (Number.isFinite(n)) return Math.abs(n - v) < 1e-9;
+      return false;
+    },
+    canonical: (Number.isInteger(v) ? String(v) : String(v))
+  };
+}
+function ansFrac(n, d) {
+  const [cn, cd] = simplifyFrac(n, d);
+  return {
+    check: (s) => {
+      const p = parseFrac(s);
+      if (!p) return false;
+      const [a, b] = simplifyFrac(p[0], p[1]);
+      return a === cn && b === cd;
+    },
+    canonical: cd === 1 ? String(cn) : `${cn}/${cd}`
+  };
+}
+function ansTime(h, m) {
+  const canon = `${h}:${String(m).padStart(2, "0")}`;
+  return {
+    check: (s) => {
+      const t = norm(s).replace(/\s*(am|pm)$/, "");
+      const mt = t.match(/^(\d{1,2})[:. ](\d{1,2})$/);
+      if (!mt) return false;
+      const hh = parseInt(mt[1]), mm = parseInt(mt[2]);
+      return (hh === h || hh === h % 12 || hh === h + 12) && mm === m;
+    },
+    canonical: canon
+  };
+}
+function ansRem(q, r) {
+  const canon = r === 0 ? String(q) : `${q} R ${r}`;
+  return {
+    check: (s) => {
+      const t = norm(s);
+      if (r === 0) { const n = Number(t); return Number.isFinite(n) && n === q; }
+      const m1 = t.match(/^(-?\d+)\s*r(?:em(?:ainder)?)?\s*\.?\s*(\d+)$/);
+      if (m1) return parseInt(m1[1]) === q && parseInt(m1[2]) === r;
+      const m2 = t.match(/^(-?\d+)\s+(\d+)$/); // "5 3"
+      if (m2) return parseInt(m2[1]) === q && parseInt(m2[2]) === r;
+      return false;
+    },
+    canonical: canon
+  };
+}
+function ansYesNo(v) {
+  return {
+    check: (s) => {
+      const t = norm(s).split(" ")[0];
+      return (v ? ["y","yes","yeah","yep","true"] : ["n","no","nope","false"]).includes(t);
+    },
+    canonical: v ? "yes" : "no"
+  };
+}
+function ansHM(h, m) {
+  // "2 hours 15 minutes" / "2h 15m" / "2:15" / "2 15"
+  const canon = `${h}h ${m}m`;
+  return {
+    check: (s) => {
+      const t = norm(s);
+      let mt = t.match(/^(\d+)\s*(?:h|hr|hrs|hour|hours)?\s*(\d+)\s*(?:m|min|mins|minute|minutes)?$/);
+      if (mt) return parseInt(mt[1]) === h && parseInt(mt[2]) === m;
+      mt = t.match(/^(\d+)[:h ](\d+)m?$/);
+      if (mt) return parseInt(mt[1]) === h && parseInt(mt[2]) === m;
+      return false;
+    },
+    canonical: canon
+  };
+}
+function ansPrimeFact(n) {
+  // Compute canonical factorization
+  const factors = [];
+  let x = n;
+  for (let p = 2; p * p <= x; p++) {
+    while (x % p === 0) { factors.push(p); x = x / p; }
+  }
+  if (x > 1) factors.push(x);
+  const canon = factors.join(" × ");
+  function isPrime(k) {
+    if (k < 2) return false;
+    for (let i = 2; i * i <= k; i++) if (k % i === 0) return false;
+    return true;
+  }
+  return {
+    check: (s) => {
+      const t = norm(s).replace(/\*/g, " ").replace(/\s+/g, " ").trim();
+      const parts = t.split(/[\s,]+/).filter(Boolean);
+      if (parts.length === 0) return false;
+      const nums = parts.map(p => {
+        // handle 2^3 notation too
+        const m = p.match(/^(\d+)\^(\d+)$/);
+        if (m) return { base: parseInt(m[1]), exp: parseInt(m[2]) };
+        const n = parseInt(p);
+        if (isNaN(n)) return null;
+        return { base: n, exp: 1 };
+      });
+      if (nums.some(v => v === null)) return false;
+      let product = 1;
+      for (const v of nums) {
+        if (!isPrime(v.base)) return false;
+        product *= Math.pow(v.base, v.exp);
+      }
+      return product === n;
+    },
+    canonical: canon
+  };
+}
+function ansAny(opts) { // opts: array of answer-checker objects
+  return {
+    check: (s) => opts.some(o => o.check(s)),
+    canonical: opts[0].canonical
+  };
+}
 
 const MATH_BUILDERS = [
-  // 4-digit addition with carries
+  // 4-digit addition
   () => {
     const a = r(1450, 8999), b = r(1375, 8999);
-    return { task: `${a} + ${b} = ?`,
+    return { task: `${a} + ${b} = ?`, answer: ansNum(a + b),
       hint: `Stack them column by column: ones, tens, hundreds, thousands. Carry whenever a column tops 9.` };
   },
-  // 4-digit subtraction with borrowing
+  // 4-digit subtraction
   () => {
     const a = r(3500, 9999), b = r(1250, 3499);
-    return { task: `${a} − ${b} = ?`,
+    return { task: `${a} − ${b} = ?`, answer: ansNum(a - b),
       hint: `Try rounding ${b} up to a nicer number, subtract that, then add back the difference.` };
   },
   // 3-digit × 1-digit
   () => {
     const a = r(124, 899), b = r(4, 9);
-    return { task: `${a} × ${b} = ?`,
+    return { task: `${a} × ${b} = ?`, answer: ansNum(a * b),
       hint: `Split: (${Math.floor(a/100)*100} × ${b}) + (${Math.floor((a%100)/10)*10} × ${b}) + (${a%10} × ${b}). Then add.` };
   },
-  // 2-digit × 2-digit (wider range)
+  // 2-digit × 2-digit
   () => {
     const a = r(23, 69), b = r(14, 49);
-    return { task: `${a} × ${b} = ?`,
+    return { task: `${a} × ${b} = ?`, answer: ansNum(a * b),
       hint: `Box method: split ${b} into ${Math.floor(b/10)*10} + ${b%10}. Do ${a} × ${Math.floor(b/10)*10}, then ${a} × ${b%10}, then add.` };
   },
-  // 3-digit × 2-digit (stretch)
+  // 3-digit × 2-digit
   () => {
     const a = r(105, 299), b = r(12, 29);
-    return { task: `${a} × ${b} = ?`,
+    return { task: `${a} × ${b} = ?`, answer: ansNum(a * b),
       hint: `Split ${b} into tens + ones. Multiply ${a} by each piece separately, then add the two results.` };
   },
-  // Long division (2-digit divisor)
+  // Long division with 2-digit divisor
   () => {
     const b = r(12, 19), q = r(18, 79), rem = r(0, b-1);
     const a = b * q + rem;
-    return { task: `${a} ÷ ${b} = ? ${rem === 0 ? "" : "(give quotient and remainder)"}`,
+    return { task: `${a} ÷ ${b} = ? ${rem === 0 ? "" : "(give quotient and remainder, e.g. \"5 R 3\")"}`,
+      answer: ansRem(q, rem),
       hint: `Estimate first: how many ${b}s fit roughly into ${a}? Refine, then find what's left over.` };
   },
   // Order of operations with exponent
   () => {
     const a = r(3, 9), b = r(2, 6), c = r(3, 12), d = r(2, 15);
-    return { task: `${a} + ${b}² × ${c} − ${d} = ?`,
+    return { task: `${a} + ${b}² × ${c} − ${d} = ?`, answer: ansNum(a + b*b*c - d),
       hint: `PEMDAS: exponents first (${b}²), then the multiplication, THEN work left to right with + and −.` };
   },
   // Parentheses + division
   () => {
     const a = r(3, 12), b = r(4, 18), c = r(2, 6), d = r(2, 5);
-    const inner = a + b;
     const div = d * r(2, 6);
-    return { task: `(${a} + ${b}) × ${c} − ${div} ÷ ${d} = ?`,
+    const val = (a + b) * c - (div / d);
+    return { task: `(${a} + ${b}) × ${c} − ${div} ÷ ${d} = ?`, answer: ansNum(val),
       hint: `Two jobs at once: solve (${a} + ${b}) and ${div} ÷ ${d} FIRST, then do × and − left to right.` };
   },
-  // Exponents (bigger)
+  // Squares 11–20
   () => {
     const n = r(11, 20);
-    return { task: `What is ${n}²?`,
-      hint: `${n}² = ${n} × ${n}. Trick: (${n})² = (${n-1})² + (${n-1}) + (${n}) — or just split ${n} into ${Math.floor(n/10)*10} + ${n%10} and expand.` };
+    return { task: `What is ${n}²?`, answer: ansNum(n*n),
+      hint: `${n}² = ${n} × ${n}. Split ${n} into ${Math.floor(n/10)*10} + ${n%10} and expand.` };
   },
-  // Cubes (bigger)
+  // Cubes 5–10
   () => {
     const n = r(5, 10);
-    return { task: `What is ${n}³?`,
-      hint: `${n}³ = ${n} × ${n} × ${n}. Do ${n} × ${n} = ${n*n} first, then ${n*n} × ${n}.` };
+    return { task: `What is ${n}³?`, answer: ansNum(n*n*n),
+      hint: `${n}³ = ${n} × ${n} × ${n}. Do ${n} × ${n} = ${n*n} first, then multiply by ${n} again.` };
   },
-  // Square roots (perfect — including up to 20²)
+  // Square roots (perfect)
   () => {
     const n = pick([81, 121, 144, 169, 196, 225, 256, 289, 324, 361, 400]);
-    return { task: `√${n} = ?`,
-      hint: `What number times itself gives ${n}? Useful squares: 13²=169, 14²=196, 15²=225, 16²=256, 17²=289, 18²=324, 19²=361, 20²=400.` };
+    return { task: `√${n} = ?`, answer: ansNum(Math.round(Math.sqrt(n))),
+      hint: `What number times itself gives ${n}? Useful: 13²=169, 14²=196, 15²=225, 16²=256, 17²=289, 18²=324, 19²=361, 20²=400.` };
   },
-  // Powers of 2 / recognizing
+  // Powers of 2
   () => {
     const exp = r(6, 10);
-    return { task: `What is 2^${exp}?`,
+    return { task: `What is 2^${exp}?`, answer: ansNum(Math.pow(2, exp)),
       hint: `Double it step by step: 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024. Count ${exp} doublings starting from 2¹=2.` };
   },
-  // Negative numbers
+  // Negative result subtraction
   () => {
     const a = r(4, 25), b = r(a+3, a+40);
-    return { task: `${a} − ${b} = ?`,
+    return { task: `${a} − ${b} = ?`, answer: ansNum(a - b),
       hint: `${a} is smaller than ${b}, so the answer is negative. Do ${b} − ${a} and put a minus sign on it.` };
   },
   // Negative arithmetic
   () => {
     const a = r(5, 30), b = r(5, 30);
-    return { task: `−${a} + ${b} = ?`,
+    return { task: `−${a} + ${b} = ?`, answer: ansNum(-a + b),
       hint: `Think of a number line. Start at −${a}, then jump ${b} to the right. Does it cross zero?` };
   },
   // Algebra — x on both sides
   () => {
     const x = r(4, 15), a = r(3, 7), b = r(1, a-1), c = r(2, 20);
-    // a*x + c = b*x + (a-b)*x*... let's keep it cleaner:
-    // Build: a*x + c = b*x + d  where d = (a-b)*x + c
     const d = (a - b) * x + c;
-    return { task: `Solve for x:  ${a}x + ${c} = ${b}x + ${d}`,
+    return { task: `Solve for x:  ${a}x + ${c} = ${b}x + ${d}`, answer: ansNum(x),
       hint: `Get all the x's on one side. Subtract ${b}x from both sides, then isolate x.` };
   },
-  // Algebra — two-step with division
+  // Algebra — distributive
   () => {
     const x = r(4, 20), a = r(2, 6), b = r(3, 15);
-    const rhs = (x + b) * a; // so  a(x + b) = rhs => x = rhs/a - b
-    return { task: `Solve for x:  ${a}(x + ${b}) = ${rhs}`,
-      hint: `Two ways: either distribute the ${a} first, or divide both sides by ${a} to undo it.` };
+    const rhs = (x + b) * a;
+    return { task: `Solve for x:  ${a}(x + ${b}) = ${rhs}`, answer: ansNum(x),
+      hint: `Divide both sides by ${a} to undo it, or distribute the ${a} first.` };
   },
   // Algebra — negative coefficient
   () => {
     const x = r(3, 12), a = r(2, 6), b = r(5, 25);
     const rhs = b - a * x;
-    return { task: `Solve for x:  ${b} − ${a}x = ${rhs}`,
+    return { task: `Solve for x:  ${b} − ${a}x = ${rhs}`, answer: ansNum(x),
       hint: `Subtract ${b} from both sides (careful with signs!), then divide by −${a}.` };
   },
-  // Fractions — add different denominators (coprime)
+  // Fraction add different denoms
   () => {
     const pairs = [[2,3],[2,5],[3,4],[3,5],[4,5],[3,7],[4,7],[5,6],[5,7],[5,8]];
     const [d1, d2] = pick(pairs);
     const a = r(1, d1 - 1), b = r(1, d2 - 1);
+    const num = a * d2 + b * d1;
     return { task: `${a}/${d1} + ${b}/${d2} = ?  (as a fraction, simplified)`,
+      answer: ansFrac(num, d1 * d2),
       hint: `Common denominator = ${d1} × ${d2} = ${d1*d2}. Rewrite both fractions over ${d1*d2}, then add.` };
   },
-  // Fractions — subtract mixed numbers
+  // Fraction subtract mixed numbers
   () => {
     const d = pick([3, 4, 5, 6, 8]);
     const w1 = r(3, 8), w2 = r(1, w1 - 1);
-    const n1 = r(1, d-1), n2 = r(n1+1, d);
-    // ensure w1 n1/d > w2 n2/d — if n2 > n1 we'll need a borrow, which is the point
-    return { task: `${w1} ${n1}/${d} − ${w2} ${n2 === d ? d-1 : n2}/${d} = ?`,
+    const n1 = r(1, d-2), n2 = r(n1+1, d-1);
+    const val1 = w1 * d + n1;
+    const val2 = w2 * d + n2;
+    const diff = val1 - val2;
+    return { task: `${w1} ${n1}/${d} − ${w2} ${n2}/${d} = ?  (as a mixed number or fraction)`,
+      answer: ansFrac(diff, d),
       hint: `Top fraction is smaller, so borrow 1 from the whole number (that's ${d}/${d} extra on top). Then subtract.` };
   },
   // Fraction × fraction
   () => {
     const n1 = r(1, 5), d1 = r(n1+1, 8);
     const n2 = r(1, 5), d2 = r(n2+1, 8);
-    return { task: `${n1}/${d1} × ${n2}/${d2} = ?  (simplify)`,
+    return { task: `${n1}/${d1} × ${n2}/${d2} = ?  (simplified)`,
+      answer: ansFrac(n1 * n2, d1 * d2),
       hint: `Multiply tops, multiply bottoms. Then simplify by dividing top and bottom by any shared factor.` };
   },
   // Fraction ÷ fraction
   () => {
     const n1 = r(1, 5), d1 = r(n1+1, 8);
     const n2 = r(1, 4), d2 = r(n2+1, 7);
-    return { task: `${n1}/${d1} ÷ ${n2}/${d2} = ?  (simplify)`,
-      hint: `Dividing fractions = multiply by the reciprocal. Flip the second fraction upside down, then multiply.` };
+    return { task: `${n1}/${d1} ÷ ${n2}/${d2} = ?  (simplified)`,
+      answer: ansFrac(n1 * d2, d1 * n2),
+      hint: `Dividing fractions = multiply by the reciprocal. Flip the second fraction, then multiply.` };
   },
   // Fraction of a number
   () => {
     const d = pick([3, 4, 5, 6, 8]);
     const n = r(1, d-1);
     const whole = d * r(3, 12);
-    return { task: `What is ${n}/${d} of ${whole}?`,
+    return { task: `What is ${n}/${d} of ${whole}?`, answer: ansNum(whole * n / d),
       hint: `Divide ${whole} by ${d} first to find 1/${d}. Then multiply by ${n}.` };
   },
-  // Percent (trickier %)
+  // Percent (trickier)
   () => {
     const pct = pick([12, 15, 18, 22, 35, 45, 65, 85]);
     const base = pick([40, 60, 80, 120, 150, 200, 240, 300]);
-    return { task: `What is ${pct}% of ${base}?`,
+    return { task: `What is ${pct}% of ${base}?`, answer: ansNum(pct * base / 100),
       hint: `Find 10% (divide by 10) and 1% (divide by 100). Build ${pct}% by combining. E.g. 18% = 10% + 5% + 3%.` };
   },
-  // Percent — reverse (harder)
+  // Percent reverse
   () => {
     const pct = pick([15, 20, 25, 30, 40, 60]);
     const whole = pick([40, 60, 80, 100, 120, 150, 200]);
     const part = (pct * whole) / 100;
-    return { task: `${part} is ${pct}% of what number?`,
-      hint: `Set it up: part ÷ percent × 100 = whole. Or: "1% = part ÷ ${pct}", then × 100.` };
+    return { task: `${part} is ${pct}% of what number?`, answer: ansNum(whole),
+      hint: `Set it up: part ÷ percent × 100 = whole.` };
   },
-  // Percent change / increase
+  // Percent markup
   () => {
     const base = pick([40, 50, 60, 80, 100, 120, 150, 200]);
     const pct = pick([15, 20, 25, 30, 40]);
-    return { task: `A $${base} jacket is marked up by ${pct}%. What's the new price?`,
+    const val = base * (1 + pct/100);
+    return { task: `A $${base} jacket is marked up by ${pct}%. What's the new price? (a number)`,
+      answer: ansNum(val),
       hint: `New price = original + (${pct}% of original). Or shortcut: multiply by 1.${pct < 10 ? "0"+pct : pct}.` };
   },
   // Percent discount
   () => {
     const base = pick([40, 60, 80, 120, 150, 200, 250]);
     const pct = pick([15, 20, 25, 30, 35, 40]);
-    return { task: `A $${base} game is ${pct}% off. What's the sale price?`,
+    const val = base * (1 - pct/100);
+    return { task: `A $${base} game is ${pct}% off. What's the sale price? (a number)`,
+      answer: ansNum(val),
       hint: `Sale price = original − (${pct}% of original). Or: pay (${100-pct}%) of $${base}.` };
   },
-  // Decimals
+  // Decimal addition
   () => {
-    const a = (r(150, 899) / 100).toFixed(2);
-    const b = (r(75, 599) / 100).toFixed(2);
-    return { task: `${a} + ${b} = ?`,
+    const a = Math.round(r(150, 899)) / 100;
+    const b = Math.round(r(75, 599)) / 100;
+    const sum = Math.round((a + b) * 100) / 100;
+    return { task: `${a.toFixed(2)} + ${b.toFixed(2)} = ?`, answer: ansNum(sum),
       hint: `Line up the decimal points. Add like normal — the decimal stays in the same column.` };
   },
-  // Decimals subtraction
+  // Decimal subtraction
   () => {
-    const a = r(400, 900) / 10;
-    const b = r(50, 300) / 10;
-    return { task: `${a.toFixed(1)} − ${b.toFixed(1)} = ?`,
+    const a = Math.round(r(400, 900)) / 10;
+    const b = Math.round(r(50, 300)) / 10;
+    const diff = Math.round((a - b) * 10) / 10;
+    return { task: `${a.toFixed(1)} − ${b.toFixed(1)} = ?`, answer: ansNum(diff),
       hint: `Line up the decimal points. Borrow across the decimal just like you would across any digit.` };
   },
   // Decimal × whole
   () => {
-    const a = (r(12, 89) / 10).toFixed(1);
+    const a = Math.round(r(12, 89)) / 10;
     const b = r(4, 9);
-    return { task: `${a} × ${b} = ?`,
-      hint: `Ignore the decimal, multiply as whole numbers, then put the decimal point back (one place from the right).` };
+    const val = Math.round(a * b * 10) / 10;
+    return { task: `${a.toFixed(1)} × ${b} = ?`, answer: ansNum(val),
+      hint: `Ignore the decimal, multiply as whole numbers, then put the decimal point back.` };
   },
   // Multi-step word problem
   () => {
     const name = pick(NAMES), pack = r(8, 16), packs = r(5, 12), gave = r(5, 20), kept = r(3, 9), item = pick(ITEMS);
-    return { task: `${name} buys ${packs} packs of ${item}, ${pack} per pack. ${name} gives ${gave} to a friend and splits the rest equally among ${kept} cousins. How many does each cousin get?`,
-      hint: `Three steps: (1) total = packs × per-pack, (2) subtract the ${gave} given away, (3) divide what's left by ${kept}.` };
+    const total = packs * pack;
+    // ensure (total - gave) is divisible by kept; if not, adjust gave
+    let gAdj = gave;
+    while ((total - gAdj) % kept !== 0) gAdj++;
+    const ans = (total - gAdj) / kept;
+    return { task: `${name} buys ${packs} packs of ${item}, ${pack} per pack. ${name} gives ${gAdj} to a friend and splits the rest equally among ${kept} cousins. How many does each cousin get?`,
+      answer: ansNum(ans),
+      hint: `Three steps: (1) total = packs × per-pack, (2) subtract the ${gAdj} given away, (3) divide what's left by ${kept}.` };
   },
   // Rate / speed
   () => {
     const speed = pick([40, 50, 60, 65, 70, 80]);
     const hours = r(2, 5);
-    return { task: `A car drives ${speed} km/h for ${hours} hours. How far does it go?`,
+    return { task: `A car drives ${speed} km/h for ${hours} hours. How far does it go? (in km)`,
+      answer: ansNum(speed * hours),
       hint: `Distance = speed × time. ${speed} × ${hours}.` };
   },
   // Time word problem
@@ -730,54 +969,74 @@ const MATH_BUILDERS = [
     let endM = mStart + dur;
     let endH = hStart + Math.floor(endM / 60);
     endM = endM % 60;
-    return { task: `A movie starts at ${hStart}:${String(mStart).padStart(2,"0")} and lasts ${dur} minutes. What time does it end?`,
+    return { task: `A movie starts at ${hStart}:${String(mStart).padStart(2,"0")} and lasts ${dur} minutes. What time does it end? (e.g. 9:45)`,
+      answer: ansTime(endH, endM),
       hint: `Convert ${dur} min into hours and minutes first (${Math.floor(dur/60)}h ${dur%60}m), then add to the start time.` };
   },
-  // Money problem
+  // Money change
   () => {
-    const price = (r(175, 650) / 100), qty = r(3, 6);
-    const paid = Math.ceil(price * qty / 5) * 5 + 5;
-    return { task: `You buy ${qty} items at $${price.toFixed(2)} each and pay with $${paid}. How much change?`,
-      hint: `First find the total cost (${qty} × $${price.toFixed(2)}). Then subtract from $${paid}.` };
+    const priceCents = r(175, 650);
+    const qty = r(3, 6);
+    const totalCents = priceCents * qty;
+    const paid = Math.ceil(totalCents / 500) * 5 + 5; // dollars
+    const change = paid - totalCents / 100;
+    return { task: `You buy ${qty} items at $${(priceCents/100).toFixed(2)} each and pay with $${paid}. How much change? (in dollars)`,
+      answer: ansNum(Math.round(change * 100) / 100),
+      hint: `Total cost first (${qty} × $${(priceCents/100).toFixed(2)}). Then subtract from $${paid}.` };
   },
   // LCM
   () => {
     const a = pick([4, 6, 8, 9]), b = pick([6, 9, 10, 12, 15]);
+    const lcm = (a * b) / gcd(a, b);
     return { task: `What's the smallest number that is a multiple of BOTH ${a} and ${b}? (LCM)`,
+      answer: ansNum(lcm),
       hint: `List multiples of each. The first one that appears in both lists is the LCM.` };
   },
-  // GCD / factors
+  // GCF
   () => {
     const a = pick([12, 18, 24, 30, 36, 42, 48]);
     const b = pick([16, 20, 24, 28, 32, 36, 40]);
     return { task: `What's the largest number that divides BOTH ${a} and ${b} evenly? (GCF)`,
-      hint: `List the factors of each and find the biggest one they share. (Answer is the GCF = ${gcd(a,b)}… but try before peeking at the numbers!)` };
+      answer: ansNum(gcd(a, b)),
+      hint: `List the factors of each and find the biggest one they share.` };
   },
-  // Prime / factorization
+  // Prime factorization
   () => {
     const n = pick([24, 36, 40, 48, 54, 60, 72, 84, 90, 96]);
-    return { task: `Write ${n} as a product of prime numbers.`,
+    return { task: `Write ${n} as a product of prime numbers. (e.g. 2 × 2 × 3)`,
+      answer: ansPrimeFact(n),
       hint: `Keep dividing by small primes (2, 3, 5, 7…). Example: 12 = 2 × 2 × 3.` };
-  },
-  // Perimeter & area combined
-  () => {
-    const w = r(6, 18), h = r(5, 15);
-    return { task: `A rectangle is ${w} cm wide and ${h} cm tall. What's the area AND perimeter?`,
-      hint: `Area = w × h. Perimeter = 2 × (w + h). Give both.` };
   },
   // Triangle area
   () => {
-    const base = r(6, 16), height = r(4, 14);
-    return { task: `A triangle has a base of ${base} cm and a height of ${height} cm. What's its area?`,
+    const base = pick([4, 6, 8, 10, 12, 14, 16]);
+    const height = pick([4, 6, 8, 10, 12, 14]);
+    return { task: `A triangle has a base of ${base} cm and a height of ${height} cm. What's its area? (in cm²)`,
+      answer: ansNum(base * height / 2),
       hint: `Triangle area = (base × height) ÷ 2.` };
   },
-  // Volume (cube/box)
+  // Volume box
   () => {
     const a = r(3, 8), b = r(3, 8), c = r(3, 8);
-    return { task: `A box is ${a} × ${b} × ${c} cm. What's the volume?`,
+    return { task: `A box is ${a} × ${b} × ${c} cm. What's the volume? (in cm³)`,
+      answer: ansNum(a * b * c),
       hint: `Volume of a box = length × width × height.` };
   },
-  // Sequence — harder (geometric or quadratic-ish)
+  // Rectangle area
+  () => {
+    const w = r(7, 18), h = r(5, 15);
+    return { task: `A rectangle is ${w} cm wide and ${h} cm tall. What's the area? (in cm²)`,
+      answer: ansNum(w * h),
+      hint: `Area of a rectangle = width × height.` };
+  },
+  // Rectangle perimeter
+  () => {
+    const w = r(6, 18), h = r(5, 15);
+    return { task: `A rectangle is ${w} cm wide and ${h} cm tall. What's the perimeter? (in cm)`,
+      answer: ansNum(2 * (w + h)),
+      hint: `Perimeter = 2 × (width + height).` };
+  },
+  // Sequence
   () => {
     const type = pick(["geo", "add-growing", "square"]);
     if (type === "geo") {
@@ -785,66 +1044,105 @@ const MATH_BUILDERS = [
       const ratio = pick([2, 3]);
       const seq = [start, start*ratio, start*ratio*ratio, start*ratio*ratio*ratio];
       return { task: `Next number? ${seq.join(", ")}, ?`,
+        answer: ansNum(seq[3] * ratio),
         hint: `This one doesn't add a fixed amount — each number is being MULTIPLIED by the same thing.` };
     } else if (type === "add-growing") {
       const start = r(1, 5);
-      const seq = [start, start+1, start+3, start+6]; // +1, +2, +3
+      const seq = [start, start+1, start+3, start+6];
       return { task: `Next number? ${seq.join(", ")}, ?`,
-        hint: `Look at the GAPS between numbers. The gaps are growing in a pattern.` };
+        answer: ansNum(seq[3] + 4),
+        hint: `Look at the GAPS between numbers. The gaps grow by 1 each time.` };
     } else {
-      const seq = [1, 4, 9, 16];
-      return { task: `Next number? ${seq.join(", ")}, ?`,
+      return { task: `Next number? 1, 4, 9, 16, ?`, answer: ansNum(25),
         hint: `These are famous — each one is a number multiplied by itself.` };
     }
   },
-  // Mental math chain (harder)
+  // Mental math chain
   () => {
-    const a = r(15, 40), b = r(5, 12), c = r(2, 6), d = r(3, 15);
-    return { task: `Start with ${a}. Multiply by ${b}. Divide by ${c}. Subtract ${d}. What do you get?`,
+    const a = r(15, 40), b = r(3, 9), c = pick([2, 3, 4, 5]), d = r(3, 15);
+    // ensure (a * b) / c is integer
+    let aa = a;
+    while ((aa * b) % c !== 0) aa++;
+    const val = (aa * b) / c - d;
+    return { task: `Start with ${aa}. Multiply by ${b}. Divide by ${c}. Subtract ${d}. What do you get?`,
+      answer: ansNum(val),
       hint: `One step at a time — track the running number. Say it out loud if it helps.` };
   },
   // Average
   () => {
-    const n = r(4, 6);
-    const nums = Array.from({length: n}, () => r(5, 40));
+    const n = r(4, 5);
+    // ensure divisibility
+    const nums = [];
+    let sum = 0;
+    for (let i = 0; i < n - 1; i++) { const v = r(5, 40); nums.push(v); sum += v; }
+    // last one makes sum divisible by n
+    const target = Math.round((sum + (n * 25)) / n) * n; // aim near 25n
+    let last = target - sum;
+    if (last < 5) last += n;
+    if (last > 60) last -= n;
+    nums.push(last); sum += last;
     return { task: `What's the average of ${nums.join(", ")}?`,
+      answer: ansNum(sum / n),
       hint: `Add them all up, then divide by ${n} (how many numbers there are).` };
   },
-  // Probability (basic)
+  // Probability (fraction answer)
   () => {
     const red = r(2, 6), blue = r(2, 6), green = r(2, 5);
     const total = red + blue + green;
-    return { task: `A bag has ${red} red, ${blue} blue, and ${green} green marbles. You grab one without looking. What's the probability it's blue? (as a fraction, simplified)`,
+    return { task: `A bag has ${red} red, ${blue} blue, and ${green} green marbles. You grab one without looking. What's the probability it's blue? (fraction, simplified)`,
+      answer: ansFrac(blue, total),
       hint: `Probability = favorable / total. That's ${blue}/${total}. Simplify if top and bottom share a factor.` };
   },
-  // Rounding (decimal)
+  // Rounding decimal
   () => {
-    const n = (r(1234, 9876) / 100).toFixed(2);
-    return { task: `Round ${n} to the nearest whole number.`,
+    const n = r(1234, 9876) / 100;
+    return { task: `Round ${n.toFixed(2)} to the nearest whole number.`,
+      answer: ansNum(Math.round(n)),
       hint: `Look at the tenths digit (right after the decimal). If it's 5 or more, round up.` };
   },
-  // Unit conversion
+  // Unit conversion — m to cm
   () => {
-    const which = pick(["mtocm", "mltoL", "mintohr", "gtokg"]);
-    if (which === "mtocm") { const m = r(3, 15); return { task: `${m} meters = ? centimeters`, hint: `1 meter = 100 cm. Multiply by 100.` }; }
-    if (which === "mltoL") { const ml = r(1500, 9500); return { task: `${ml} mL = ? liters (as a decimal)`, hint: `1 L = 1000 mL. Divide by 1000 (move the decimal left 3 places).` }; }
-    if (which === "mintohr") { const m = r(75, 260); return { task: `${m} minutes = ? hours and minutes`, hint: `Divide by 60. The quotient is hours, the remainder is minutes.` }; }
-    const g = r(1500, 9500); return { task: `${g} grams = ? kilograms (as a decimal)`, hint: `1 kg = 1000 g. Divide by 1000.` };
+    const m = r(3, 15);
+    return { task: `${m} meters = ? centimeters`, answer: ansNum(m * 100),
+      hint: `1 meter = 100 cm. Multiply by 100.` };
   },
-  // Divisibility / logic
+  // Unit conversion — mL to L
+  () => {
+    const ml = r(15, 95) * 100;
+    return { task: `${ml} mL = ? liters (as a decimal)`,
+      answer: ansNum(ml / 1000),
+      hint: `1 L = 1000 mL. Divide by 1000 (move the decimal left 3 places).` };
+  },
+  // Unit conversion — min to h m
+  () => {
+    const m = r(75, 260);
+    return { task: `${m} minutes = ? hours and minutes (e.g. "2h 15m")`,
+      answer: ansHM(Math.floor(m / 60), m % 60),
+      hint: `Divide by 60. The quotient is hours, the remainder is minutes.` };
+  },
+  // Unit conversion — g to kg
+  () => {
+    const g = r(15, 95) * 100;
+    return { task: `${g} grams = ? kilograms (as a decimal)`,
+      answer: ansNum(g / 1000),
+      hint: `1 kg = 1000 g. Divide by 1000.` };
+  },
+  // Divisibility yes/no
   () => {
     const n = r(120, 980);
     const d = pick([3, 4, 6, 9]);
-    return { task: `Is ${n} divisible by ${d}? (yes or no, and why)`,
-      hint: d === 3 ? `Trick: add the digits of ${n}. If that sum is divisible by 3, so is ${n}.` :
-            d === 9 ? `Trick: add the digits. If the sum is divisible by 9, so is the number.` :
-            d === 4 ? `Trick: look at the last TWO digits. If that number is divisible by 4, so is the whole thing.` :
-                      `Trick: it must be divisible by BOTH 2 and 3. Even? And digit sum divisible by 3?` };
+    return { task: `Is ${n} divisible by ${d}? (yes or no)`,
+      answer: ansYesNo(n % d === 0),
+      hint: d === 3 ? `Add the digits of ${n}. If that sum is divisible by 3, so is ${n}.` :
+            d === 9 ? `Add the digits. If the sum is divisible by 9, so is the number.` :
+            d === 4 ? `Look at the last TWO digits. If that number is divisible by 4, so is the whole thing.` :
+                      `Must be divisible by BOTH 2 and 3. Even? And digit sum divisible by 3?` };
   },
-  // Counting / combinations (gentle)
+  // Combinations
   () => {
     const shirts = r(3, 6), pants = r(2, 5), shoes = r(2, 4);
     return { task: `You have ${shirts} shirts, ${pants} pairs of pants, and ${shoes} pairs of shoes. How many different outfits can you make?`,
+      answer: ansNum(shirts * pants * shoes),
       hint: `Multiply the choices together: shirts × pants × shoes.` };
   }
 ];
@@ -864,6 +1162,9 @@ const els = {
   aiHint: document.getElementById("aiHint"),
   mathTask: document.getElementById("mathTask"),
   mathHint: document.getElementById("mathHint"),
+  mathInput: document.getElementById("mathInput"),
+  checkBtn: document.getElementById("checkBtn"),
+  mathFeedback: document.getElementById("mathFeedback"),
   newBtn: document.getElementById("newBtn"),
   celebrate: document.getElementById("celebrate"),
   aiCard: document.getElementById("aiCard"),
@@ -871,7 +1172,7 @@ const els = {
   date: document.getElementById("date")
 };
 
-const state = { doneAI: false, doneMath: false, lastAI: "", lastMath: "" };
+const state = { doneAI: false, doneMath: false, lastAI: "", lastMath: "", currentMath: null, attempts: 0 };
 
 function setDate() {
   const d = new Date();
@@ -885,9 +1186,10 @@ function refresh() {
   tries = 0;
   do { math = buildMathTask(); tries++; } while (math.task === state.lastMath && tries < 5);
   state.lastAI = ai.task; state.lastMath = math.task;
+  state.currentMath = math;
+  state.attempts = 0;
 
   els.aiCard.style.animation = "none"; els.mathCard.style.animation = "none";
-  // force reflow to restart animation
   void els.aiCard.offsetWidth; void els.mathCard.offsetWidth;
   els.aiCard.style.animation = ""; els.mathCard.style.animation = "";
 
@@ -896,6 +1198,15 @@ function refresh() {
   els.mathTask.textContent = math.task;
   els.mathHint.innerHTML = "💡 " + math.hint;
 
+  // reset input + feedback
+  els.mathInput.value = "";
+  els.mathInput.disabled = false;
+  els.mathInput.classList.remove("ok", "no");
+  els.checkBtn.disabled = false;
+  els.checkBtn.textContent = "Check";
+  els.mathFeedback.textContent = "";
+  els.mathFeedback.className = "feedback";
+
   state.doneAI = false; state.doneMath = false;
   document.querySelectorAll(".mark").forEach(b => {
     b.classList.remove("is-done");
@@ -903,6 +1214,73 @@ function refresh() {
   });
   els.celebrate.classList.remove("show");
   els.celebrate.textContent = "";
+}
+
+const WRONG_NUDGES = [
+  "Not quite — take another shot! 💪",
+  "Close one. Try again!",
+  "Almost! Check the hint 👇",
+  "Not yet — you've got this.",
+  "Hmm, not it. Give it one more try!"
+];
+const RIGHT_CHEERS = [
+  "✓ Correct! Nice one. 🎉",
+  "✓ Boom — nailed it! 💥",
+  "✓ That's it! 🧠",
+  "✓ Yes! Crushed it. 🔥",
+  "✓ You got it. 🏆"
+];
+
+function checkMath() {
+  const raw = els.mathInput.value;
+  if (!raw.trim()) return;
+  const task = state.currentMath;
+  if (!task || !task.answer) return;
+
+  const ok = task.answer.check(raw);
+  state.attempts++;
+
+  if (ok) {
+    els.mathInput.classList.remove("no");
+    els.mathInput.classList.add("ok");
+    els.mathInput.disabled = true;
+    els.checkBtn.disabled = true;
+    els.checkBtn.textContent = "✓";
+    els.mathFeedback.textContent = pick(RIGHT_CHEERS);
+    els.mathFeedback.className = "feedback show ok";
+    // auto-mark done
+    if (!state.doneMath) {
+      const btn = document.querySelector('.mark[data-mark="math"]');
+      state.doneMath = true;
+      btn.classList.add("is-done");
+      btn.textContent = "Done! ✓";
+      updateCelebrate();
+    }
+  } else {
+    els.mathInput.classList.remove("ok");
+    els.mathInput.classList.add("no");
+    let msg = pick(WRONG_NUDGES);
+    if (state.attempts >= 3) {
+      msg += ` <span class="reveal-link" id="revealLink">Show answer</span>`;
+    }
+    els.mathFeedback.innerHTML = msg;
+    els.mathFeedback.className = "feedback show no";
+    const rl = document.getElementById("revealLink");
+    if (rl) rl.addEventListener("click", revealAnswer);
+    // Clear the red state shortly after so they can type again
+    setTimeout(() => els.mathInput.classList.remove("no"), 800);
+    els.mathInput.select();
+  }
+}
+
+function revealAnswer() {
+  const task = state.currentMath;
+  if (!task) return;
+  els.mathFeedback.innerHTML = `Answer: <b>${task.answer.canonical}</b>`;
+  els.mathFeedback.className = "feedback show no";
+  els.mathInput.value = task.answer.canonical;
+  els.mathInput.disabled = true;
+  els.checkBtn.disabled = true;
 }
 
 const CHEERS = [
@@ -931,6 +1309,10 @@ document.querySelectorAll(".mark").forEach(btn => {
 });
 
 els.newBtn.addEventListener("click", refresh);
+els.checkBtn.addEventListener("click", checkMath);
+els.mathInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") { e.preventDefault(); checkMath(); }
+});
 
 setDate();
 refresh();

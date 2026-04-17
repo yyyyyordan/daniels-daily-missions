@@ -508,192 +508,296 @@ const PLACES = ["shelves","boxes","bags","trays","crates","baskets"];
 
 function r(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
+function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+
 const MATH_BUILDERS = [
-  // Addition
+  // 3-digit addition with carries
   () => {
-    const a = r(12, 89), b = r(8, 89);
-    return { task: `What is ${a} + ${b}?`,
-      hint: `Add the tens first (${Math.floor(a/10)*10} + ${Math.floor(b/10)*10}), then add the ones. Put them together at the end.` };
-  },
-  // Addition with carry
-  () => {
-    const a = r(100, 499), b = r(20, 499);
+    const a = r(245, 899), b = r(178, 899);
     return { task: `${a} + ${b} = ?`,
-      hint: `Line the numbers up in your head: ones, tens, hundreds. Carry the 1 when a column goes past 9.` };
+      hint: `Stack them in your head: ones, tens, hundreds. Don't forget to carry when a column goes over 9.` };
   },
-  // Subtraction
+  // 3-digit subtraction with borrowing
   () => {
-    const a = r(40, 99), b = r(10, 39);
+    const a = r(500, 999), b = r(150, 499);
     return { task: `${a} − ${b} = ?`,
-      hint: `Try counting up from ${b} to ${a}. How many jumps does it take? That's your answer.` };
+      hint: `Try rounding ${b} up to a nicer number, subtract that, then add back the difference.` };
   },
-  // Subtraction larger
+  // 2-digit × 1-digit
   () => {
-    const a = r(200, 900), b = r(50, 199);
-    return { task: `${a} − ${b} = ?`,
-      hint: `Round ${b} up to the nearest 10 or 100 to make it easier, then adjust at the end.` };
-  },
-  // Multiplication small
-  () => {
-    const a = r(3, 12), b = r(3, 12);
+    const a = r(13, 49), b = r(4, 9);
     return { task: `${a} × ${b} = ?`,
-      hint: `Think of ${a} groups of ${b}. Or flip it: ${b} groups of ${a} — same answer!` };
+      hint: `Split ${a} into tens and ones: (${Math.floor(a/10)*10} × ${b}) + (${a%10} × ${b}).` };
   },
-  // Multiplication by 10/100
+  // 2-digit × 2-digit
   () => {
-    const a = r(12, 98);
-    const m = pick([10, 100]);
-    return { task: `${a} × ${m} = ?`,
-      hint: `When you multiply by ${m}, just add ${m === 10 ? "a zero" : "two zeros"} to the end. That's it.` };
+    const a = r(12, 39), b = r(11, 29);
+    return { task: `${a} × ${b} = ?`,
+      hint: `Break ${b} apart: ${a} × ${Math.floor(b/10)*10} plus ${a} × ${b%10}. Add the two pieces.` };
   },
-  // Division (clean)
+  // Multiplication with larger factor
   () => {
-    const b = r(2, 12), q = r(2, 12);
-    const a = b * q;
-    return { task: `${a} ÷ ${b} = ?`,
-      hint: `Ask yourself: "${b} times what gives ${a}?" The times tables are your shortcut.` };
+    const a = r(101, 499), b = r(3, 9);
+    return { task: `${a} × ${b} = ?`,
+      hint: `Multiply each digit of ${a} by ${b}, carrying as you go. Or split: (${Math.floor(a/100)*100} × ${b}) + (${a%100} × ${b}).` };
   },
-  // Division with remainder
+  // Long division with remainder
   () => {
-    const b = r(3, 9), q = r(3, 9), rem = r(1, b-1);
+    const b = r(6, 12), q = r(12, 49), rem = r(1, b-1);
     const a = b * q + rem;
-    return { task: `${a} ÷ ${b} = ? (give the answer with remainder)`,
-      hint: `Find the biggest multiple of ${b} that fits inside ${a}. Whatever's left over is the remainder.` };
+    return { task: `${a} ÷ ${b} = ? (answer with remainder)`,
+      hint: `How many times does ${b} fit into ${a}? Find the biggest multiple, then whatever's left is the remainder.` };
   },
-  // Doubles
+  // Order of operations
   () => {
-    const n = r(13, 49);
-    return { task: `Double ${n}.`,
-      hint: `Doubling means × 2. Double the tens, double the ones, add them together.` };
+    const a = r(3, 9), b = r(2, 9), c = r(3, 12), d = r(2, 8);
+    return { task: `${a} + ${b} × ${c} − ${d} = ?`,
+      hint: `PEMDAS/BODMAS: do the × first, then go left to right with + and −.` };
   },
-  // Halves
+  // Parentheses
   () => {
-    const n = r(6, 48) * 2;
-    return { task: `Half of ${n} is?`,
-      hint: `Split ${n} into two equal groups. Or ask: "what + what = ${n}?"` };
+    const a = r(3, 12), b = r(4, 15), c = r(2, 9);
+    return { task: `(${a} + ${b}) × ${c} = ?`,
+      hint: `Parentheses go first. Solve what's inside, then multiply.` };
   },
-  // Percent (easy 10%, 50%, 25%)
+  // Exponents
   () => {
-    const pct = pick([10, 25, 50]);
-    const base = pct === 25 ? r(2, 20) * 4 : pct === 50 ? r(3, 30) * 2 : r(3, 20) * 10;
+    const n = r(4, 15);
+    return { task: `What is ${n}²?`,
+      hint: `${n}² = ${n} × ${n}. Tip: (${n-1})² is ${(n-1)*(n-1)}, and squares go up by 2n−1 each step.` };
+  },
+  // Cubes (small)
+  () => {
+    const n = r(3, 7);
+    return { task: `What is ${n}³?`,
+      hint: `${n}³ = ${n} × ${n} × ${n}. Do ${n} × ${n} first, then multiply by ${n} again.` };
+  },
+  // Square roots (perfect)
+  () => {
+    const n = pick([36, 49, 64, 81, 100, 121, 144, 169, 196, 225]);
+    return { task: `√${n} = ?`,
+      hint: `What number times itself gives ${n}? Think of the squares: 6²=36, 7²=49, 8²=64, 9²=81, 10²=100, 11²=121, 12²=144…` };
+  },
+  // Negative numbers
+  () => {
+    const a = r(4, 25), b = r(a+3, a+40);
+    return { task: `${a} − ${b} = ?`,
+      hint: `${a} is smaller than ${b}, so the answer is negative. Do ${b} − ${a} and put a minus sign on it.` };
+  },
+  // Negative arithmetic
+  () => {
+    const a = r(5, 30), b = r(5, 30);
+    return { task: `−${a} + ${b} = ?`,
+      hint: `Think of a number line. Start at −${a}, then jump ${b} to the right. Does it cross zero?` };
+  },
+  // Simple algebra
+  () => {
+    const x = r(6, 25), a = r(3, 9), b = r(5, 40);
+    const rhs = a * x + b;
+    return { task: `Solve for x:  ${a}x + ${b} = ${rhs}`,
+      hint: `First undo the +${b} (subtract it from both sides). Then undo the × ${a} (divide).` };
+  },
+  // Algebra with subtraction
+  () => {
+    const x = r(7, 20), a = r(2, 7), b = r(4, 15);
+    const rhs = a * x - b;
+    return { task: `Solve for x:  ${a}x − ${b} = ${rhs}`,
+      hint: `Add ${b} to both sides first, then divide both sides by ${a}.` };
+  },
+  // Fractions — add same denominator (not always simplified)
+  () => {
+    const d = r(5, 12), a = r(1, d-1), b = r(1, d-1);
+    return { task: `${a}/${d} + ${b}/${d} = ?  (simplify if you can)`,
+      hint: `Same denominator — just add the tops. Then check if top and bottom share a common factor.` };
+  },
+  // Fractions — add different denominators (one multiple of the other)
+  () => {
+    const d1 = pick([2, 3, 4, 5]);
+    const k = pick([2, 3, 4]);
+    const d2 = d1 * k;
+    const a = r(1, d1 - 1), b = r(1, d2 - 1);
+    return { task: `${a}/${d1} + ${b}/${d2} = ?`,
+      hint: `Find a common denominator. Since ${d2} is a multiple of ${d1}, convert ${a}/${d1} to something over ${d2}, then add.` };
+  },
+  // Fraction of a number
+  () => {
+    const d = pick([3, 4, 5, 6, 8]);
+    const n = r(1, d-1);
+    const whole = d * r(3, 12);
+    return { task: `What is ${n}/${d} of ${whole}?`,
+      hint: `Divide ${whole} by ${d} first to find 1/${d}. Then multiply by ${n}.` };
+  },
+  // Percent harder (15%, 20%, 75%)
+  () => {
+    const pct = pick([15, 20, 30, 40, 60, 75, 80]);
+    const base = pick([20, 40, 60, 80, 100, 120, 150, 200, 240]);
     return { task: `What is ${pct}% of ${base}?`,
-      hint: pct === 10 ? `10% means "one-tenth." Just divide by 10 (move the decimal left one).` :
-            pct === 50 ? `50% is half. Just cut it in half.` :
-            `25% is one-quarter. Half, then half again.` };
+      hint: `Find 10% first (divide by 10), then scale. E.g. 15% = 10% + half of 10%. 75% = three quarters.` };
   },
-  // Word problem — adding
+  // Percent — reverse
   () => {
-    const name = pick(NAMES), a = r(5, 25), b = r(3, 20), item = pick(ITEMS);
-    return { task: `${name} has ${a} ${item}. A friend gives ${name} ${b} more. How many ${item} now?`,
-      hint: `"Gives more" means add. ${a} + ${b} = ?` };
+    const pct = pick([10, 20, 25, 50]);
+    const part = pick([6, 8, 10, 12, 15, 18, 20, 25]);
+    return { task: `${part} is ${pct}% of what number?`,
+      hint: `If ${pct}% is ${part}, then 100% is ${pct === 50 ? "double" : pct === 25 ? "four times" : pct === 20 ? "five times" : "ten times"} ${part}.` };
   },
-  // Word problem — subtracting
+  // Decimals
   () => {
-    const name = pick(NAMES), a = r(15, 60), b = r(3, 14), item = pick(ITEMS);
-    return { task: `${name} had ${a} ${item} and gave ${b} away. How many are left?`,
-      hint: `"Gave away" means subtract. Start at ${a}, count down ${b}.` };
+    const a = (r(150, 899) / 100).toFixed(2);
+    const b = (r(75, 599) / 100).toFixed(2);
+    return { task: `${a} + ${b} = ?`,
+      hint: `Line up the decimal points. Add like normal — the decimal stays in the same column.` };
   },
-  // Word problem — multiplying (rows)
+  // Decimals subtraction
   () => {
-    const rows = r(3, 9), cols = r(3, 9), place = pick(PLACES), item = pick(ITEMS);
-    return { task: `A store has ${rows} ${place} with ${cols} ${item} on each. How many ${item} total?`,
-      hint: `Rows × per row = total. ${rows} × ${cols} = ?` };
+    const a = r(400, 900) / 10;
+    const b = r(50, 300) / 10;
+    return { task: `${a.toFixed(1)} − ${b.toFixed(1)} = ?`,
+      hint: `Line up the decimal points. Borrow across the decimal just like you would across any digit.` };
   },
-  // Word problem — dividing (share)
+  // Decimal × whole
   () => {
-    const people = r(3, 8), per = r(2, 9), item = pick(ITEMS);
-    const total = people * per;
-    return { task: `${total} ${item} are shared equally between ${people} kids. How many does each kid get?`,
-      hint: `Sharing equally = division. ${total} ÷ ${people} = ?` };
+    const a = (r(12, 89) / 10).toFixed(1);
+    const b = r(4, 9);
+    return { task: `${a} × ${b} = ?`,
+      hint: `Ignore the decimal, multiply as whole numbers, then put the decimal point back (one place from the right).` };
   },
-  // Money / change
+  // Multi-step word problem
   () => {
-    const price = (r(125, 875) / 100);
-    const priceStr = price.toFixed(2);
-    const paid = pick([5, 10, 20]);
-    return { task: `You pay $${paid} for something that costs $${priceStr}. How much change do you get?`,
-      hint: `Count up from $${priceStr} to $${paid}. First to the next whole dollar, then the rest.` };
+    const name = pick(NAMES), pack = r(6, 12), packs = r(4, 9), gave = r(3, 12), item = pick(ITEMS);
+    return { task: `${name} buys ${packs} packs of ${item}. Each pack has ${pack}. ${name} gives ${gave} away. How many are left?`,
+      hint: `Two steps: first total = packs × per-pack. Then subtract what was given away.` };
   },
-  // Time
+  // Rate / speed
   () => {
-    const a = r(10, 55), b = r(10, 55);
-    return { task: `You read for ${a} minutes, then ${b} more minutes. How many minutes total?`,
-      hint: `Just add: ${a} + ${b}. If you go past 60, that's also 1 hour + leftover minutes.` };
+    const speed = pick([40, 50, 60, 65, 70, 80]);
+    const hours = r(2, 5);
+    return { task: `A car drives ${speed} km/h for ${hours} hours. How far does it go?`,
+      hint: `Distance = speed × time. ${speed} × ${hours}.` };
   },
-  // Sequence (skip counting)
+  // Time word problem
   () => {
-    const step = pick([2,3,4,5,6,7,8,9]);
-    const start = r(1, 5) * step;
-    const a = start, b = start + step, c = start + 2*step, d = start + 3*step;
-    return { task: `What comes next in the pattern: ${a}, ${b}, ${c}, ${d}, ?`,
-      hint: `Each number goes up by the same amount. Find the jump between two numbers, then add it to ${d}.` };
+    const hStart = r(7, 11), mStart = pick([0, 15, 30, 45]);
+    const dur = r(75, 185);
+    let endM = mStart + dur;
+    let endH = hStart + Math.floor(endM / 60);
+    endM = endM % 60;
+    return { task: `A movie starts at ${hStart}:${String(mStart).padStart(2,"0")} and lasts ${dur} minutes. What time does it end?`,
+      hint: `Convert ${dur} min into hours and minutes first (${Math.floor(dur/60)}h ${dur%60}m), then add to the start time.` };
   },
-  // Squares
+  // Money problem
   () => {
-    const n = r(3, 12);
-    return { task: `What is ${n}² (${n} × ${n})?`,
-      hint: `${n} squared means ${n} × ${n}. That's ${n} groups of ${n}.` };
+    const price = (r(175, 650) / 100), qty = r(3, 6);
+    const paid = Math.ceil(price * qty / 5) * 5 + 5;
+    return { task: `You buy ${qty} items at $${price.toFixed(2)} each and pay with $${paid}. How much change?`,
+      hint: `First find the total cost (${qty} × $${price.toFixed(2)}). Then subtract from $${paid}.` };
   },
-  // Comparison — fractions easy
+  // LCM
   () => {
-    const pairs = [["1/2","1/3"],["1/4","1/2"],["2/3","1/2"],["3/4","2/3"],["1/5","1/4"],["2/5","1/2"],["3/8","1/2"],["5/6","3/4"]];
-    const [a,b] = pick(pairs);
-    return { task: `Which is bigger: ${a} or ${b}?`,
-      hint: `Smaller bottom number = bigger slice. Or imagine a pizza cut into that many slices.` };
+    const a = pick([4, 6, 8, 9]), b = pick([6, 9, 10, 12, 15]);
+    return { task: `What's the smallest number that is a multiple of BOTH ${a} and ${b}? (LCM)`,
+      hint: `List multiples of each. The first one that appears in both lists is the LCM.` };
   },
-  // Logic / counting
+  // GCD / factors
   () => {
-    const legs = r(2, 5), heads = r(4, 10);
-    const total = legs * heads;
-    const kind = pick(["spiders","dogs","cats","birds","aliens"]);
-    const bodyLegs = kind === "spiders" ? 8 : kind === "birds" ? 2 : 4;
-    const n = r(3, 9);
-    return { task: `There are ${n} ${kind}. How many legs in total?`,
-      hint: `Each ${kind.slice(0,-1)} has ${bodyLegs} legs. So it's ${n} × ${bodyLegs}.` };
+    const a = pick([12, 18, 24, 30, 36, 42, 48]);
+    const b = pick([16, 20, 24, 28, 32, 36, 40]);
+    return { task: `What's the largest number that divides BOTH ${a} and ${b} evenly? (GCF)`,
+      hint: `List the factors of each and find the biggest one they share. (Answer is the GCF = ${gcd(a,b)}… but try before peeking at the numbers!)` };
   },
-  // Mental math chain
+  // Prime / factorization
   () => {
-    const a = r(10, 30), b = r(3, 9), c = r(2, 8);
-    return { task: `Start with ${a}. Add ${b}. Multiply by ${c}. What do you get?`,
-      hint: `Do it one step at a time, out loud if it helps. ${a} + ${b} first, then × ${c}.` };
+    const n = pick([24, 36, 40, 48, 54, 60, 72, 84, 90, 96]);
+    return { task: `Write ${n} as a product of prime numbers.`,
+      hint: `Keep dividing by small primes (2, 3, 5, 7…). Example: 12 = 2 × 2 × 3.` };
   },
-  // Odd/even + logic
+  // Perimeter & area combined
   () => {
-    const a = r(23, 89), b = r(12, 50);
-    return { task: `Is ${a} + ${b} odd or even? (And what's the answer?)`,
-      hint: `Odd + even = odd. Even + even = even. Odd + odd = even. Check the last digit to decide.` };
+    const w = r(6, 18), h = r(5, 15);
+    return { task: `A rectangle is ${w} cm wide and ${h} cm tall. What's the area AND perimeter?`,
+      hint: `Area = w × h. Perimeter = 2 × (w + h). Give both.` };
   },
-  // Rounding
+  // Triangle area
   () => {
-    const n = r(123, 987);
-    const to = pick([10, 100]);
-    return { task: `Round ${n} to the nearest ${to}.`,
-      hint: to === 10 ? `Look at the ones digit. If it's 5 or more, round up. Otherwise, round down.` :
-                        `Look at the tens digit. If it's 5 or more, round up to the next hundred.` };
+    const base = r(6, 16), height = r(4, 14);
+    return { task: `A triangle has a base of ${base} cm and a height of ${height} cm. What's its area?`,
+      hint: `Triangle area = (base × height) ÷ 2.` };
   },
-  // Missing number
+  // Volume (cube/box)
   () => {
-    const a = r(12, 45), ans = r(30, 90) + a;
-    return { task: `${a} + ? = ${ans}. What's the missing number?`,
-      hint: `Subtract to find what's missing: ${ans} − ${a} = ?` };
+    const a = r(3, 8), b = r(3, 8), c = r(3, 8);
+    return { task: `A box is ${a} × ${b} × ${c} cm. What's the volume?`,
+      hint: `Volume of a box = length × width × height.` };
   },
-  // Average (small set)
+  // Sequence — harder (geometric or quadratic-ish)
   () => {
-    const nums = [r(2, 10), r(2, 10), r(2, 10)];
+    const type = pick(["geo", "add-growing", "square"]);
+    if (type === "geo") {
+      const start = pick([2, 3, 5]);
+      const ratio = pick([2, 3]);
+      const seq = [start, start*ratio, start*ratio*ratio, start*ratio*ratio*ratio];
+      return { task: `Next number? ${seq.join(", ")}, ?`,
+        hint: `This one doesn't add a fixed amount — each number is being MULTIPLIED by the same thing.` };
+    } else if (type === "add-growing") {
+      const start = r(1, 5);
+      const seq = [start, start+1, start+3, start+6]; // +1, +2, +3
+      return { task: `Next number? ${seq.join(", ")}, ?`,
+        hint: `Look at the GAPS between numbers. The gaps are growing in a pattern.` };
+    } else {
+      const seq = [1, 4, 9, 16];
+      return { task: `Next number? ${seq.join(", ")}, ?`,
+        hint: `These are famous — each one is a number multiplied by itself.` };
+    }
+  },
+  // Mental math chain (harder)
+  () => {
+    const a = r(15, 40), b = r(5, 12), c = r(2, 6), d = r(3, 15);
+    return { task: `Start with ${a}. Multiply by ${b}. Divide by ${c}. Subtract ${d}. What do you get?`,
+      hint: `One step at a time — track the running number. Say it out loud if it helps.` };
+  },
+  // Average
+  () => {
+    const n = r(4, 6);
+    const nums = Array.from({length: n}, () => r(5, 40));
     return { task: `What's the average of ${nums.join(", ")}?`,
-      hint: `Add them up, then divide by how many there are (3).` };
+      hint: `Add them all up, then divide by ${n} (how many numbers there are).` };
   },
-  // Perimeter
+  // Probability (basic)
   () => {
-    const w = r(3, 15), h = r(3, 15);
-    return { task: `A rectangle is ${w} cm wide and ${h} cm tall. What's the perimeter (distance all the way around)?`,
-      hint: `Add all 4 sides: ${w} + ${h} + ${w} + ${h}. Or shortcut: 2 × (${w} + ${h}).` };
+    const red = r(2, 6), blue = r(2, 6), green = r(2, 5);
+    const total = red + blue + green;
+    return { task: `A bag has ${red} red, ${blue} blue, and ${green} green marbles. You grab one without looking. What's the probability it's blue? (as a fraction, simplified)`,
+      hint: `Probability = favorable / total. That's ${blue}/${total}. Simplify if top and bottom share a factor.` };
   },
-  // Area
+  // Rounding (decimal)
   () => {
-    const w = r(3, 12), h = r(3, 12);
-    return { task: `A rectangle is ${w} cm wide and ${h} cm tall. What's the area?`,
-      hint: `Area of a rectangle = width × height. ${w} × ${h}.` };
+    const n = (r(1234, 9876) / 100).toFixed(2);
+    return { task: `Round ${n} to the nearest whole number.`,
+      hint: `Look at the tenths digit (right after the decimal). If it's 5 or more, round up.` };
+  },
+  // Unit conversion
+  () => {
+    const which = pick(["mtocm", "mltoL", "mintohr", "gtokg"]);
+    if (which === "mtocm") { const m = r(3, 15); return { task: `${m} meters = ? centimeters`, hint: `1 meter = 100 cm. Multiply by 100.` }; }
+    if (which === "mltoL") { const ml = r(1500, 9500); return { task: `${ml} mL = ? liters (as a decimal)`, hint: `1 L = 1000 mL. Divide by 1000 (move the decimal left 3 places).` }; }
+    if (which === "mintohr") { const m = r(75, 260); return { task: `${m} minutes = ? hours and minutes`, hint: `Divide by 60. The quotient is hours, the remainder is minutes.` }; }
+    const g = r(1500, 9500); return { task: `${g} grams = ? kilograms (as a decimal)`, hint: `1 kg = 1000 g. Divide by 1000.` };
+  },
+  // Divisibility / logic
+  () => {
+    const n = r(120, 980);
+    const d = pick([3, 4, 6, 9]);
+    return { task: `Is ${n} divisible by ${d}? (yes or no, and why)`,
+      hint: d === 3 ? `Trick: add the digits of ${n}. If that sum is divisible by 3, so is ${n}.` :
+            d === 9 ? `Trick: add the digits. If the sum is divisible by 9, so is the number.` :
+            d === 4 ? `Trick: look at the last TWO digits. If that number is divisible by 4, so is the whole thing.` :
+                      `Trick: it must be divisible by BOTH 2 and 3. Even? And digit sum divisible by 3?` };
+  },
+  // Counting / combinations (gentle)
+  () => {
+    const shirts = r(3, 6), pants = r(2, 5), shoes = r(2, 4);
+    return { task: `You have ${shirts} shirts, ${pants} pairs of pants, and ${shoes} pairs of shoes. How many different outfits can you make?`,
+      hint: `Multiply the choices together: shirts × pants × shoes.` };
   }
 ];
 

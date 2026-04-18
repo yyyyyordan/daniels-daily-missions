@@ -98,6 +98,8 @@
   }
   .card.ai::before { background: linear-gradient(90deg, #5b47e0, #9f6bff); }
   .card.math::before { background: linear-gradient(90deg, #2fd8a8, #ffc857); }
+  .card.trivia::before { background: linear-gradient(90deg, #ff8a3d, #ff5fa2); }
+  .card.quote::before { background: linear-gradient(90deg, #ffc857, #ff7ac6); }
   .row {
     display: flex;
     align-items: center;
@@ -115,6 +117,8 @@
     color: var(--chip-ink);
   }
   .tag.math { background: #e5fbf3; color: #158a63; }
+  .tag.trivia { background: #fff0e4; color: #b3431a; }
+  .tag.quote { background: #fff7e0; color: #8a5a00; }
   .icon {
     width: 36px; height: 36px;
     border-radius: 12px;
@@ -124,6 +128,8 @@
   }
   .icon.ai { background: linear-gradient(135deg, #ece8ff, #f6e8ff); }
   .icon.math { background: linear-gradient(135deg, #e2fbf0, #fff3d6); }
+  .icon.trivia { background: linear-gradient(135deg, #ffe4cc, #ffd4e4); }
+  .icon.quote { background: linear-gradient(135deg, #fff3d0, #ffdceb); }
   .task {
     font-size: 19px;
     line-height: 1.35;
@@ -239,6 +245,7 @@
     border: 2px solid transparent;
   }
   .card.math .mark { background: #effaf4; color: #158a63; }
+  .card.trivia .mark { background: #ffeede; color: #b3431a; }
   .mark.is-done {
     background: linear-gradient(135deg, #5b47e0, #9f6bff);
     color: #fff;
@@ -246,6 +253,96 @@
   }
   .card.math .mark.is-done {
     background: linear-gradient(135deg, #2fd8a8, #26b893);
+    color: #fff;
+  }
+  .card.trivia .mark.is-done {
+    background: linear-gradient(135deg, #ff8a3d, #ff5fa2);
+    color: #fff;
+  }
+  .options {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .opt {
+    text-align: left;
+    background: #fff5ec;
+    color: var(--ink);
+    font-size: 16px;
+    font-weight: 600;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    width: 100%;
+    line-height: 1.3;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .opt .letter {
+    display: inline-grid;
+    place-items: center;
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: #ffdebf;
+    color: #b3431a;
+    font-size: 13px;
+    font-weight: 800;
+    flex: 0 0 auto;
+  }
+  .opt:hover { background: #ffe9d6; }
+  .opt.locked { pointer-events: none; }
+  .opt.correct {
+    background: #e3fbef; border-color: #2fd8a8; color: #158a63;
+  }
+  .opt.correct .letter { background: #2fd8a8; color: #fff; }
+  .opt.wrong {
+    background: #ffe4eb; border-color: #ff7a9a; color: #c23866;
+  }
+  .opt.wrong .letter { background: #ff7a9a; color: #fff; }
+  .funfact {
+    background: #fff5ec;
+    border-left: 4px solid #ff8a3d;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.45;
+    margin-bottom: 0;
+    display: none;
+  }
+  .funfact.show { display: block; }
+  .funfact b { color: var(--ink); }
+
+  /* Quote card */
+  .card.quote { padding-bottom: 16px; }
+  .quote-text {
+    font-size: 19px;
+    line-height: 1.4;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 6px 0 10px;
+    font-style: italic;
+  }
+  .quote-text::before { content: "“"; color: var(--accent-2); font-size: 28px; margin-right: 2px; vertical-align: -4px; }
+  .quote-text::after { content: "”"; color: var(--accent-2); font-size: 28px; margin-left: 2px; vertical-align: -4px; }
+  .quote-author {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    margin-bottom: 10px;
+  }
+  .quote-author::before { content: "— "; }
+  .fav-btn {
+    background: #fff7e0;
+    color: #b37700;
+    font-size: 14px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    border: 2px solid transparent;
+  }
+  .fav-btn.is-fav {
+    background: linear-gradient(135deg, #ff5fa2, #ff8a3d);
     color: #fff;
   }
   .celebrate {
@@ -280,7 +377,7 @@
   <header>
     <div class="badge">Daily Missions</div>
     <h1>Daniel's Daily Missions</h1>
-    <p class="sub">Two quick missions. One with AI, one with numbers. Let's go!</p>
+    <p class="sub">Three quick missions + a quote. Let's go!</p>
     <div class="date" id="date"></div>
   </header>
 
@@ -314,6 +411,31 @@
     <div class="hint" id="mathHint"></div>
     <div class="done-row">
       <button class="mark" data-mark="math">Mark done ✓</button>
+    </div>
+  </section>
+
+  <section class="card trivia" id="triviaCard">
+    <div class="row">
+      <div class="icon trivia">🎯</div>
+      <div class="tag trivia">Trivia Mission</div>
+    </div>
+    <div class="task" id="triviaQ"></div>
+    <div class="options" id="triviaOpts"></div>
+    <div class="funfact" id="triviaFact"></div>
+    <div class="done-row">
+      <button class="mark" data-mark="trivia">Mark done ✓</button>
+    </div>
+  </section>
+
+  <section class="card quote" id="quoteCard">
+    <div class="row">
+      <div class="icon quote">✨</div>
+      <div class="tag quote">Daily Quote</div>
+    </div>
+    <div class="quote-text" id="quoteText"></div>
+    <div class="quote-author" id="quoteAuthor"></div>
+    <div class="done-row">
+      <button class="fav-btn" id="favBtn">♡ Favorite</button>
     </div>
   </section>
 
@@ -1151,6 +1273,315 @@ function buildMathTask() {
   return pick(MATH_BUILDERS)();
 }
 
+/* ---------- TRIVIA BANK ---------- */
+/* Format: [question, correct answer, [3 distractors], fun fact]
+   Kid-friendly, mixed categories. Keep answers short. */
+
+const TRIVIA = [
+  // ANIMALS
+  ["Which animal has the longest tongue relative to its body?", "Chameleon", ["Giraffe","Frog","Anteater"], "A chameleon's tongue can be up to twice its body length — and it strikes in under a second."],
+  ["What is the largest animal on Earth?", "Blue whale", ["African elephant","Great white shark","T-Rex"], "A blue whale's heart alone is about the size of a small car."],
+  ["How many hearts does an octopus have?", "3", ["1","2","8"], "Two pump blood to the gills, one pumps to the rest of the body."],
+  ["What's a baby kangaroo called?", "Joey", ["Kit","Pup","Cub"], "A joey is the size of a jellybean when born!"],
+  ["Which bird can fly backwards?", "Hummingbird", ["Eagle","Parrot","Owl"], "Hummingbirds beat their wings up to 80 times per second."],
+  ["What color is a polar bear's skin under its fur?", "Black", ["White","Pink","Gray"], "Black skin absorbs heat from the sun better. Their fur is actually see-through, not white!"],
+  ["Which animal sleeps the most?", "Koala", ["Sloth","Cat","Bat"], "Koalas sleep up to 22 hours a day — eucalyptus leaves are hard to digest."],
+  ["How many legs does a spider have?", "8", ["6","10","4"], "Spiders are arachnids, not insects. Insects have 6 legs."],
+  ["What do you call a group of lions?", "Pride", ["Pack","Herd","Flock"], "A pride usually has one or two males and several females and cubs."],
+  ["Which is the fastest land animal?", "Cheetah", ["Lion","Horse","Pronghorn"], "Cheetahs can hit 70 mph — but only for about 30 seconds at a time."],
+  ["Which ocean animal has no brain and no heart?", "Jellyfish", ["Octopus","Squid","Starfish"], "Jellyfish are 95% water and have survived over 500 million years."],
+  ["How many bones does a shark have?", "0", ["100","206","500"], "Sharks have skeletons made of cartilage — the same stuff as your nose and ears."],
+  ["What's the only mammal that can truly fly?", "Bat", ["Flying squirrel","Sugar glider","Owl"], "Flying squirrels glide, they don't really fly."],
+  ["What do pandas mostly eat?", "Bamboo", ["Fish","Meat","Berries"], "Pandas eat bamboo for up to 14 hours a day."],
+  ["Which animal has fingerprints almost identical to humans?", "Koala", ["Chimpanzee","Gorilla","Dolphin"], "Koala prints have actually confused crime scene investigators."],
+  ["How many eyes does a honeybee have?", "5", ["2","3","8"], "Two big compound eyes plus three tiny ones on top of its head."],
+  ["What's the biggest living dinosaur relative?", "Bird", ["Crocodile","Lizard","Komodo dragon"], "Birds evolved from small feathered dinosaurs."],
+  ["Which animal's milk is pink?", "Hippo", ["Flamingo","Pig","Rhino"], "Hippos produce two acids that turn their milk pinkish."],
+  ["How long can a giant tortoise live?", "Over 150 years", ["50 years","80 years","300 years"], "The oldest ever recorded, Jonathan, is still alive in his 190s!"],
+  ["What is the smallest bird in the world?", "Bee hummingbird", ["Sparrow","Wren","Finch"], "It weighs less than a penny."],
+
+  // SPACE
+  ["Which planet has the most moons?", "Saturn", ["Jupiter","Uranus","Neptune"], "Saturn has over 140 confirmed moons — it overtook Jupiter in 2023."],
+  ["Which is the hottest planet in our solar system?", "Venus", ["Mercury","Mars","Jupiter"], "Venus's thick atmosphere traps heat — over 450°C on the surface."],
+  ["How long does it take light from the Sun to reach Earth?", "About 8 minutes", ["1 second","1 hour","1 day"], "That means the Sun you see is actually 8 minutes in the past."],
+  ["Which planet is known as the Red Planet?", "Mars", ["Jupiter","Venus","Mercury"], "Mars is red because of iron oxide — basically rust — on its surface."],
+  ["What is the largest planet in our solar system?", "Jupiter", ["Saturn","Neptune","Earth"], "Jupiter is so big, over 1,300 Earths could fit inside it."],
+  ["What is a shooting star actually?", "A meteor burning up", ["A planet exploding","A real star falling","A comet"], "Most are smaller than a pea but burn super bright from friction."],
+  ["How many planets are in our solar system?", "8", ["7","9","10"], "Pluto was reclassified as a 'dwarf planet' in 2006."],
+  ["What galaxy do we live in?", "The Milky Way", ["Andromeda","Sombrero","Triangulum"], "It has about 100–400 billion stars."],
+  ["What is the name of our Sun?", "Sol", ["Helios","Ra","Stella"], "In Latin, the Sun is literally 'Sol' — that's where 'solar system' comes from."],
+  ["Which planet spins on its side?", "Uranus", ["Neptune","Saturn","Mars"], "Uranus rolls around the Sun like a ball instead of spinning upright."],
+  ["What's the closest star to Earth (besides the Sun)?", "Proxima Centauri", ["Sirius","Polaris","Betelgeuse"], "It's about 4.2 light-years away — still super far!"],
+  ["What is a black hole?", "A place where gravity is so strong nothing escapes", ["A dark planet","An empty part of space","A dying star"], "Not even light can escape, which is why they look black."],
+  ["Who was the first person on the Moon?", "Neil Armstrong", ["Buzz Aldrin","Yuri Gagarin","Michael Collins"], "He landed on July 20, 1969."],
+  ["How many rings does Saturn have?", "Thousands", ["7","12","100"], "They're made mostly of ice chunks, from tiny specks to house-sized boulders."],
+  ["What unit measures the distance light travels in a year?", "Light-year", ["Parsec","Mile","Astronomical unit"], "One light-year is about 9.5 trillion km."],
+  ["What is the Sun mostly made of?", "Hydrogen and helium", ["Fire","Lava","Oxygen"], "The Sun fuses hydrogen into helium — that's where its energy comes from."],
+  ["Which planet has the Great Red Spot?", "Jupiter", ["Mars","Neptune","Saturn"], "It's a storm bigger than Earth that's been raging for at least 350 years."],
+
+  // GEOGRAPHY
+  ["What is the longest river in the world?", "Nile", ["Amazon","Yangtze","Mississippi"], "It's about 6,650 km long and flows through 11 countries."],
+  ["Which is the largest country by land area?", "Russia", ["Canada","China","USA"], "Russia covers 11 time zones."],
+  ["What's the tallest mountain on Earth?", "Mount Everest", ["K2","Kilimanjaro","Denali"], "Its peak is 8,849 m above sea level."],
+  ["How many continents are there?", "7", ["5","6","8"], "Africa, Antarctica, Asia, Australia, Europe, North America, South America."],
+  ["Which ocean is the biggest?", "Pacific", ["Atlantic","Indian","Arctic"], "The Pacific alone covers more area than all the land on Earth combined."],
+  ["What is the capital of Australia?", "Canberra", ["Sydney","Melbourne","Perth"], "A lot of people think it's Sydney, but it's not."],
+  ["Which country has the most people?", "India", ["China","USA","Indonesia"], "India passed China in 2023, with over 1.4 billion people."],
+  ["What's the smallest country in the world?", "Vatican City", ["Monaco","Liechtenstein","San Marino"], "It's smaller than most city parks — about 49 hectares."],
+  ["Which desert is the largest in the world?", "Antarctic", ["Sahara","Gobi","Arabian"], "Deserts are defined by low rainfall, not heat. Antarctica qualifies!"],
+  ["Which river runs through Egypt?", "Nile", ["Congo","Amazon","Niger"], "Ancient Egyptian civilization was built along the Nile."],
+  ["What country is the Eiffel Tower in?", "France", ["Italy","Spain","Belgium"], "It was built in 1889 and was meant to be temporary."],
+  ["Which mountain range has Mount Everest?", "Himalayas", ["Andes","Alps","Rockies"], "The Himalayas are still growing — a few mm per year."],
+  ["Which is the smallest continent?", "Australia", ["Europe","Antarctica","South America"], "Though it's also its own country."],
+  ["What country is home to the Great Wall?", "China", ["Japan","Mongolia","Korea"], "The Great Wall is over 21,000 km long — built over 2,000 years."],
+  ["Which city is known as the Big Apple?", "New York", ["Los Angeles","Chicago","Boston"], "The nickname started with horse racing in the 1920s."],
+  ["What's the largest hot desert in the world?", "Sahara", ["Gobi","Arabian","Kalahari"], "It covers nearly all of North Africa — about the size of the USA."],
+  ["Which country invented pizza?", "Italy", ["Greece","France","USA"], "Modern pizza was born in Naples in the late 1700s."],
+  ["Which country is shaped like a boot?", "Italy", ["France","Spain","Greece"], "And the 'heel' is where soccer superstars often come from."],
+  ["What is the official language of Brazil?", "Portuguese", ["Spanish","Brazilian","English"], "Brazil was colonized by Portugal. Almost everywhere else in South America speaks Spanish."],
+  ["Which African country is Kilimanjaro in?", "Tanzania", ["Kenya","Uganda","Ethiopia"], "It's Africa's tallest mountain — 5,895 m."],
+
+  // HISTORY
+  ["Who painted the Mona Lisa?", "Leonardo da Vinci", ["Michelangelo","Picasso","Van Gogh"], "It took him about 16 years — and it's only 77 cm tall."],
+  ["In what year did World War II end?", "1945", ["1918","1939","1950"], "It ended in August 1945."],
+  ["Who was the first US President?", "George Washington", ["Thomas Jefferson","John Adams","Abraham Lincoln"], "He refused to be called 'King' — pretty important choice."],
+  ["Which ancient civilization built the pyramids at Giza?", "Egyptians", ["Romans","Greeks","Mayans"], "The Great Pyramid took about 20 years and 2+ million stones."],
+  ["Who invented the telephone?", "Alexander Graham Bell", ["Thomas Edison","Nikola Tesla","Benjamin Franklin"], "The first call he made was to his assistant: 'Mr. Watson, come here!'"],
+  ["What sank on its first voyage in 1912?", "Titanic", ["Lusitania","Bismarck","Mayflower"], "It hit an iceberg in the North Atlantic."],
+  ["Who wrote the Harry Potter series?", "J.K. Rowling", ["Roald Dahl","Suzanne Collins","Rick Riordan"], "She wrote the first book as a single mom in cafés."],
+  ["Which civilization invented the number zero?", "India", ["Egypt","Greece","Rome"], "Roman numerals had no zero — that's why math was harder back then."],
+  ["Who was Tutankhamun?", "An Egyptian pharaoh", ["A Greek god","A Roman emperor","A Viking king"], "He became king at age 9 and died around age 19."],
+  ["What wall came down in 1989?", "Berlin Wall", ["Great Wall","Hadrian's Wall","Wall of Troy"], "It had divided Berlin for 28 years."],
+  ["Who discovered penicillin?", "Alexander Fleming", ["Louis Pasteur","Marie Curie","Edward Jenner"], "He discovered it by accident from moldy petri dishes in 1928."],
+  ["What were the Vikings famous for?", "Sailing and raiding", ["Building pyramids","Painting","Horse racing"], "Vikings reached North America 500 years before Columbus."],
+  ["What's the name of the ship Columbus sailed to America?", "Santa María", ["Mayflower","Beagle","Endeavour"], "Three ships sailed — Niña, Pinta, and Santa María."],
+
+  // SCIENCE
+  ["What's the chemical symbol for water?", "H₂O", ["O₂","CO₂","H₂"], "Two hydrogen atoms bonded to one oxygen atom."],
+  ["How many bones are in the adult human body?", "206", ["150","300","500"], "Babies are born with ~270 — some fuse as you grow!"],
+  ["What gas do plants breathe in?", "Carbon dioxide", ["Oxygen","Nitrogen","Hydrogen"], "They breathe in CO₂ and release oxygen — the opposite of us."],
+  ["What is the hardest natural substance?", "Diamond", ["Gold","Iron","Quartz"], "Diamonds are made of pure carbon under huge pressure."],
+  ["What part of the cell is the 'powerhouse'?", "Mitochondria", ["Nucleus","Ribosome","Cell wall"], "Mitochondria turn food into usable energy."],
+  ["What's the fastest thing in the universe?", "Light", ["Sound","A bullet","Electricity"], "About 300,000 km per second. Nothing beats it."],
+  ["What force pulls things toward the ground?", "Gravity", ["Magnetism","Friction","Inertia"], "Newton figured it out — allegedly after an apple fell on him."],
+  ["What is the center of an atom called?", "Nucleus", ["Electron","Proton","Shell"], "Made of protons and neutrons, with electrons zipping around it."],
+  ["What state of matter is ice?", "Solid", ["Liquid","Gas","Plasma"], "The fourth state is plasma — found in stars and lightning."],
+  ["Which vitamin do you get from sunlight?", "Vitamin D", ["Vitamin A","Vitamin C","Vitamin K"], "Your skin makes it when sunlight hits it."],
+  ["What's the tallest organ in your body?", "Skin", ["Liver","Heart","Brain"], "It's also the largest — about 2 m² if you spread it out."],
+  ["What do you call a scientist who studies rocks?", "Geologist", ["Biologist","Astronomer","Botanist"], "They also study volcanoes and earthquakes."],
+  ["How many colors are in a rainbow?", "7", ["5","6","8"], "Red, orange, yellow, green, blue, indigo, violet."],
+  ["What causes thunder?", "Lightning heating the air super fast", ["Clouds crashing","Wind","Rain"], "Air expands so quickly it creates a shockwave — that boom is thunder."],
+  ["Which metal is liquid at room temperature?", "Mercury", ["Lead","Iron","Silver"], "Old thermometers used to be filled with mercury."],
+  ["What's the smallest unit of life?", "Cell", ["Atom","Molecule","Organ"], "Your body has about 37 trillion of them."],
+  ["What's the name for a shape with 5 sides?", "Pentagon", ["Hexagon","Octagon","Decagon"], "Six = hexagon, eight = octagon, ten = decagon."],
+  ["What's the chemical symbol for gold?", "Au", ["Gd","Go","Ag"], "From Latin 'aurum'. Silver is Ag (argentum)."],
+  ["What organ pumps blood through your body?", "Heart", ["Lungs","Liver","Brain"], "It beats about 100,000 times a day."],
+
+  // SPORTS
+  ["How many players are on a soccer team on the field?", "11", ["10","9","12"], "Including the goalkeeper."],
+  ["In what sport would you use a puck?", "Ice hockey", ["Cricket","Lacrosse","Field hockey"], "A frozen rubber disc that slides on ice."],
+  ["How long is an Olympic swimming pool?", "50 meters", ["25 meters","100 meters","75 meters"], "Called 'long course'."],
+  ["Who is the soccer player known as 'CR7'?", "Cristiano Ronaldo", ["Lionel Messi","Neymar","Kylian Mbappé"], "His number 7 became iconic at Manchester United."],
+  ["Which sport is Serena Williams known for?", "Tennis", ["Volleyball","Golf","Swimming"], "She won 23 Grand Slam singles titles."],
+  ["What's the top score in ten-pin bowling?", "300", ["200","250","500"], "That's 12 strikes in a row — a 'perfect game'."],
+  ["How many rings are on the Olympic flag?", "5", ["4","6","7"], "One for each inhabited continent."],
+  ["Who holds the record for most NBA career points?", "LeBron James", ["Michael Jordan","Kareem Abdul-Jabbar","Kobe Bryant"], "He passed Kareem's record in 2023."],
+  ["In golf, what is one under par on a hole called?", "Birdie", ["Eagle","Bogey","Albatross"], "Eagle is 2 under, albatross is 3 under."],
+  ["What color belt is the highest in most karate schools?", "Black", ["Red","Gold","White"], "You start with white and work up through the colors."],
+  ["How many players are on a basketball team on the court?", "5", ["6","7","4"], "For each team. So 10 total on the court."],
+  ["What do you call a score of zero in tennis?", "Love", ["Nil","Zip","Duck"], "Probably from the French 'l'œuf' meaning 'the egg' (shaped like 0)."],
+  ["What's the most watched sporting event in the world?", "FIFA World Cup", ["Super Bowl","Olympics","Tour de France"], "Over 5 billion people watched the 2022 final."],
+
+  // VIDEO GAMES
+  ["What's the best-selling video game of all time?", "Minecraft", ["Tetris","GTA V","Fortnite"], "Over 300 million copies sold."],
+  ["Who is Mario's brother?", "Luigi", ["Wario","Toad","Bowser"], "Luigi is usually taller and jumps higher."],
+  ["What color is Sonic the Hedgehog?", "Blue", ["Red","Green","Yellow"], "And he runs faster than the speed of sound."],
+  ["What game features a character named Link?", "The Legend of Zelda", ["Pokémon","Mario","Kirby"], "Link is the hero — Zelda is the princess."],
+  ["Which company makes the PlayStation?", "Sony", ["Microsoft","Nintendo","Sega"], "Microsoft makes the Xbox, Nintendo makes the Switch."],
+  ["What game lets you catch creatures with Poké Balls?", "Pokémon", ["Digimon","Yo-kai Watch","Monster Hunter"], "Pokémon launched in 1996 — it's older than most players!"],
+  ["What's the name of the yellow ghost-eating character from 1980?", "Pac-Man", ["Mario","Frogger","Donkey Kong"], "Pac-Man was designed to look like a pizza with a slice missing."],
+  ["Which game is set in the world of Hyrule?", "Zelda", ["Skyrim","Kingdom Hearts","Final Fantasy"], "Hyrule has appeared in nearly every Zelda game since 1986."],
+  ["Who is the villain in most Mario games?", "Bowser", ["Wario","King K. Rool","Ganon"], "Bowser has been kidnapping Princess Peach since 1985."],
+  ["What's the main material you mine first in Minecraft?", "Wood", ["Stone","Iron","Coal"], "You punch a tree with your fist — a very Minecraft start."],
+  ["What game features building with bricks and 'studs'?", "LEGO", ["Roblox","Minecraft","Terraria"], "LEGO games now span Star Wars, Marvel, Harry Potter and more."],
+  ["In Fortnite, what falls from the sky at the start of a match?", "Battle Bus", ["Plane","Rocket","Helicopter"], "Players jump out and skydive onto the island."],
+
+  // POP CULTURE
+  ["Which superhero is from the planet Krypton?", "Superman", ["Batman","Iron Man","Spider-Man"], "His real name is Kal-El."],
+  ["In Star Wars, what is Luke Skywalker's weapon?", "Lightsaber", ["Blaster","Bow","Sword"], "Jedi train for years to use one properly."],
+  ["Who is Harry Potter's best friend?", "Ron Weasley", ["Draco Malfoy","Neville","Dudley"], "Ron comes from a big wizarding family."],
+  ["What's the name of the ogre in Shrek?", "Shrek", ["Fiona","Donkey","Lord Farquaad"], "He's voiced by Mike Myers."],
+  ["Which movie features a clownfish looking for his son?", "Finding Nemo", ["Finding Dory","The Little Mermaid","Moana"], "Marlin searches for Nemo after he's taken by a diver."],
+  ["What city is Spider-Man from?", "New York", ["Gotham","Metropolis","Los Angeles"], "Specifically Queens."],
+  ["Who's the leader of the Avengers in the comics?", "Captain America", ["Iron Man","Thor","Hulk"], "He's known for his shield made of vibranium."],
+  ["What does 'LOL' stand for?", "Laugh out loud", ["Lots of love","Look online","Live on link"], "It started in 1980s internet chat rooms."],
+  ["Which video platform is famous for short dance videos?", "TikTok", ["Netflix","LinkedIn","Spotify"], "TikTok launched globally in 2018."],
+  ["Who created Mickey Mouse?", "Walt Disney", ["Stan Lee","Jim Henson","Hayao Miyazaki"], "Mickey first appeared in 'Steamboat Willie' (1928)."],
+
+  // FOOD
+  ["What country is sushi from?", "Japan", ["China","Korea","Thailand"], "Modern sushi was invented in Tokyo in the 1800s."],
+  ["What fruit is known as the 'king of fruits'?", "Durian", ["Mango","Pineapple","Coconut"], "It smells so strong that some countries ban it on buses and trains."],
+  ["What's the main ingredient in guacamole?", "Avocado", ["Tomato","Lime","Pepper"], "Avocado is technically a fruit — a berry, actually."],
+  ["What is tofu made from?", "Soybeans", ["Rice","Wheat","Milk"], "It's made by curdling soy milk, like cheese from regular milk."],
+  ["Which country is credited with inventing chocolate?", "Mexico", ["Switzerland","France","Belgium"], "The Aztecs drank it as a bitter, spicy drink."],
+  ["What type of pasta is shaped like small rice grains?", "Orzo", ["Penne","Rigatoni","Farfalle"], "It's Italian for 'barley'."],
+  ["What fruit do prunes come from?", "Plum", ["Peach","Apricot","Grape"], "Dried plums were renamed 'dried plums' from 'prunes' for marketing."],
+  ["Which country does pizza originally come from?", "Italy", ["Greece","France","USA"], "Specifically Naples, Italy."],
+  ["What spice is the most expensive by weight?", "Saffron", ["Vanilla","Cardamom","Cinnamon"], "It takes ~75,000 flowers to make a single pound."],
+  ["Which vegetable is Popeye famous for eating?", "Spinach", ["Broccoli","Kale","Carrot"], "It gave him super strength."],
+
+  // WORLD RECORDS / MISC
+  ["What is the most spoken first language in the world?", "Mandarin Chinese", ["English","Spanish","Hindi"], "Over 900 million people speak it as their first language."],
+  ["What's the fastest land animal?", "Cheetah", ["Pronghorn antelope","Ostrich","Lion"], "Up to 70 mph in short bursts."],
+  ["What's the deepest point in the ocean?", "Mariana Trench", ["Puerto Rico Trench","Java Trench","Tonga Trench"], "Challenger Deep is nearly 11 km down."],
+  ["What's the loudest animal in the world?", "Sperm whale", ["Howler monkey","Blue whale","Lion"], "Their clicks can reach 230 decibels — louder than a jet engine."],
+  ["What's the longest-running TV show ever?", "The Simpsons", ["SpongeBob","Friends","Doctor Who"], "Doctor Who is actually older by decades, but paused for a long stretch."],
+  ["How many strings does a standard guitar have?", "6", ["4","7","8"], "Bass guitar has 4; some electric guitars have 7 or 8."],
+  ["What's the only letter not in any US state name?", "Q", ["X","Z","J"], "Every other letter appears in at least one state."],
+  ["How many keys are on a standard piano?", "88", ["76","100","64"], "52 white keys and 36 black keys."],
+  ["What's the official currency of Japan?", "Yen", ["Yuan","Won","Peso"], "The yen has been used since 1871."],
+  ["What percentage of the human brain do people actually use?", "Nearly 100%", ["10%","50%","25%"], "The '10%' thing is a myth. Different parts just do different jobs."],
+  ["What's the longest word in English dictionaries?", "Pneumonoultramicroscopicsilicovolcanoconiosis", ["Antidisestablishmentarianism","Supercalifragilisticexpialidocious","Floccinaucinihilipilification"], "It's a lung disease caused by inhaling volcanic dust. 45 letters."],
+  ["What's the national sport of Canada?", "Lacrosse", ["Ice hockey","Curling","Basketball"], "Hockey is more famous, but lacrosse is officially the national sport."],
+  ["What do you call a word that reads the same forwards and backwards?", "Palindrome", ["Anagram","Acronym","Pangram"], "Example: 'racecar' or 'level'."],
+  ["How many sides does a heptagon have?", "7", ["6","8","9"], "Hepta- = 7 in Greek."],
+  ["Who invented the lightbulb?", "Thomas Edison", ["Nikola Tesla","Alexander Graham Bell","Benjamin Franklin"], "Others invented versions first, but Edison made the first practical, long-lasting one."],
+  ["How many teeth does an adult human have?", "32", ["28","30","36"], "Including wisdom teeth."],
+  ["What's the currency of the UK?", "Pound sterling", ["Euro","Dollar","Shilling"], "Even though the UK is in Europe, it doesn't use the euro."],
+  ["Which is heavier: a pound of feathers or a pound of bricks?", "They weigh the same", ["Feathers","Bricks","Depends on size"], "A pound is a pound. Classic trick question!"]
+];
+
+function buildTrivia() {
+  const item = pick(TRIVIA);
+  const [q, correct, distractors, fact] = item;
+  const opts = [correct, ...distractors];
+  // shuffle
+  for (let i = opts.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [opts[i], opts[j]] = [opts[j], opts[i]];
+  }
+  return { q, correct, opts, fact };
+}
+
+/* ---------- QUOTE BANK ---------- */
+/* Mix of inspirational + funny. Names Daniel might recognize. */
+
+const QUOTES = [
+  // Inspirational — sports & game
+  ["You miss 100% of the shots you don't take.", "Wayne Gretzky"],
+  ["It always seems impossible until it's done.", "Nelson Mandela"],
+  ["The only way to do great work is to love what you do.", "Steve Jobs"],
+  ["I'm not saying I'm Superman, but you've never seen us in the same room.", "Deadpool"],
+  ["Do or do not. There is no try.", "Yoda"],
+  ["With great power comes great responsibility.", "Uncle Ben (Spider-Man)"],
+  ["Why fit in when you were born to stand out?", "Dr. Seuss"],
+  ["Today you are you! That is truer than true! There is no one alive who is you-er than you!", "Dr. Seuss"],
+  ["The best way to predict the future is to create it.", "Abraham Lincoln"],
+  ["Just keep swimming.", "Dory (Finding Nemo)"],
+  ["To infinity and beyond!", "Buzz Lightyear"],
+  ["Hakuna Matata. It means no worries.", "Timon & Pumbaa (The Lion King)"],
+  ["It's kind of fun to do the impossible.", "Walt Disney"],
+  ["If you can dream it, you can do it.", "Walt Disney"],
+  ["The expert in anything was once a beginner.", "Helen Hayes"],
+  ["Great things never come from comfort zones.", "Neil Strauss"],
+  ["Believe you can and you're halfway there.", "Theodore Roosevelt"],
+  ["You are never too old to set another goal or to dream a new dream.", "C.S. Lewis"],
+
+  // Funny
+  ["I'm not arguing, I'm just explaining why I'm right.", "Anonymous"],
+  ["I'm on a seafood diet. I see food and I eat it.", "Dolly Parton"],
+  ["Life is short. Smile while you still have teeth.", "Anonymous"],
+  ["Why do they call it rush hour when nothing moves?", "Robin Williams"],
+  ["I never forget a face, but in your case I'll be glad to make an exception.", "Groucho Marx"],
+  ["I'm writing a book. I've got the page numbers done.", "Steven Wright"],
+  ["Age is of no importance unless you are a cheese.", "Billie Burke"],
+  ["Common sense is like deodorant. The people who need it most never use it.", "Anonymous"],
+  ["If at first you don't succeed, skydiving is probably not for you.", "Steven Wright"],
+  ["I'm not lazy, I'm just on energy-saving mode.", "Anonymous"],
+  ["When nothing goes right, go left.", "Anonymous"],
+  ["My bed is a magical place where I suddenly remember everything I forgot to do.", "Anonymous"],
+  ["Clever doesn't cut it. You have to be determined.", "Serena Williams"],
+  ["I told my computer I needed a break, and now it won't stop sending me KitKat ads.", "Anonymous"],
+  ["Why don't scientists trust atoms? Because they make up everything.", "Anonymous"],
+  ["I used to play piano by ear, but now I use my hands.", "Steven Wright"],
+
+  // Scientists & thinkers
+  ["Imagination is more important than knowledge.", "Albert Einstein"],
+  ["Try not to become a man of success, but rather try to become a man of value.", "Albert Einstein"],
+  ["The important thing is not to stop questioning.", "Albert Einstein"],
+  ["Science is not only a disciple of reason but, also, one of romance and passion.", "Stephen Hawking"],
+  ["Look up at the stars and not down at your feet.", "Stephen Hawking"],
+  ["Somewhere, something incredible is waiting to be known.", "Carl Sagan"],
+  ["We are all made of star-stuff.", "Carl Sagan"],
+  ["I have not failed. I've just found 10,000 ways that won't work.", "Thomas Edison"],
+  ["Nothing in life is to be feared, it is only to be understood.", "Marie Curie"],
+  ["Logic will get you from A to B. Imagination will take you everywhere.", "Albert Einstein"],
+
+  // Athletes
+  ["I've failed over and over and over again in my life. And that is why I succeed.", "Michael Jordan"],
+  ["You have to expect things of yourself before you can do them.", "Michael Jordan"],
+  ["It's hard to beat a person who never gives up.", "Babe Ruth"],
+  ["Champions keep playing until they get it right.", "Billie Jean King"],
+  ["Hard work beats talent when talent doesn't work hard.", "Tim Notke"],
+  ["Everything is practice.", "Pelé"],
+  ["You don't have to be great to start, but you have to start to be great.", "Zig Ziglar"],
+  ["The only place where success comes before work is in the dictionary.", "Vince Lombardi"],
+  ["I've never lost a game, I just ran out of time.", "Michael Jordan"],
+
+  // Authors / storytellers
+  ["Not all those who wander are lost.", "J.R.R. Tolkien"],
+  ["There is some good in this world, and it's worth fighting for.", "J.R.R. Tolkien"],
+  ["It does not do to dwell on dreams and forget to live.", "J.K. Rowling (Dumbledore)"],
+  ["Happiness can be found, even in the darkest of times, if one only remembers to turn on the light.", "J.K. Rowling (Dumbledore)"],
+  ["It is our choices that show what we truly are, far more than our abilities.", "J.K. Rowling (Dumbledore)"],
+  ["Don't cry because it's over, smile because it happened.", "Dr. Seuss"],
+  ["Oh, the places you'll go!", "Dr. Seuss"],
+  ["A person's a person, no matter how small.", "Dr. Seuss"],
+  ["The more that you read, the more things you will know.", "Dr. Seuss"],
+  ["Everything you can imagine is real.", "Pablo Picasso"],
+  ["Be yourself; everyone else is already taken.", "Oscar Wilde"],
+  ["Adventure is out there!", "Ellie (Up)"],
+
+  // Gamers, inventors, creators
+  ["Anything is possible when you have the right people there to support you.", "Misty Copeland"],
+  ["Don't let yesterday take up too much of today.", "Will Rogers"],
+  ["You can't go back and change the beginning, but you can start where you are and change the ending.", "C.S. Lewis"],
+  ["The way to get started is to quit talking and begin doing.", "Walt Disney"],
+  ["The best time to plant a tree was 20 years ago. The second best time is now.", "Chinese proverb"],
+  ["Whether you think you can or you think you can't, you're right.", "Henry Ford"],
+  ["Courage is not the absence of fear, but the triumph over it.", "Nelson Mandela"],
+  ["Don't watch the clock; do what it does. Keep going.", "Sam Levenson"],
+  ["If you want to fly, give up everything that weighs you down.", "Anonymous"],
+  ["Be a voice, not an echo.", "Albert Einstein"],
+  ["Mistakes are proof that you are trying.", "Anonymous"],
+  ["Practice like you've never won. Play like you've never lost.", "Michael Jordan"],
+  ["The future depends on what you do today.", "Mahatma Gandhi"],
+
+  // Kid-friendly funny & wise
+  ["If a thing is worth doing, it is worth doing well.", "Mary Poppins"],
+  ["A spoonful of sugar helps the medicine go down.", "Mary Poppins"],
+  ["All it takes is faith and trust. And a little bit of pixie dust.", "Peter Pan"],
+  ["Life is like a box of chocolates. You never know what you're gonna get.", "Forrest Gump"],
+  ["I can and I will. Watch me.", "Carrie Green"],
+  ["Doubt kills more dreams than failure ever will.", "Suzy Kassem"],
+  ["Don't be afraid to give up the good to go for the great.", "John D. Rockefeller"],
+  ["You can steer yourself in any direction you choose.", "Dr. Seuss"],
+  ["Be who you are and say what you feel.", "Dr. Seuss"],
+  ["The best view comes after the hardest climb.", "Anonymous"],
+  ["Success is not final; failure is not fatal.", "Winston Churchill"],
+  ["If you fall, I'll be there.", "The Floor"],
+  ["I am not afraid of storms, for I am learning how to sail my ship.", "Louisa May Alcott"],
+  ["Every champion was once a contender that refused to give up.", "Rocky Balboa"],
+  ["Don't count the days, make the days count.", "Muhammad Ali"],
+  ["Float like a butterfly, sting like a bee.", "Muhammad Ali"],
+  ["Impossible is just a big word thrown around by small men.", "Muhammad Ali"]
+];
+
+function buildQuote() {
+  const [text, author] = pick(QUOTES);
+  return { text, author };
+}
+
 /* Math combinatorial space: each builder uses randomized ranges giving
    anywhere from ~60 to thousands of variants each. Easily > 1000 unique
    problems across the bank of ${MATH_BUILDERS.length} templates. */
@@ -1165,6 +1596,14 @@ const els = {
   mathInput: document.getElementById("mathInput"),
   checkBtn: document.getElementById("checkBtn"),
   mathFeedback: document.getElementById("mathFeedback"),
+  triviaQ: document.getElementById("triviaQ"),
+  triviaOpts: document.getElementById("triviaOpts"),
+  triviaFact: document.getElementById("triviaFact"),
+  triviaCard: document.getElementById("triviaCard"),
+  quoteText: document.getElementById("quoteText"),
+  quoteAuthor: document.getElementById("quoteAuthor"),
+  quoteCard: document.getElementById("quoteCard"),
+  favBtn: document.getElementById("favBtn"),
   newBtn: document.getElementById("newBtn"),
   celebrate: document.getElementById("celebrate"),
   aiCard: document.getElementById("aiCard"),
@@ -1172,7 +1611,23 @@ const els = {
   date: document.getElementById("date")
 };
 
-const state = { doneAI: false, doneMath: false, lastAI: "", lastMath: "", currentMath: null, attempts: 0 };
+const state = {
+  doneAI: false, doneMath: false, doneTrivia: false,
+  lastAI: "", lastMath: "", lastTrivia: "", lastQuote: "",
+  currentMath: null, attempts: 0,
+  currentTrivia: null, triviaAnswered: false,
+  currentQuote: null
+};
+
+/* Favorites persisted in localStorage */
+function loadFavs() {
+  try { return new Set(JSON.parse(localStorage.getItem("ddm_favs") || "[]")); }
+  catch (e) { return new Set(); }
+}
+function saveFavs(set) {
+  try { localStorage.setItem("ddm_favs", JSON.stringify([...set])); } catch (e) {}
+}
+let favs = loadFavs();
 
 function setDate() {
   const d = new Date();
@@ -1181,24 +1636,32 @@ function setDate() {
 }
 
 function refresh() {
-  let ai, math, tries = 0;
+  let ai, math, trivia, quote, tries = 0;
   do { ai = buildAITask(); tries++; } while (ai.task === state.lastAI && tries < 5);
   tries = 0;
   do { math = buildMathTask(); tries++; } while (math.task === state.lastMath && tries < 5);
-  state.lastAI = ai.task; state.lastMath = math.task;
-  state.currentMath = math;
-  state.attempts = 0;
+  tries = 0;
+  do { trivia = buildTrivia(); tries++; } while (trivia.q === state.lastTrivia && tries < 5);
+  tries = 0;
+  do { quote = buildQuote(); tries++; } while (quote.text === state.lastQuote && tries < 5);
 
-  els.aiCard.style.animation = "none"; els.mathCard.style.animation = "none";
-  void els.aiCard.offsetWidth; void els.mathCard.offsetWidth;
-  els.aiCard.style.animation = ""; els.mathCard.style.animation = "";
+  state.lastAI = ai.task; state.lastMath = math.task;
+  state.lastTrivia = trivia.q; state.lastQuote = quote.text;
+  state.currentMath = math;
+  state.currentTrivia = trivia;
+  state.currentQuote = quote;
+  state.attempts = 0;
+  state.triviaAnswered = false;
+
+  [els.aiCard, els.mathCard, els.triviaCard, els.quoteCard].forEach(c => {
+    c.style.animation = "none"; void c.offsetWidth; c.style.animation = "";
+  });
 
   els.aiTask.textContent = ai.task;
   els.aiHint.innerHTML = "💡 " + ai.hint;
   els.mathTask.textContent = math.task;
   els.mathHint.innerHTML = "💡 " + math.hint;
 
-  // reset input + feedback
   els.mathInput.value = "";
   els.mathInput.disabled = false;
   els.mathInput.classList.remove("ok", "no");
@@ -1207,13 +1670,76 @@ function refresh() {
   els.mathFeedback.textContent = "";
   els.mathFeedback.className = "feedback";
 
-  state.doneAI = false; state.doneMath = false;
+  renderTrivia();
+  renderQuote();
+
+  state.doneAI = false; state.doneMath = false; state.doneTrivia = false;
   document.querySelectorAll(".mark").forEach(b => {
     b.classList.remove("is-done");
     b.textContent = "Mark done ✓";
   });
   els.celebrate.classList.remove("show");
   els.celebrate.textContent = "";
+}
+
+function renderTrivia() {
+  const t = state.currentTrivia;
+  els.triviaQ.textContent = t.q;
+  els.triviaOpts.innerHTML = "";
+  els.triviaFact.classList.remove("show");
+  els.triviaFact.innerHTML = "";
+  const letters = ["A", "B", "C", "D"];
+  t.opts.forEach((opt, i) => {
+    const btn = document.createElement("button");
+    btn.className = "opt";
+    btn.innerHTML = `<span class="letter">${letters[i]}</span><span>${opt}</span>`;
+    btn.addEventListener("click", () => handleTrivia(btn, opt));
+    els.triviaOpts.appendChild(btn);
+  });
+}
+
+function handleTrivia(btn, choice) {
+  if (state.triviaAnswered) return;
+  state.triviaAnswered = true;
+  const t = state.currentTrivia;
+  const correct = choice === t.correct;
+  // lock all, mark correct one, mark chosen if wrong
+  document.querySelectorAll(".opt").forEach(b => {
+    b.classList.add("locked");
+    const label = b.querySelector("span:last-child").textContent;
+    if (label === t.correct) b.classList.add("correct");
+    else if (b === btn && !correct) b.classList.add("wrong");
+  });
+  // reveal fun fact
+  els.triviaFact.innerHTML = (correct ? "🎉 " : "💡 ") + `<b>Did you know?</b> ${t.fact}`;
+  els.triviaFact.classList.add("show");
+  // auto-mark done on correct
+  if (correct && !state.doneTrivia) {
+    const markBtn = document.querySelector('.mark[data-mark="trivia"]');
+    state.doneTrivia = true;
+    markBtn.classList.add("is-done");
+    markBtn.textContent = "Done! ✓";
+    updateCelebrate();
+  }
+}
+
+function quoteKey(q) { return q.text + "|" + q.author; }
+
+function renderQuote() {
+  const q = state.currentQuote;
+  els.quoteText.textContent = q.text;
+  els.quoteAuthor.textContent = q.author;
+  const isFav = favs.has(quoteKey(q));
+  els.favBtn.classList.toggle("is-fav", isFav);
+  els.favBtn.textContent = isFav ? "♥ Favorited" : "♡ Favorite";
+}
+
+function toggleFav() {
+  const key = quoteKey(state.currentQuote);
+  if (favs.has(key)) favs.delete(key);
+  else favs.add(key);
+  saveFavs(favs);
+  renderQuote();
 }
 
 const WRONG_NUDGES = [
@@ -1290,7 +1816,7 @@ const CHEERS = [
 ];
 
 function updateCelebrate() {
-  if (state.doneAI && state.doneMath) {
+  if (state.doneAI && state.doneMath && state.doneTrivia) {
     els.celebrate.textContent = pick(CHEERS);
     els.celebrate.classList.add("show");
   }
@@ -1300,13 +1826,16 @@ document.querySelectorAll(".mark").forEach(btn => {
   btn.addEventListener("click", () => {
     const kind = btn.dataset.mark;
     if (kind === "ai") state.doneAI = !state.doneAI;
-    if (kind === "math") state.doneMath = !state.doneMath;
-    const on = kind === "ai" ? state.doneAI : state.doneMath;
+    else if (kind === "math") state.doneMath = !state.doneMath;
+    else if (kind === "trivia") state.doneTrivia = !state.doneTrivia;
+    const on = kind === "ai" ? state.doneAI : kind === "math" ? state.doneMath : state.doneTrivia;
     btn.classList.toggle("is-done", on);
     btn.textContent = on ? "Done! ✓" : "Mark done ✓";
     updateCelebrate();
   });
 });
+
+els.favBtn.addEventListener("click", toggleFav);
 
 els.newBtn.addEventListener("click", refresh);
 els.checkBtn.addEventListener("click", checkMath);

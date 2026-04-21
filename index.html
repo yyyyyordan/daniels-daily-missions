@@ -1448,7 +1448,252 @@ const TRIVIA = [
   ["Who invented the lightbulb?", "Thomas Edison", ["Nikola Tesla","Alexander Graham Bell","Benjamin Franklin"], "Others invented versions first, but Edison made the first practical, long-lasting one."],
   ["How many teeth does an adult human have?", "32", ["28","30","36"], "Including wisdom teeth."],
   ["What's the currency of the UK?", "Pound sterling", ["Euro","Dollar","Shilling"], "Even though the UK is in Europe, it doesn't use the euro."],
-  ["Which is heavier: a pound of feathers or a pound of bricks?", "They weigh the same", ["Feathers","Bricks","Depends on size"], "A pound is a pound. Classic trick question!"]
+  ["Which is heavier: a pound of feathers or a pound of bricks?", "They weigh the same", ["Feathers","Bricks","Depends on size"], "A pound is a pound. Classic trick question!"],
+
+  // MORE ANIMALS
+  ["Which animal is known as the 'ship of the desert'?", "Camel", ["Horse","Donkey","Llama"], "Camels can drink up to 100 liters of water in 10 minutes."],
+  ["What do you call a group of crows?", "Murder", ["Flock","Herd","Pack"], "Yes, really — 'a murder of crows.' Crows are extremely smart."],
+  ["Which animal has stripes that are unique like fingerprints?", "Zebra", ["Tiger","Cheetah","Giraffe"], "No two zebras have the same stripe pattern."],
+  ["Which bird lays the largest egg?", "Ostrich", ["Emu","Eagle","Swan"], "An ostrich egg weighs about 1.4 kg."],
+  ["How many legs does a starfish typically have?", "5", ["4","6","8"], "Most have 5 arms, but some species have up to 40."],
+  ["What's the only mammal that can't jump?", "Elephant", ["Rhino","Hippo","Sloth"], "Their legs aren't built to spring like ours."],
+  ["Which animal has the biggest eyes of any land creature?", "Ostrich", ["Horse","Owl","Giraffe"], "Ostrich eyes are bigger than their brains."],
+  ["How do frogs drink water?", "Through their skin", ["Through their mouth","Through their nose","They don't"], "Frogs absorb water through a special 'drinking patch' of skin."],
+  ["What's unique about the platypus?", "It's a mammal that lays eggs", ["It breathes underwater","It's part bird","It has 6 legs"], "Platypuses also have venomous spurs and detect prey with electricity."],
+  ["Which is the largest reptile alive today?", "Saltwater crocodile", ["Komodo dragon","Green anaconda","Nile crocodile"], "They can grow over 6 meters long."],
+  ["Which animal's fur changes color with the seasons?", "Arctic fox", ["Grizzly bear","Kangaroo","Elk"], "White in winter, brown in summer — built-in camouflage."],
+  ["What do you call a baby elephant?", "Calf", ["Cub","Kit","Joey"], "Cows, dolphins, and whales also have calves."],
+  ["Which snake is the longest in the world?", "Reticulated python", ["Anaconda","King cobra","Boa constrictor"], "They can grow over 7 meters long."],
+  ["What percent of their life do sloths spend upside down?", "About 90%", ["50%","25%","10%"], "They eat, sleep, and even give birth hanging upside down."],
+  ["What's a group of wolves called?", "Pack", ["Herd","Pride","Swarm"], "A pack usually has 5–12 wolves led by the alpha pair."],
+  ["Which animal has the longest pregnancy?", "Elephant", ["Whale","Rhino","Giraffe"], "About 22 months — nearly 2 years!"],
+  ["Which bird is the national symbol of the USA?", "Bald eagle", ["Hawk","Owl","Turkey"], "Benjamin Franklin actually preferred the turkey."],
+  ["What do you call the study of birds?", "Ornithology", ["Entomology","Ichthyology","Mammalogy"], "Bird-watching scientists are called ornithologists."],
+  ["Which fish is known for sticking to sharks?", "Remora", ["Pilot fish","Clownfish","Lamprey"], "Remoras hitch rides on sharks using a suction pad on their head."],
+  ["How many stomachs does a cow have?", "4", ["1","2","3"], "Well, 1 stomach with 4 chambers: rumen, reticulum, omasum, abomasum."],
+  ["Which creature produces the silk we use for clothing?", "Silkworm", ["Spider","Caterpillar","Ant"], "One silkworm cocoon can make up to 900 meters of silk thread."],
+  ["Which is the only big cat that can't roar?", "Cheetah", ["Jaguar","Leopard","Tiger"], "Cheetahs purr, chirp, and yip instead."],
+  ["What do chameleons change color for?", "Emotions and temperature", ["Only camouflage","Food","Speed"], "Mostly mood and body temperature — camouflage is secondary."],
+  ["Which animal is the closest living relative of humans?", "Chimpanzee", ["Gorilla","Orangutan","Baboon"], "We share about 98.8% of our DNA with chimps."],
+  ["How many babies do kangaroos usually have at once?", "1", ["2","3","5"], "A single joey at a time, usually. It's born the size of a cherry."],
+
+  // MORE SPACE
+  ["What's the temperature at the Sun's core?", "About 15 million °C", ["1 million °C","100,000 °C","5,000 °C"], "Its surface is only ~5,500°C — the core is way hotter."],
+  ["Which was the first country to launch a satellite?", "Soviet Union", ["USA","China","UK"], "Sputnik 1 launched in October 1957."],
+  ["What was the name of the first dog in space?", "Laika", ["Rex","Astro","Buddy"], "She orbited Earth on Sputnik 2 in 1957."],
+  ["What's the Milky Way shaped like?", "Spiral", ["Sphere","Ring","Cube"], "It's a barred spiral galaxy with arms winding out from the center."],
+  ["How many minutes does it take to 'fall' into a black hole?", "It depends on the black hole", ["1 minute","Forever","Exactly 7"], "Outside observers would see it take infinitely long due to time dilation."],
+  ["What is the 'Goldilocks Zone'?", "The orbit range where a planet could have liquid water", ["The edge of the galaxy","Inside the Sun","The space between stars"], "Not too hot, not too cold — just right."],
+  ["What protects Earth from harmful space radiation?", "Magnetic field", ["The Moon","Ozone layer","Atmosphere alone"], "Earth's magnetic field deflects most of it, along with the atmosphere."],
+  ["How long is a day on Venus?", "243 Earth days", ["1 day","24 hours","1 week"], "Weirdly, that's LONGER than its year (225 Earth days)!"],
+  ["What name is given to a frozen 'dirty snowball' in space?", "Comet", ["Meteor","Asteroid","Planet"], "Comets are made of ice, dust, and rock."],
+  ["What's the biggest volcano in the solar system?", "Olympus Mons", ["Mauna Loa","Mount Etna","Vesuvius"], "It's on Mars — about 22 km tall, 2.5x the height of Everest."],
+  ["How many astronauts have walked on the Moon?", "12", ["6","8","20"], "All during the Apollo missions between 1969 and 1972."],
+  ["What did Galileo invent to study the night sky?", "Telescope", ["Microscope","Compass","Sextant"], "He didn't invent the telescope, but he greatly improved it."],
+  ["What's a supernova?", "An exploding star", ["A star being born","A black hole","A dying planet"], "One supernova can briefly outshine an entire galaxy."],
+  ["Which planet has the fastest winds?", "Neptune", ["Jupiter","Mars","Saturn"], "Up to 2,000 km/h — faster than the speed of sound on Earth."],
+  ["Which galaxy is closest to ours?", "Andromeda", ["Sombrero","Triangulum","Whirlpool"], "It's on a collision course with the Milky Way in about 4.5 billion years."],
+  ["What is the center of the Earth called?", "Core", ["Crust","Mantle","Shell"], "The inner core is solid iron; the outer core is molten."],
+  ["Which moon is the largest in the solar system?", "Ganymede", ["Titan","Europa","Io"], "It orbits Jupiter and is even bigger than the planet Mercury."],
+  ["What space agency landed the first rover on Mars?", "NASA", ["Roscosmos","ESA","ISRO"], "Sojourner landed on Mars in 1997."],
+
+  // MORE GEOGRAPHY
+  ["Which country has the most time zones?", "France", ["Russia","USA","China"], "France has 12 time zones thanks to its overseas territories."],
+  ["What river runs through London?", "Thames", ["Seine","Danube","Rhine"], "It's about 346 km long."],
+  ["What is the capital of Japan?", "Tokyo", ["Kyoto","Osaka","Seoul"], "Tokyo is one of the biggest metro areas in the world — 37 million people."],
+  ["Which is the longest country in the world?", "Chile", ["Norway","Russia","Brazil"], "Chile is over 4,300 km long but averages only 180 km wide."],
+  ["What's the capital of Canada?", "Ottawa", ["Toronto","Vancouver","Montreal"], "Toronto is bigger, but Ottawa is the capital."],
+  ["Which country has the most lakes?", "Canada", ["Russia","Finland","USA"], "Canada has over 2 million lakes — more than the rest of the world combined."],
+  ["Which mountain is the tallest measured from base to peak?", "Mauna Kea", ["Everest","K2","Denali"], "Most of it is underwater, but base-to-peak it's over 10 km — taller than Everest."],
+  ["What's the deepest lake in the world?", "Lake Baikal", ["Lake Superior","Caspian Sea","Lake Tanganyika"], "Baikal is over 1,600 m deep and holds 20% of Earth's fresh surface water."],
+  ["Which continent is the coldest?", "Antarctica", ["Europe","North America","Asia"], "Temperatures can drop below -80°C in winter."],
+  ["What's the capital of Spain?", "Madrid", ["Barcelona","Seville","Valencia"], "Barcelona is famous but Madrid is the capital."],
+  ["Which country is home to Machu Picchu?", "Peru", ["Brazil","Mexico","Bolivia"], "It's an ancient Incan city high in the Andes."],
+  ["Which strait separates Asia from North America?", "Bering Strait", ["Strait of Gibraltar","Strait of Magellan","Bosphorus"], "Only about 85 km wide — Russia and Alaska almost touch."],
+  ["What's the capital of Germany?", "Berlin", ["Munich","Hamburg","Frankfurt"], "Berlin was divided by a wall until 1989."],
+  ["What's the longest wall in the world?", "Great Wall of China", ["Hadrian's Wall","Berlin Wall","Western Wall"], "Over 21,000 km in total length."],
+  ["Which country is known as the Land of the Rising Sun?", "Japan", ["China","Korea","Thailand"], "Japan's name in Japanese literally means 'origin of the sun'."],
+  ["Which African country has the most pyramids?", "Sudan", ["Egypt","Ethiopia","Morocco"], "Sudan has over 200 pyramids — twice as many as Egypt."],
+  ["What's the smallest ocean in the world?", "Arctic", ["Indian","Southern","Atlantic"], "It's also the shallowest."],
+  ["Which European country is shaped like a boot?", "Italy", ["Spain","Greece","Norway"], "And Sicily is like a soccer ball its toe is kicking."],
+  ["Which country invented the modern Olympic Games?", "Greece", ["France","Italy","UK"], "Ancient Greeks held the first games in 776 BC. The modern games started in 1896."],
+  ["What is the capital of South Korea?", "Seoul", ["Busan","Tokyo","Beijing"], "Over half of South Korea's population lives in the Seoul metro area."],
+  ["Which sea is between Italy and Greece?", "Adriatic", ["Ionian","Aegean","Tyrrhenian"], "It's an arm of the Mediterranean."],
+  ["Which state in the USA is the largest by area?", "Alaska", ["Texas","California","Montana"], "Alaska is more than twice the size of Texas."],
+
+  // MORE HISTORY
+  ["Who wrote 'Romeo and Juliet'?", "William Shakespeare", ["Charles Dickens","Mark Twain","Homer"], "He wrote it around 1595."],
+  ["Who was the first emperor of Rome?", "Augustus", ["Julius Caesar","Nero","Constantine"], "Julius Caesar ruled as dictator but never used the title 'Emperor'."],
+  ["Where were the first Olympic Games held?", "Olympia, Greece", ["Athens","Rome","Sparta"], "In 776 BC."],
+  ["What year did man first walk on the Moon?", "1969", ["1959","1972","1975"], "Apollo 11 landed on July 20, 1969."],
+  ["Who was known as the 'Maid of Orléans'?", "Joan of Arc", ["Marie Antoinette","Queen Victoria","Cleopatra"], "She led French troops at age 17."],
+  ["What wall did Hadrian build?", "A wall across northern Britain", ["Around Jerusalem","Across Germany","Around Rome"], "To mark the northern border of Roman Britain."],
+  ["Who was the ancient Greek god of the sea?", "Poseidon", ["Zeus","Apollo","Ares"], "The Romans called him Neptune."],
+  ["Who wrote 'The Odyssey'?", "Homer", ["Virgil","Sophocles","Plato"], "An ancient Greek epic poem about Odysseus' journey home."],
+  ["What was the first country to give women the right to vote?", "New Zealand", ["USA","UK","France"], "In 1893."],
+  ["Who invented the printing press?", "Johannes Gutenberg", ["Leonardo da Vinci","Isaac Newton","Galileo"], "Around 1440 — it changed the world by spreading books."],
+  ["In what year did the French Revolution begin?", "1789", ["1776","1812","1848"], "The storming of the Bastille on July 14, 1789, is the key date."],
+  ["Who painted the Sistine Chapel ceiling?", "Michelangelo", ["Leonardo da Vinci","Raphael","Donatello"], "It took him 4 years, painting while lying on his back."],
+  ["What ship did Charles Darwin sail on?", "HMS Beagle", ["Endeavour","Discovery","Victory"], "His 5-year voyage led to his theory of evolution."],
+  ["Who was the first woman to win a Nobel Prize?", "Marie Curie", ["Rosalind Franklin","Jane Goodall","Ada Lovelace"], "She won 2 — in Physics (1903) and Chemistry (1911)."],
+  ["Who was Cleopatra?", "Queen of Egypt", ["Queen of Rome","A Greek goddess","A warrior princess"], "Actually the last ruler of the Ptolemaic Kingdom of Egypt."],
+  ["Which civilization invented paper?", "China", ["Egypt","Greece","Rome"], "Around 100 BC."],
+  ["Who discovered America for Europe in 1492?", "Christopher Columbus", ["Vasco da Gama","Marco Polo","Ferdinand Magellan"], "Though Vikings had landed there ~500 years earlier."],
+
+  // MORE SCIENCE
+  ["How many planets in our solar system can support life (as we know it)?", "1", ["2","0","4"], "Just Earth, as far as we know right now."],
+  ["What's the speed of sound (roughly)?", "343 m/s", ["100 m/s","1,000 m/s","3,000 m/s"], "That's about 1,235 km/h at sea level."],
+  ["What type of energy does the Sun produce?", "Nuclear fusion energy", ["Solar panels","Electricity","Friction"], "The Sun fuses hydrogen into helium."],
+  ["What's Newton's 3rd law?", "Every action has an equal and opposite reaction", ["Objects fall","Energy is conserved","Everything spins"], "Push a wall — it pushes back with equal force."],
+  ["Which part of your brain controls balance?", "Cerebellum", ["Cerebrum","Brainstem","Medulla"], "The cerebellum is at the back of the brain."],
+  ["What's the pH of pure water?", "7", ["5","10","0"], "Perfectly neutral — not acidic, not basic."],
+  ["What element has the chemical symbol Fe?", "Iron", ["Fluorine","Phosphorus","Francium"], "Fe comes from 'ferrum', Latin for iron."],
+  ["How many chromosomes do humans have?", "46", ["23","48","100"], "23 pairs — one set from each parent."],
+  ["What makes a rainbow form?", "Light bending through water drops", ["Clouds reflecting","Sun hitting snow","Lightning"], "Raindrops act like tiny prisms."],
+  ["What's the largest bone in the human body?", "Femur", ["Tibia","Humerus","Skull"], "The thigh bone — it supports your whole weight."],
+  ["What gas makes up most of Earth's atmosphere?", "Nitrogen", ["Oxygen","CO₂","Argon"], "About 78%. Oxygen is only about 21%."],
+  ["What is lightning, scientifically?", "Electrostatic discharge", ["Fire in clouds","Sun rays","Liquid plasma"], "It's super-heated air — hotter than the surface of the Sun."],
+  ["What do bees use to make honey?", "Flower nectar", ["Pollen","Water","Tree sap"], "Bees collect nectar and bring it back to the hive to turn into honey."],
+  ["Which is the only fish that can blink with both eyes?", "Shark", ["Tuna","Salmon","Clownfish"], "Most fish can't blink — they have no eyelids."],
+  ["What is H₂O₂?", "Hydrogen peroxide", ["Water","Oxygen","Acid"], "One extra oxygen atom turns water into bleach."],
+  ["Which planet is closest to the Sun?", "Mercury", ["Venus","Earth","Mars"], "Only 58 million km from the Sun."],
+  ["What's the process plants use to make food?", "Photosynthesis", ["Respiration","Transpiration","Osmosis"], "They use sunlight, water, and CO₂ to make sugar and oxygen."],
+  ["What's a scientist who studies the weather called?", "Meteorologist", ["Geologist","Biologist","Zoologist"], "Meteorology isn't about meteors — it's about the atmosphere."],
+  ["What's the largest planet by mass?", "Jupiter", ["Saturn","Neptune","Earth"], "Jupiter has 2.5 times the mass of all other planets combined."],
+  ["Which sense is most linked to memory?", "Smell", ["Sight","Hearing","Taste"], "Smells travel to the memory center of your brain faster than other senses."],
+  ["What's inside the Earth's outer core?", "Molten iron and nickel", ["Solid rock","Water","Magma only"], "It's so hot — 4,000 to 6,000 °C."],
+
+  // MORE SPORTS
+  ["What does NBA stand for?", "National Basketball Association", ["National Boxing Association","North Baseball Alliance","New Basketball Alliance"], "Founded in 1946."],
+  ["In chess, which piece can only move diagonally?", "Bishop", ["Rook","Knight","Queen"], "The queen can move diagonally too, but also straight."],
+  ["Which country has won the most FIFA World Cups?", "Brazil", ["Germany","Italy","Argentina"], "Brazil has 5 World Cup titles."],
+  ["What sport uses the terms 'love' and 'deuce'?", "Tennis", ["Badminton","Ping pong","Squash"], "Deuce is 40-40, when either player needs 2 points to win."],
+  ["In baseball, how many strikes make an out?", "3", ["2","4","5"], "And 4 balls is a walk."],
+  ["What's the maximum break in snooker?", "147", ["100","180","200"], "That's 15 reds, 15 blacks, then the colors."],
+  ["How many minutes in an NBA quarter?", "12", ["15","10","20"], "The full game is 48 minutes of game time."],
+  ["What country invented table tennis?", "England", ["China","Japan","Korea"], "It started as an after-dinner game in Victorian England."],
+  ["Who is Simone Biles famous in?", "Gymnastics", ["Swimming","Track","Tennis"], "She has several moves named after her."],
+  ["How tall is a basketball hoop?", "10 feet", ["8 feet","12 feet","9 feet"], "About 3.05 meters."],
+  ["In what sport is the Ryder Cup played?", "Golf", ["Tennis","Sailing","Rugby"], "It's between the USA and Europe, held every 2 years."],
+  ["What animal is the mascot of the Chicago Bulls?", "Bull", ["Eagle","Bear","Shark"], "Chicago has long been a cattle city."],
+  ["How many Super Bowls had Tom Brady won by 2021?", "7", ["5","6","8"], "More than any NFL franchise has."],
+  ["What shape is a soccer (football) field?", "Rectangle", ["Oval","Square","Circle"], "Between 100–110 m long and 64–75 m wide for pro games."],
+  ["Which country has the national sport of sumo wrestling?", "Japan", ["Korea","China","Thailand"], "Sumo is over 1,500 years old."],
+  ["How many players on a volleyball team on the court?", "6", ["5","7","8"], "Three front-row, three back-row."],
+
+  // MORE VIDEO GAMES
+  ["What's the name of the hero in Breath of the Wild?", "Link", ["Zelda","Ganondorf","Cloud"], "Link is in every Zelda game."],
+  ["What game features a universe made of colorful blocks and creepers?", "Minecraft", ["Terraria","Roblox","Among Us"], "A creeper will sneak up and hiss before exploding."],
+  ["Who is the villain in The Legend of Zelda?", "Ganon / Ganondorf", ["Bowser","Dr. Robotnik","Sephiroth"], "He usually wants the Triforce to conquer Hyrule."],
+  ["What's the name of Mario's horse-dinosaur companion?", "Yoshi", ["Koopa","Toadette","Diddy"], "Yoshi first appeared in Super Mario World (1990)."],
+  ["Which game features the character 'Master Chief'?", "Halo", ["Call of Duty","Destiny","Fortnite"], "The game started on the original Xbox in 2001."],
+  ["What does 'FPS' stand for in video games?", "First-person shooter", ["Fast player speed","Fight-per-session","Full point scene"], "Like Call of Duty or Halo."],
+  ["What device did Nintendo release in 2017 that's both handheld and console?", "Switch", ["Wii","DS","GameCube"], "It's sold over 130 million units."],
+  ["What's the name of the blue bird in Angry Birds?", "Jay, Jake, or Jim", ["Chuck","Bomb","Red"], "There are three blue birds — they split apart when you tap."],
+  ["In Among Us, what are the red characters often called?", "Impostors (sus)", ["Crewmates","Aliens","Zombies"], "The game made 'sus' (suspicious) a mainstream word."],
+  ["What's the currency used in Minecraft trading?", "Emeralds", ["Gold","Diamonds","Coins"], "Villagers trade using emeralds."],
+  ["What color is Kirby?", "Pink", ["Yellow","Red","Blue"], "He can inhale enemies to copy their powers."],
+  ["What's a 'boss' in a video game?", "A tough enemy at the end of a level", ["A trophy","A character you play","A cheat code"], "You usually need your best gear and skills to beat one."],
+  ["What game started with 'It's-a me, Mario!'?", "Super Mario 64", ["Mario Kart 64","Mario Party","Paper Mario"], "Released in 1996 on the Nintendo 64."],
+  ["Which game features gliders, pickaxes, and storms called 'the storm'?", "Fortnite", ["PUBG","Apex Legends","Valorant"], "Fortnite's Battle Royale mode launched in 2017."],
+  ["What's the best-selling home console of all time?", "PlayStation 2", ["Nintendo Switch","Xbox 360","PlayStation 4"], "Over 155 million units sold."],
+
+  // MORE POP CULTURE
+  ["Who played the first Spider-Man in the 2002 movie?", "Tobey Maguire", ["Andrew Garfield","Tom Holland","Jake Gyllenhaal"], "He played the role in 3 Raimi films."],
+  ["What school does Harry Potter attend?", "Hogwarts", ["Beauxbatons","Durmstrang","Ilvermorny"], "The full name: Hogwarts School of Witchcraft and Wizardry."],
+  ["What's the name of the evil overlord in The Lord of the Rings?", "Sauron", ["Saruman","Gollum","Smaug"], "He made the One Ring to rule them all."],
+  ["What movie features the song 'Let It Go'?", "Frozen", ["Moana","Tangled","Encanto"], "Sung by Idina Menzel as Elsa."],
+  ["Who is Mickey Mouse's dog?", "Pluto", ["Goofy","Max","Rex"], "Pluto first appeared in 1930."],
+  ["Which Marvel hero has a magic hammer called Mjölnir?", "Thor", ["Iron Man","Hulk","Captain America"], "Only the worthy can lift it."],
+  ["Which animated franchise features 'Po', a kung fu panda?", "Kung Fu Panda", ["Shrek","Madagascar","How to Train Your Dragon"], "Po is the Dragon Warrior."],
+  ["What is Doraemon?", "A robot cat from the future", ["A dragon","A ninja","A samurai"], "One of the most popular anime characters ever."],
+  ["What animated show features a character named SpongeBob?", "SpongeBob SquarePants", ["Phineas and Ferb","Adventure Time","Regular Show"], "He lives in a pineapple under the sea."],
+  ["Who is Anna's sister in Frozen?", "Elsa", ["Moana","Rapunzel","Ariel"], "Elsa has ice powers."],
+  ["What's the name of the toy cowboy in Toy Story?", "Woody", ["Buzz","Jessie","Slinky"], "Andy's favorite toy at the start of the story."],
+  ["What family stars in The Incredibles?", "The Parr family", ["The Smiths","The Jones","The Incredibles family"], "Dad has super strength, Mom stretches, kids have speed and force fields."],
+  ["What is Stranger Things mostly set in?", "Hawkins, Indiana (1980s)", ["Brooklyn (2020s)","Gotham City","Toronto"], "The show is famous for its 80s vibe."],
+  ["Who is the villain in Star Wars Episode IV?", "Darth Vader", ["Emperor Palpatine","Kylo Ren","Boba Fett"], "He's Luke's father — spoiler from 1980."],
+  ["Who voices Woody in Toy Story?", "Tom Hanks", ["Tim Allen","Will Smith","John Goodman"], "Tim Allen voices Buzz."],
+
+  // FOOD
+  ["What vegetable is a pickle made from?", "Cucumber", ["Zucchini","Celery","Onion"], "Cucumbers soaked in vinegar and spices become pickles."],
+  ["What country is curry associated with most?", "India", ["Thailand","Japan","China"], "Though many Asian countries have their own curry styles."],
+  ["What is the main ingredient in bread?", "Flour", ["Sugar","Eggs","Milk"], "Plus water, salt, and yeast."],
+  ["What's the most popular ice cream flavor in the world?", "Vanilla", ["Chocolate","Strawberry","Mint"], "Vanilla is the base for most other flavors too."],
+  ["Where does coffee come from (originally)?", "Ethiopia", ["Brazil","Colombia","Italy"], "Legend says a goat herder noticed his goats got hyper after eating coffee berries."],
+  ["What is the national dish of Japan?", "Sushi", ["Ramen","Tempura","Curry"], "Though Japan has no 'official' national dish, sushi is the most iconic."],
+  ["What's the main ingredient in hummus?", "Chickpeas", ["Beans","Lentils","Peas"], "Blended with tahini, lemon, and garlic."],
+  ["What's a taco usually wrapped in?", "Tortilla", ["Pita","Wrap","Bun"], "Corn or flour tortillas."],
+  ["What fruit do raisins come from?", "Grapes", ["Plums","Apples","Berries"], "Dried grapes = raisins."],
+  ["Which country invented hamburgers?", "Germany (original)", ["USA","France","UK"], "Named after Hamburg, Germany. The modern version took off in the USA."],
+
+  // MUSIC
+  ["How many strings does a violin have?", "4", ["5","6","3"], "Tuned G, D, A, E — lowest to highest."],
+  ["What instrument is Yo-Yo Ma famous for?", "Cello", ["Piano","Violin","Drums"], "He's one of the greatest cellists of all time."],
+  ["What country is the band BTS from?", "South Korea", ["Japan","China","USA"], "They're one of the biggest pop groups ever."],
+  ["Who was the 'King of Pop'?", "Michael Jackson", ["Elvis","Prince","Stevie Wonder"], "Elvis was the 'King of Rock and Roll'."],
+  ["How many keys does a standard violin have?", "0", ["4","12","24"], "Violins don't have keys — they have 4 strings. Trick question!"],
+  ["Which instrument family does the trumpet belong to?", "Brass", ["Woodwind","Percussion","String"], "Brass also includes trombone, French horn, and tuba."],
+  ["Who sang 'Bad Guy' in 2019?", "Billie Eilish", ["Ariana Grande","Dua Lipa","Olivia Rodrigo"], "It was her first #1 song."],
+  ["What's a capella music?", "Singing without instruments", ["Opera","Loud singing","Rap music"], "Just voices — no backing track."],
+  ["How many lines are on a music staff?", "5", ["4","6","7"], "Notes sit on the lines or in the spaces between them."],
+  ["What does 'forte' mean in music?", "Loud", ["Soft","Fast","Slow"], "Piano (p) means soft, forte (f) means loud."],
+
+  // TECH / INTERNET
+  ["What does 'WWW' stand for?", "World Wide Web", ["World Web Wide","Wide World Web","Worldwide Web"], "Invented by Tim Berners-Lee in 1989."],
+  ["What does 'AI' stand for?", "Artificial Intelligence", ["Automated Internet","Active Information","Algorithm Input"], "AI is everywhere now — from search to games."],
+  ["Who founded Apple?", "Steve Jobs & Steve Wozniak", ["Bill Gates","Elon Musk","Jeff Bezos"], "They started Apple in a garage in 1976."],
+  ["What company makes the iPhone?", "Apple", ["Samsung","Google","Microsoft"], "The first iPhone launched in 2007."],
+  ["What does 'Wi-Fi' actually stand for?", "Nothing — it's just a catchy name", ["Wireless Fidelity","Wireless Internet","Wide Filter"], "Wi-Fi was invented as a brand name. It doesn't really stand for anything."],
+  ["Which company owns YouTube?", "Google", ["Meta","Microsoft","Netflix"], "Google bought YouTube in 2006 for $1.65 billion."],
+  ["What does 'USB' stand for?", "Universal Serial Bus", ["Universal System Base","Unified Signal Bridge","User Storage Box"], "It's been the standard plug for computers since 1996."],
+  ["What year did the first iPhone come out?", "2007", ["2003","2005","2010"], "Steve Jobs announced it in January 2007."],
+  ["What is Python?", "A programming language", ["An operating system","A video game","A web browser"], "Named after Monty Python, not the snake. It's super popular for AI."],
+  ["Who founded Microsoft?", "Bill Gates & Paul Allen", ["Steve Jobs","Mark Zuckerberg","Larry Page"], "They founded it in 1975."],
+  ["What does 'HTML' stand for?", "HyperText Markup Language", ["High Tech Machine Language","Hyper Terminal Mode List","Home Tool Main Link"], "It's the language that builds every web page."],
+
+  // BODY / HEALTH
+  ["How many muscles does it take to smile?", "About 17", ["2","10","43"], "Frowning takes more — about 43 muscles."],
+  ["How much of the human body is water?", "About 60%", ["25%","90%","40%"], "Babies are about 78% water."],
+  ["What's the only muscle that never gets tired?", "Heart", ["Tongue","Diaphragm","Eye"], "It beats around 100,000 times a day — every day of your life."],
+  ["How many taste buds does an adult have?", "About 10,000", ["1,000","100,000","100"], "You lose some as you age."],
+  ["How often does your skin completely renew itself?", "About every 27 days", ["Every year","Every 10 days","Never"], "Your old skin cells fall off all the time."],
+  ["Which organ filters your blood?", "Kidneys", ["Liver","Spleen","Heart"], "Your 2 kidneys filter 180 liters of blood a day."],
+  ["How many bones is a baby born with?", "About 270", ["206","300","150"], "Some fuse together as you grow — adults have 206."],
+  ["What's the longest nerve in the human body?", "Sciatic nerve", ["Vagus nerve","Optic nerve","Phrenic nerve"], "It runs from your lower back down to your foot."],
+  ["Which finger has its own tendon to wiggle independently?", "Index finger", ["Pinky","Middle","Ring"], "Ring finger is stuck — try pointing at it without your middle moving!"],
+  ["What color is your blood inside your body?", "Red", ["Blue","Clear","Purple"], "Always red. Veins look blue because of the skin, not the blood."],
+  ["How fast can a sneeze travel?", "Up to 100 mph", ["10 mph","50 mph","500 mph"], "Which is why you should cover your mouth!"],
+  ["How many hairs are on the average human head?", "About 100,000", ["10,000","1 million","1,000"], "You lose about 50–100 per day normally."],
+
+  // NATURE / WEATHER
+  ["What do you call a scientist who studies earthquakes?", "Seismologist", ["Geologist","Volcanologist","Meteorologist"], "Seismic waves travel through Earth during quakes."],
+  ["What is the scale for measuring tornadoes?", "Enhanced Fujita (EF) scale", ["Richter scale","Saffir-Simpson","Mohs scale"], "EF0 (weakest) to EF5 (strongest)."],
+  ["What's the only natural disaster that can happen anywhere in the world?", "Earthquake", ["Hurricane","Blizzard","Tornado"], "Earthquakes can happen anywhere with fault lines — everywhere."],
+  ["What type of cloud is tall and flat on top like an anvil?", "Cumulonimbus", ["Stratus","Cirrus","Altocumulus"], "These produce thunderstorms."],
+  ["What's the name of a rotating column of air over land?", "Tornado", ["Hurricane","Cyclone","Typhoon"], "Over water it's called a waterspout."],
+  ["Which rainforest is the biggest in the world?", "Amazon", ["Congo","Southeast Asian","Costa Rican"], "The Amazon covers 9 countries."],
+  ["What's the largest coral reef system on Earth?", "Great Barrier Reef", ["Mesoamerican Reef","Red Sea Reef","Coral Triangle"], "It's off the coast of Australia — visible from space."],
+  ["How many seasons are there in most of the world?", "4", ["2","3","6"], "Tropical regions sometimes only have wet and dry seasons."],
+  ["Which is the smallest planet in our solar system?", "Mercury", ["Mars","Pluto","Venus"], "Pluto used to count, but was demoted."],
+  ["What causes ocean waves?", "Wind", ["The Moon","Fish","Earth's rotation"], "Wind pushes water. Tides are different — those are caused by the Moon."],
+  ["What do trees release that we breathe?", "Oxygen", ["Carbon dioxide","Nitrogen","Hydrogen"], "One big tree can produce enough oxygen for 2 people for a year."],
+  ["What's a natural event that shakes the ground?", "Earthquake", ["Avalanche","Landslide","Flood"], "Caused by tectonic plates shifting."],
+
+  // MORE WORLD RECORDS / MISC
+  ["What's the oldest living tree species?", "Bristlecone pine", ["Oak","Redwood","Baobab"], "Some are over 4,800 years old."],
+  ["What's the tallest building in the world (as of 2024)?", "Burj Khalifa", ["Shanghai Tower","Empire State","Eiffel Tower"], "828 m tall, in Dubai."],
+  ["What's the largest living structure?", "Great Barrier Reef", ["Amazon Rainforest","Great Wall","Pando (a forest)"], "Technically Pando, an aspen colony, is also a contender as one organism."],
+  ["What language has the most letters?", "Khmer (74 letters)", ["English","Russian","Mandarin"], "Khmer is the language of Cambodia."],
+  ["Which country has the shortest anthem?", "Uganda", ["Japan","Monaco","UK"], "Uganda's is only 8 bars of music."],
+  ["How many colors can a human eye see?", "About 10 million", ["1,000","1 billion","100"], "Give or take — we have only 3 color receptors."],
+  ["What's the most visited website in the world?", "Google", ["YouTube","Facebook","TikTok"], "With YouTube (also Google) a close second."],
+  ["What's the largest flower in the world?", "Rafflesia", ["Sunflower","Corpse flower","Rose"], "It can grow over 1 m across — and smells like rotting meat."],
+  ["Which animal has the longest lifespan?", "Greenland shark", ["Tortoise","Jellyfish","Clam"], "They can live over 400 years. Though some jellyfish may be 'immortal'."],
+  ["What is the loudest sound ever recorded on Earth?", "Krakatoa volcanic eruption (1883)", ["Atomic bomb","Meteor impact","Tunguska event"], "It was heard 5,000 km away."],
+  ["Which number is considered unlucky in many Asian cultures?", "4", ["7","13","9"], "Because '4' sounds like 'death' in Mandarin and Cantonese."],
+  ["Which number is considered unlucky in Western cultures?", "13", ["4","17","21"], "Many hotels skip the 13th floor."],
+  ["How long does it take for the Moon to orbit Earth?", "About 27 days", ["1 day","365 days","7 days"], "Which is why we see the same face of the Moon always — it's tidally locked."]
 ];
 
 function buildTrivia() {
@@ -1574,7 +1819,122 @@ const QUOTES = [
   ["Every champion was once a contender that refused to give up.", "Rocky Balboa"],
   ["Don't count the days, make the days count.", "Muhammad Ali"],
   ["Float like a butterfly, sting like a bee.", "Muhammad Ali"],
-  ["Impossible is just a big word thrown around by small men.", "Muhammad Ali"]
+  ["Impossible is just a big word thrown around by small men.", "Muhammad Ali"],
+
+  // MORE ATHLETES
+  ["I can accept failure, everyone fails at something. But I can't accept not trying.", "Michael Jordan"],
+  ["You can't put a limit on anything.", "Michael Phelps"],
+  ["Don't be afraid of failure. This is the way to succeed.", "LeBron James"],
+  ["Success is no accident. It is hard work, perseverance, learning, and most of all, love of what you are doing.", "Pelé"],
+  ["Talent wins games, but teamwork and intelligence win championships.", "Michael Jordan"],
+  ["If you're going through hell, keep going.", "Winston Churchill"],
+  ["Do what is right, not what is easy.", "Roy T. Bennett"],
+  ["The harder the battle, the sweeter the victory.", "Les Brown"],
+  ["I was told I couldn't, so I did.", "Anonymous"],
+  ["Push yourself, because no one else is going to do it for you.", "Anonymous"],
+  ["Wake up with determination. Go to bed with satisfaction.", "George Lorimer"],
+  ["Today I will do what others won't, so tomorrow I can do what others can't.", "Jerry Rice"],
+  ["A winner is a dreamer who never gives up.", "Nelson Mandela"],
+  ["You are braver than you believe, stronger than you seem, and smarter than you think.", "Christopher Robin (Winnie the Pooh)"],
+  ["Keep your face to the sunshine and you cannot see a shadow.", "Helen Keller"],
+
+  // MORE FUNNY
+  ["I can resist everything except temptation.", "Oscar Wilde"],
+  ["The early bird might get the worm, but the second mouse gets the cheese.", "Anonymous"],
+  ["I intend to live forever. So far, so good.", "Steven Wright"],
+  ["My therapist says I have a preoccupation with vengeance. We'll see about that.", "Stewart Francis"],
+  ["If at first you don't succeed, then skydiving definitely isn't for you.", "Steven Wright"],
+  ["The trouble with having an open mind is that people keep coming along and sticking things into it.", "Terry Pratchett"],
+  ["Do not take life too seriously. You will never get out of it alive.", "Elbert Hubbard"],
+  ["I'd like to help you out. Which way did you come in?", "Anonymous"],
+  ["Always borrow money from a pessimist. He won't expect it back.", "Oscar Wilde"],
+  ["I used to think I was indecisive. Now I'm not so sure.", "Anonymous"],
+  ["If you think you are too small to make a difference, try sleeping with a mosquito.", "Dalai Lama"],
+  ["Behind every great man is a woman rolling her eyes.", "Jim Carrey"],
+  ["I can't believe I forgot to go to the gym yesterday. That's 7 years in a row now.", "Anonymous"],
+  ["Insanity: doing the same thing over and over and expecting different results.", "Albert Einstein"],
+  ["Humor is the sunshine of the mind.", "Edward Bulwer-Lytton"],
+  ["A pessimist sees the difficulty in every opportunity; an optimist sees the opportunity in every difficulty.", "Winston Churchill"],
+
+  // MORE CHARACTERS (MOVIES, TV, GAMES)
+  ["I'll be back.", "The Terminator"],
+  ["May the Force be with you.", "Obi-Wan Kenobi (Star Wars)"],
+  ["I am inevitable.", "Thanos (Avengers)"],
+  ["I am Iron Man.", "Tony Stark"],
+  ["With great power there must also come great responsibility.", "Stan Lee (Spider-Man)"],
+  ["There's no place like home.", "Dorothy (The Wizard of Oz)"],
+  ["Why so serious?", "The Joker"],
+  ["I'm the king of the world!", "Jack (Titanic)"],
+  ["Keep swimming, keep swimming, keep swimming.", "Dory (Finding Nemo)"],
+  ["Life is a journey, not a destination.", "Ralph Waldo Emerson"],
+  ["Happiness is a choice.", "Anonymous"],
+  ["Be the change that you wish to see in the world.", "Mahatma Gandhi"],
+  ["The only thing we have to fear is fear itself.", "Franklin D. Roosevelt"],
+  ["Knowledge is power.", "Sir Francis Bacon"],
+  ["I can do this all day.", "Captain America"],
+  ["Wakanda forever.", "Black Panther"],
+  ["Avengers, assemble!", "Captain America"],
+  ["Great things take time.", "Anonymous"],
+  ["Don't let them tell you what you can't do.", "Anonymous"],
+  ["The world breaks everyone, and afterward, many are strong at the broken places.", "Ernest Hemingway"],
+
+  // MORE SCIENTISTS & THINKERS
+  ["The only true wisdom is in knowing you know nothing.", "Socrates"],
+  ["It is during our darkest moments that we must focus to see the light.", "Aristotle"],
+  ["Turn your wounds into wisdom.", "Oprah Winfrey"],
+  ["Be curious. Read widely. Try new things.", "Aaron Swartz"],
+  ["The greatest enemy of knowledge is not ignorance, it is the illusion of knowledge.", "Stephen Hawking"],
+  ["Life is and will ever remain an equation incapable of solution, but it contains certain known factors.", "Nikola Tesla"],
+  ["Curiosity is, in great and generous minds, the first passion and the last.", "Samuel Johnson"],
+  ["Science is the key to our future.", "Bill Nye"],
+  ["Everyone you will ever meet knows something you don't.", "Bill Nye"],
+  ["It's only after we've lost everything that we're free to do anything.", "Chuck Palahniuk"],
+  ["The mind is not a vessel to be filled, but a fire to be kindled.", "Plutarch"],
+  ["An investment in knowledge pays the best interest.", "Benjamin Franklin"],
+  ["Don't be afraid to fail. Be afraid not to try.", "Michael Jordan"],
+
+  // YOUTUBERS / CREATORS / GAMERS
+  ["It's not about what you can't do, it's about what you can.", "Markiplier"],
+  ["Keep going, keep grinding.", "MrBeast"],
+  ["Make your dreams so big that people laugh, then make it happen.", "Anonymous"],
+  ["Success is not in what you have, but who you are.", "Bo Bennett"],
+  ["If you can't stop thinking about it, don't stop working for it.", "Anonymous"],
+  ["Every master was once a disaster.", "T. Harv Eker"],
+
+  // MORE DR. SEUSS & KID CLASSICS
+  ["You have brains in your head. You have feet in your shoes. You can steer yourself any direction you choose.", "Dr. Seuss"],
+  ["Unless someone like you cares a whole awful lot, nothing is going to get better. It's not.", "Dr. Seuss (The Lorax)"],
+  ["Think left and think right and think low and think high. Oh, the thinks you can think up if only you try!", "Dr. Seuss"],
+  ["Sometimes the questions are complicated and the answers are simple.", "Dr. Seuss"],
+  ["A person's a person, no matter how small.", "Horton (Dr. Seuss)"],
+  ["The more you read, the more things you will know. The more that you learn, the more places you'll go.", "Dr. Seuss"],
+
+  // MORE MOVIES / SHOWS
+  ["You're braver than you believe.", "A.A. Milne (Winnie the Pooh)"],
+  ["Any dream will do.", "Joseph (Joseph and the Amazing Technicolor Dreamcoat)"],
+  ["Friends are the family we choose.", "Edna Buchanan"],
+  ["Every strike brings me closer to the next home run.", "Babe Ruth"],
+  ["Only I can change my life. No one can do it for me.", "Carol Burnett"],
+  ["Make it count.", "Jack (Titanic)"],
+  ["Don't give up, don't ever give up.", "Jim Valvano"],
+  ["Believe in yourself and all that you are.", "Christian D. Larson"],
+  ["Work hard, stay humble.", "Anonymous"],
+  ["Winners never quit, and quitters never win.", "Vince Lombardi"],
+
+  // MORE WISDOM
+  ["Fall seven times and stand up eight.", "Japanese proverb"],
+  ["The journey of a thousand miles begins with a single step.", "Lao Tzu"],
+  ["The best revenge is massive success.", "Frank Sinatra"],
+  ["Life is either a daring adventure or nothing at all.", "Helen Keller"],
+  ["Real courage is doing the right thing when nobody's looking.", "Anonymous"],
+  ["Goals are dreams with deadlines.", "Diana Scharf"],
+  ["Don't wait for opportunity. Create it.", "Anonymous"],
+  ["A river cuts through a rock not because of its power, but its persistence.", "Jim Watkins"],
+  ["Small steps every day.", "Anonymous"],
+  ["Kindness is a language that the deaf can hear and the blind can see.", "Mark Twain"],
+  ["If you can't fly, then run. If you can't run, then walk. If you can't walk, then crawl.", "Martin Luther King Jr."],
+  ["Do small things with great love.", "Mother Teresa"],
+  ["Don't watch the clock; do what it does.", "Sam Levenson"]
 ];
 
 function buildQuote() {
@@ -1629,6 +1989,48 @@ function saveFavs(set) {
 }
 let favs = loadFavs();
 
+/* Seen-history per category (persisted, sliding window).
+   Each bucket holds the last N unique IDs Daniel saw. Picker re-rolls
+   until it finds one NOT in the bucket (with a safety cap). */
+const SEEN_CAPS = { ai: 200, math: 200, trivia: 110, quote: 130 };
+function loadSeen(k) {
+  try { return JSON.parse(localStorage.getItem("ddm_seen_" + k) || "[]"); }
+  catch (e) { return []; }
+}
+function saveSeen(k, arr) {
+  try { localStorage.setItem("ddm_seen_" + k, JSON.stringify(arr)); } catch (e) {}
+}
+const SEEN = {
+  ai: loadSeen("ai"),
+  math: loadSeen("math"),
+  trivia: loadSeen("trivia"),
+  quote: loadSeen("quote")
+};
+function markSeen(kind, id) {
+  const arr = SEEN[kind];
+  // remove if already present (move to end)
+  const idx = arr.indexOf(id);
+  if (idx !== -1) arr.splice(idx, 1);
+  arr.push(id);
+  // trim from the front
+  const cap = SEEN_CAPS[kind];
+  while (arr.length > cap) arr.shift();
+  saveSeen(kind, arr);
+}
+function isSeen(kind, id) {
+  return SEEN[kind].indexOf(id) !== -1;
+}
+function pickUnseen(kind, builder, idOf, maxTries) {
+  let best = null;
+  for (let i = 0; i < (maxTries || 40); i++) {
+    const candidate = builder();
+    const id = idOf(candidate);
+    if (!isSeen(kind, id)) return candidate;
+    if (!best) best = candidate; // fallback if every try is seen
+  }
+  return best;
+}
+
 function setDate() {
   const d = new Date();
   const opts = { weekday: "long", month: "long", day: "numeric" };
@@ -1636,14 +2038,15 @@ function setDate() {
 }
 
 function refresh() {
-  let ai, math, trivia, quote, tries = 0;
-  do { ai = buildAITask(); tries++; } while (ai.task === state.lastAI && tries < 5);
-  tries = 0;
-  do { math = buildMathTask(); tries++; } while (math.task === state.lastMath && tries < 5);
-  tries = 0;
-  do { trivia = buildTrivia(); tries++; } while (trivia.q === state.lastTrivia && tries < 5);
-  tries = 0;
-  do { quote = buildQuote(); tries++; } while (quote.text === state.lastQuote && tries < 5);
+  const ai = pickUnseen("ai", buildAITask, t => t.task);
+  const math = pickUnseen("math", buildMathTask, t => t.task);
+  const trivia = pickUnseen("trivia", buildTrivia, t => t.q);
+  const quote = pickUnseen("quote", buildQuote, q => q.text + "|" + q.author);
+
+  markSeen("ai", ai.task);
+  markSeen("math", math.task);
+  markSeen("trivia", trivia.q);
+  markSeen("quote", quote.text + "|" + quote.author);
 
   state.lastAI = ai.task; state.lastMath = math.task;
   state.lastTrivia = trivia.q; state.lastQuote = quote.text;

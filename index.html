@@ -4974,8 +4974,11 @@ els.newMissions.addEventListener("click", () => {
 /* ============= BOSS BATTLE ============= */
 function findBossById(id) { return BOSSES.find(b => b.id === id); }
 function pickNextBossId(completedList) {
-  // Avoid the most-recent 5 done; cycle through the remaining.
-  const recent = (completedList || []).slice(-5);
+  const completed = completedList || [];
+  // Fresh install (no boss ever defeated) → pin the first one as Paper Airplane Engineer.
+  if (completed.length === 0) return "paper-airplane";
+  // Otherwise, avoid the most-recent 5 done and pick at random from the rest.
+  const recent = completed.slice(-5);
   const fresh  = BOSSES.filter(b => !recent.includes(b.id));
   const pool   = fresh.length ? fresh : BOSSES;
   return pool[Math.floor(Math.random() * pool.length)].id;

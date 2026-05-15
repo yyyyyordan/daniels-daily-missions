@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#5b47e0" />
+<meta name="theme-color" content="#06060d" media="(prefers-color-scheme: dark)" />
+<meta name="theme-color" content="#f6f2e9" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#f6f2e9" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -13,546 +15,690 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
 <title>Daniel's Daily Missions</title>
+<script>
+  // Set data-theme synchronously BEFORE styles apply (no FOUC).
+  (function () {
+    try {
+      var stored = localStorage.getItem("ddm-theme");
+      var sysDark = matchMedia("(prefers-color-scheme: dark)").matches;
+      var theme = (stored === "light" || stored === "dark") ? stored : (sysDark ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (e) {
+      document.documentElement.setAttribute("data-theme", "light");
+    }
+  })();
+</script>
 <style>
-  :root {
-    --bg1: #6b5bff;
-    --bg2: #9f6bff;
-    --bg3: #ff7ac6;
-    --card: #ffffff;
-    --ink: #1a1440;
-    --ink-soft: #4a4270;
-    --accent: #5b47e0;
-    --accent-2: #ff5fa2;
-    --mint: #2fd8a8;
-    --sun: #ffc857;
-    --chip: #f1efff;
-    --chip-ink: #4b3fb3;
-    --shadow: 0 10px 30px rgba(30, 20, 80, 0.18);
-  }
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body { margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
-    color: var(--ink);
-    min-height: 100vh;
-    background:
-      radial-gradient(1200px 800px at 10% -10%, #8a7bff 0%, transparent 60%),
-      radial-gradient(900px 700px at 110% 10%, #ff7ac6 0%, transparent 55%),
-      linear-gradient(160deg, #5b47e0 0%, #8655e8 60%, #ff6fb3 100%);
-    background-attachment: fixed;
-    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-  }
-  .wrap {
-    max-width: 620px;
-    margin: 0 auto;
-    padding: 22px 18px 40px;
-  }
-  header {
-    text-align: center;
-    color: #fff;
-    padding: 10px 6px 22px;
-  }
-  .badge {
-    display: inline-block;
-    background: rgba(255,255,255,0.18);
-    backdrop-filter: blur(10px);
-    padding: 6px 12px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.3px;
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-  h1 {
-    margin: 2px 0 6px;
-    font-size: 30px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-  }
-  .sub {
-    margin: 0;
-    opacity: 0.92;
-    font-size: 15px;
-  }
-  .date {
-    margin-top: 6px;
-    font-size: 12px;
-    opacity: 0.8;
-  }
-  .card {
-    background: var(--card);
-    border-radius: 22px;
-    padding: 20px 20px 18px;
-    margin-bottom: 16px;
-    box-shadow: var(--shadow);
-    position: relative;
-    overflow: hidden;
-    animation: pop 0.35s ease-out both;
-  }
-  .card::before {
-    content: "";
-    position: absolute;
-    inset: 0 0 auto 0;
-    height: 6px;
-  }
-  .card.ai::before { background: linear-gradient(90deg, #5b47e0, #9f6bff); }
-  .card.math::before { background: linear-gradient(90deg, #2fd8a8, #ffc857); }
-  .card.trivia::before { background: linear-gradient(90deg, #ff8a3d, #ff5fa2); }
-  .card.quote::before { background: linear-gradient(90deg, #ffc857, #ff7ac6); }
-  .row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
-  }
-  .tag {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    padding: 5px 9px;
-    border-radius: 999px;
-    background: var(--chip);
-    color: var(--chip-ink);
-  }
-  .tag.math { background: #e5fbf3; color: #158a63; }
-  .tag.trivia { background: #fff0e4; color: #b3431a; }
-  .tag.quote { background: #fff7e0; color: #8a5a00; }
-  .icon {
-    width: 36px; height: 36px;
-    border-radius: 12px;
-    display: grid; place-items: center;
-    font-size: 20px;
-    flex: 0 0 auto;
-  }
-  .icon.ai { background: linear-gradient(135deg, #ece8ff, #f6e8ff); }
-  .icon.math { background: linear-gradient(135deg, #e2fbf0, #fff3d6); }
-  .icon.trivia { background: linear-gradient(135deg, #ffe4cc, #ffd4e4); }
-  .icon.quote { background: linear-gradient(135deg, #fff3d0, #ffdceb); }
-  .task {
-    font-size: 19px;
-    line-height: 1.35;
-    font-weight: 700;
-    color: var(--ink);
-    margin: 4px 0 14px;
-  }
-  .hint {
-    background: #f7f5ff;
-    border-left: 4px solid var(--accent);
-    border-radius: 10px;
-    padding: 10px 12px;
-    font-size: 14px;
-    color: var(--ink-soft);
-    line-height: 1.45;
-  }
-  .card.math .hint {
-    background: #f2fbf7;
-    border-left-color: var(--mint);
-  }
-  .hint b { color: var(--ink); }
-  .actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 14px;
-  }
-  button {
-    font-family: inherit;
-    font-weight: 700;
-    border: 0;
-    cursor: pointer;
-    transition: transform 0.08s ease, box-shadow 0.2s ease, background 0.2s ease;
-  }
-  button:active { transform: scale(0.97); }
-  .btn-primary {
-    flex: 1;
-    background: linear-gradient(135deg, #ffd369, #ff7ac6);
-    color: #1a1440;
-    font-size: 17px;
-    padding: 15px 18px;
-    border-radius: 16px;
-    box-shadow: 0 8px 20px rgba(255, 100, 170, 0.35);
-  }
-  .btn-ghost {
-    background: rgba(255,255,255,0.9);
-    color: var(--accent);
-    font-size: 14px;
-    padding: 10px 14px;
-    border-radius: 12px;
-  }
-  .answer-row {
-    display: flex;
-    gap: 8px;
-    margin: 0 0 10px;
-  }
-  .answer-input {
-    flex: 1;
-    font-family: inherit;
-    font-size: 17px;
-    font-weight: 600;
-    color: var(--ink);
-    padding: 12px 14px;
-    border-radius: 12px;
-    border: 2px solid #e3dffc;
-    background: #fbfaff;
-    outline: none;
-    min-width: 0;
-    transition: border-color 0.15s, background 0.15s;
-  }
-  .answer-input:focus { border-color: var(--mint); background: #fff; }
-  .answer-input.ok { border-color: #2fd8a8; background: #eafbf4; }
-  .answer-input.no { border-color: #ff7a9a; background: #fff1f5; }
-  .check-btn {
-    background: linear-gradient(135deg, #2fd8a8, #26b893);
-    color: #fff;
-    font-size: 15px;
-    padding: 0 18px;
-    border-radius: 12px;
-    box-shadow: 0 6px 14px rgba(47, 216, 168, 0.35);
-  }
-  .feedback {
-    min-height: 20px;
-    margin: 0 0 10px;
-    font-size: 14px;
-    font-weight: 700;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-  }
-  .feedback.show { opacity: 1; }
-  .feedback.ok { color: #158a63; }
-  .feedback.no { color: #c23866; }
-  .feedback .reveal-link {
-    display: inline-block;
-    margin-left: 6px;
-    color: var(--accent);
-    font-weight: 600;
-    text-decoration: underline;
-    cursor: pointer;
-  }
-  .done-row {
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
-  }
-  .mark {
-    flex: 1;
-    background: #f3f1ff;
-    color: var(--accent);
-    padding: 10px;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 700;
-    border: 2px solid transparent;
-  }
-  .card.math .mark { background: #effaf4; color: #158a63; }
-  .card.trivia .mark { background: #ffeede; color: #b3431a; }
-  .mark.is-done {
-    background: linear-gradient(135deg, #5b47e0, #9f6bff);
-    color: #fff;
-    border-color: transparent;
-  }
-  .card.math .mark.is-done {
-    background: linear-gradient(135deg, #2fd8a8, #26b893);
-    color: #fff;
-  }
-  .card.trivia .mark.is-done {
-    background: linear-gradient(135deg, #ff8a3d, #ff5fa2);
-    color: #fff;
-  }
-  .options {
-    display: grid;
-    gap: 8px;
-    margin-bottom: 10px;
-  }
-  .opt {
-    text-align: left;
-    background: #fff5ec;
-    color: var(--ink);
-    font-size: 16px;
-    font-weight: 600;
-    padding: 12px 14px;
-    border-radius: 12px;
-    border: 2px solid transparent;
-    width: 100%;
-    line-height: 1.3;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .opt .letter {
-    display: inline-grid;
-    place-items: center;
-    width: 26px; height: 26px;
-    border-radius: 8px;
-    background: #ffdebf;
-    color: #b3431a;
-    font-size: 13px;
-    font-weight: 800;
-    flex: 0 0 auto;
-  }
-  .opt:hover { background: #ffe9d6; }
-  .opt.locked { pointer-events: none; }
-  .opt.correct {
-    background: #e3fbef; border-color: #2fd8a8; color: #158a63;
-  }
-  .opt.correct .letter { background: #2fd8a8; color: #fff; }
-  .opt.wrong {
-    background: #ffe4eb; border-color: #ff7a9a; color: #c23866;
-  }
-  .opt.wrong .letter { background: #ff7a9a; color: #fff; }
-  .funfact {
-    background: #fff5ec;
-    border-left: 4px solid #ff8a3d;
-    border-radius: 10px;
-    padding: 10px 12px;
-    font-size: 14px;
-    color: var(--ink-soft);
-    line-height: 1.45;
-    margin-bottom: 0;
-    display: none;
-  }
-  .funfact.show { display: block; }
-  .funfact b { color: var(--ink); }
+/* =============================================================
+   DANIEL'S DAILY MISSIONS — ARCADE GLOW
+   Single-file, vanilla CSS. System fonts only. iOS Safari + PWA.
+   ============================================================= */
 
-  /* Quote card */
-  .card.quote { padding-bottom: 16px; }
-  .quote-text {
-    font-size: 19px;
-    line-height: 1.4;
-    font-weight: 600;
-    color: var(--ink);
-    margin: 6px 0 10px;
-    font-style: italic;
-  }
-  .quote-text::before { content: "“"; color: var(--accent-2); font-size: 28px; margin-right: 2px; vertical-align: -4px; }
-  .quote-text::after { content: "”"; color: var(--accent-2); font-size: 28px; margin-left: 2px; vertical-align: -4px; }
-  .quote-author {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--ink-soft);
-    margin-bottom: 10px;
-  }
-  .quote-author::before { content: "— "; }
-  .fav-btn {
-    background: #fff7e0;
-    color: #b37700;
-    font-size: 14px;
-    padding: 8px 14px;
-    border-radius: 10px;
-    border: 2px solid transparent;
-  }
-  .fav-btn.is-fav {
-    background: linear-gradient(135deg, #ff5fa2, #ff8a3d);
-    color: #fff;
-  }
-  .celebrate {
-    text-align: center;
-    color: #fff;
-    font-weight: 700;
-    font-size: 16px;
-    margin: 8px 0 18px;
-    min-height: 22px;
-    opacity: 0;
-    transition: opacity 0.25s ease;
-  }
-  .celebrate.show { opacity: 1; }
-  footer {
-    text-align: center;
-    color: rgba(255,255,255,0.8);
-    font-size: 12px;
-    margin-top: 18px;
-  }
-  @keyframes pop {
-    from { opacity: 0; transform: translateY(8px) scale(0.98); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-  }
-  @media (min-width: 720px) {
-    .wrap { padding-top: 40px; }
-    h1 { font-size: 34px; }
-  }
+/* 01 · TOKENS */
+:root {
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Menlo", "Cascadia Mono", Consolas, monospace;
 
-  /* Theme toggle button */
-  .wrap { position: relative; }
-  .theme-toggle {
-    position: absolute;
-    top: 18px;
-    right: 18px;
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.2);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    color: #fff;
-    font-size: 20px;
-    border: 0;
-    cursor: pointer;
-    z-index: 10;
-    display: grid;
-    place-items: center;
-    line-height: 1;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  }
-  .theme-toggle:active { transform: scale(0.92); }
+  --bg:        #f6f2e9;
+  --bg-grad-a: #ffffff;
+  --bg-grad-b: #ece5d4;
+  --ink:       #0c0d18;
+  --ink-2:     rgba(12,13,24,0.65);
+  --ink-3:     rgba(12,13,24,0.42);
+  --rule:      rgba(12,13,24,0.08);
 
-  /* =========================  DARK MODE  ========================= */
-  [data-theme="dark"] {
-    --card: #1d1940;
-    --ink: #ece8ff;
-    --ink-soft: #aea7d4;
-    --accent: #b3a3ff;
-    --accent-2: #ff85c4;
-    --chip: #2c2658;
-    --chip-ink: #c8bcff;
-    --shadow: 0 14px 36px rgba(0, 0, 0, 0.5);
-  }
-  [data-theme="dark"] body {
-    background:
-      radial-gradient(1200px 800px at 10% -10%, #3a1f7a 0%, transparent 60%),
-      radial-gradient(900px 700px at 110% 10%, #5a1f6e 0%, transparent 55%),
-      linear-gradient(160deg, #0e0a26 0%, #1e1140 60%, #38113f 100%);
-  }
-  [data-theme="dark"] .tag { background: #2c2658; color: #c8bcff; }
-  [data-theme="dark"] .tag.math   { background: #143b30; color: #6fe4b6; }
-  [data-theme="dark"] .tag.trivia { background: #3d2417; color: #ffb88a; }
-  [data-theme="dark"] .tag.quote  { background: #3d2e10; color: #ffd97a; }
-  [data-theme="dark"] .icon.ai     { background: linear-gradient(135deg, #2a2454, #3a2058); }
-  [data-theme="dark"] .icon.math   { background: linear-gradient(135deg, #143b30, #3d2e10); }
-  [data-theme="dark"] .icon.trivia { background: linear-gradient(135deg, #3d2417, #3a1f2e); }
-  [data-theme="dark"] .icon.quote  { background: linear-gradient(135deg, #3d2e10, #3a1f2e); }
-  [data-theme="dark"] .hint {
-    background: #14112e;
-    color: #aea7d4;
-    border-left-color: #b3a3ff;
-  }
-  [data-theme="dark"] .card.math .hint {
-    background: #102a23;
-    border-left-color: #2fd8a8;
-  }
-  [data-theme="dark"] .mark {
-    background: #2c2658; color: #c8bcff;
-  }
-  [data-theme="dark"] .card.math   .mark { background: #143b30; color: #6fe4b6; }
-  [data-theme="dark"] .card.trivia .mark { background: #3d2417; color: #ffb88a; }
-  [data-theme="dark"] .answer-input {
-    background: #14112e;
-    border-color: #2e2755;
-    color: #ece8ff;
-  }
-  [data-theme="dark"] .answer-input::placeholder { color: #6c6594; }
-  [data-theme="dark"] .answer-input:focus { background: #1c1841; border-color: #2fd8a8; }
-  [data-theme="dark"] .answer-input.ok { background: #102a23; border-color: #2fd8a8; }
-  [data-theme="dark"] .answer-input.no { background: #3a1828; border-color: #ff7a9a; }
-  [data-theme="dark"] .opt {
-    background: #251f4d;
-    color: #ece8ff;
-  }
-  [data-theme="dark"] .opt:hover { background: #2e2759; }
-  [data-theme="dark"] .opt .letter { background: #3d2417; color: #ffb88a; }
-  [data-theme="dark"] .opt.correct {
-    background: #102a23; border-color: #2fd8a8; color: #6fe4b6;
-  }
-  [data-theme="dark"] .opt.correct .letter { background: #2fd8a8; color: #0e0a26; }
-  [data-theme="dark"] .opt.wrong {
-    background: #3a1828; border-color: #ff7a9a; color: #ff9bb5;
-  }
-  [data-theme="dark"] .opt.wrong .letter { background: #ff7a9a; color: #0e0a26; }
-  [data-theme="dark"] .funfact {
-    background: #14112e;
-    color: #aea7d4;
-  }
-  [data-theme="dark"] .fav-btn { background: #3d2e10; color: #ffd97a; }
-  [data-theme="dark"] .feedback.ok { color: #6fe4b6; }
-  [data-theme="dark"] .feedback.no { color: #ff9bb5; }
-  [data-theme="dark"] .feedback .reveal-link { color: #b3a3ff; }
-  [data-theme="dark"] footer { color: rgba(255,255,255,0.65); }
-  [data-theme="dark"] .badge { background: rgba(255,255,255,0.12); }
-  [data-theme="dark"] .btn-ghost { background: rgba(255,255,255,0.9); }
-  [data-theme="dark"] .theme-toggle { background: rgba(255,255,255,0.12); }
+  --card:      #ffffff;
+  --card-sub:  #f7f5ee;
+  --card-shadow:
+    0 1px 0 rgba(12,13,24,0.04),
+    0 18px 40px -22px rgba(15,5,50,0.32);
 
-  /* Smooth transitions when toggling */
-  body, .card, .hint, .opt, .answer-input, .mark, .tag, .funfact, .fav-btn, .theme-toggle {
-    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
-  }
+  --mint:      #1bc99e;
+  --mint-hi:   #38f0c2;
+  --gold:      #ffd24a;
+  --pink:      #e23a8d;
+  --pink-hi:   #ff5fa2;
+  --violet:    #7c5cff;
+  --violet-hi: #a99cff;
+  --orange:    #ff9d3a;
+
+  --on-mint:   #04261d;
+  --on-gold:   #1a1820;
+
+  --stripe-ai:     linear-gradient(90deg, var(--violet-hi) 0%, var(--violet) 100%);
+  --stripe-math:   linear-gradient(90deg, var(--mint-hi) 0%, var(--gold) 100%);
+  --stripe-trivia: linear-gradient(90deg, var(--orange) 0%, var(--pink) 100%);
+  --stripe-quote:  linear-gradient(90deg, var(--gold) 0%, var(--pink-hi) 100%);
+
+  --r-card:  22px;
+  --r-ctrl:  14px;
+  --r-pill:  999px;
+
+  --scanline-light: rgba(0,0,0,0.04);
+  --scanline-dark:  rgba(255,255,255,0.025);
+  --scanline:       var(--scanline-light);
+}
+[data-theme="dark"] {
+  --bg:        #06060d;
+  --bg-grad-a: #1a1b2a;
+  --bg-grad-b: #06060d;
+  --ink:       #f1f1f5;
+  --ink-2:     rgba(241,241,245,0.72);
+  --ink-3:     rgba(241,241,245,0.48);
+  --rule:      rgba(255,255,255,0.06);
+  --card:      #15172a;
+  --card-sub:  #0c0e1d;
+  --card-shadow:
+    0 0 0 1px rgba(255,255,255,0.05),
+    0 24px 50px -22px rgba(0,0,0,0.7);
+  --scanline:  var(--scanline-dark);
+}
+
+/* 02 · PAGE SHELL */
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans);
+  color: var(--ink);
+  background:
+    radial-gradient(120% 60% at 50% -10%, var(--bg-grad-a) 0%, var(--bg) 40%, var(--bg-grad-b) 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: max(env(safe-area-inset-top), 16px) 0 max(env(safe-area-inset-bottom), 16px);
+  position: relative;
+  overflow-x: hidden;
+}
+body::before {
+  content: "";
+  position: fixed; inset: 0;
+  background-image: repeating-linear-gradient(
+    to bottom, transparent 0 3px, var(--scanline) 3px 4px
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+main {
+  position: relative;
+  z-index: 1;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 18px 32px;
+}
+
+.app-header { position: relative; padding: 8px 4px 22px; }
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px; font-weight: 700; letter-spacing: 0.2em;
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--ink-2);
+}
+.eyebrow .pip {
+  width: 8px; height: 8px;
+  background: var(--mint-hi);
+  box-shadow: 0 0 10px var(--mint-hi);
+}
+[data-theme="dark"] .eyebrow .pip {
+  box-shadow: 0 0 14px var(--mint-hi), 0 0 4px var(--mint-hi);
+}
+.title {
+  font-size: clamp(34px, 9vw, 44px);
+  font-weight: 800; letter-spacing: -0.025em; line-height: 0.98;
+  margin: 8px 0 0;
+}
+.title .slash { color: var(--ink-3); font-weight: 700; }
+.sub {
+  font-family: var(--font-mono);
+  font-size: 11px; letter-spacing: 0.18em;
+  margin-top: 10px; color: var(--ink-3);
+}
+
+.theme-toggle {
+  position: absolute; top: 4px; right: 0;
+  appearance: none; border: 0;
+  width: 50px; height: 30px;
+  border-radius: var(--r-pill);
+  background: rgba(12,13,24,0.08);
+  padding: 3px; cursor: pointer; font: inherit;
+  transition: background 200ms ease;
+}
+[data-theme="dark"] .theme-toggle { background: rgba(255,255,255,0.08); }
+.theme-toggle .knob {
+  width: 24px; height: 24px;
+  border-radius: 50%; background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+  display: grid; place-items: center; font-size: 13px;
+  transition: transform 220ms cubic-bezier(.34,1.56,.64,1), background 200ms ease, color 200ms ease;
+  transform: translateX(0);
+}
+[data-theme="dark"] .theme-toggle .knob {
+  background: #1a1b2a; color: var(--gold);
+  transform: translateX(20px);
+}
+.theme-toggle .icon-sun  { display: block; }
+.theme-toggle .icon-moon { display: none; }
+[data-theme="dark"] .theme-toggle .icon-sun  { display: none; }
+[data-theme="dark"] .theme-toggle .icon-moon { display: block; }
+
+.app-footer {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 10.5px; letter-spacing: 0.18em;
+  color: var(--ink-3);
+  margin-top: 22px; padding-bottom: 6px;
+  text-transform: uppercase;
+}
+.app-footer .heart { color: var(--pink-hi); letter-spacing: 0; }
+
+/* 03 · MISSION CARDS */
+.mission {
+  position: relative;
+  background: var(--card);
+  border-radius: var(--r-card);
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  margin-bottom: 16px;
+  isolation: isolate;
+}
+.mission::before {
+  content: ""; position: absolute;
+  inset: 0 0 auto 0; height: 4px;
+  background: var(--stripe); z-index: 2;
+}
+.mission::after {
+  content: ""; position: absolute;
+  inset: 0 0 auto 0; height: 4px;
+  z-index: 3;
+  background: linear-gradient(90deg, transparent 0%, transparent 60%, rgba(255,255,255,0.7) 78%, transparent 100%);
+  transform: translateX(-100%);
+  animation: stripe-shine 5s linear infinite;
+  pointer-events: none;
+}
+@keyframes stripe-shine {
+  0%   { transform: translateX(-100%); }
+  60%, 100% { transform: translateX(120%); }
+}
+
+.mission.ai     { --stripe: var(--stripe-ai);     --accent: var(--violet); --accent-hi: var(--violet-hi); }
+.mission.math   { --stripe: var(--stripe-math);   --accent: var(--mint);   --accent-hi: var(--mint-hi);   }
+.mission.trivia { --stripe: var(--stripe-trivia); --accent: var(--pink);   --accent-hi: var(--pink-hi);   }
+.mission.quote  { --stripe: var(--stripe-quote);  --accent: var(--gold);   --accent-hi: var(--pink-hi);   }
+
+.mission-inner { padding: 20px 22px 22px; }
+
+.mission-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.mission-label {
+  font-family: var(--font-mono);
+  font-size: 11px; font-weight: 700; letter-spacing: 0.2em;
+  color: var(--accent);
+  display: inline-flex; align-items: center; gap: 8px;
+}
+[data-theme="dark"] .mission-label {
+  color: var(--accent-hi);
+  text-shadow: 0 0 8px color-mix(in oklab, var(--accent-hi), transparent 70%);
+}
+.mission-label::before { content: "▸"; opacity: 0.8; }
+.mission-meta {
+  font-family: var(--font-mono);
+  font-size: 11px; letter-spacing: 0.16em;
+  color: var(--ink-3);
+}
+
+.mission-q {
+  font-size: 21px; font-weight: 800;
+  line-height: 1.25; letter-spacing: -0.015em;
+  margin: 6px 0 4px;
+  color: var(--ink);
+}
+.mission-q em { font-style: italic; }
+.mission-q .num { font-family: var(--font-mono); padding: 0 3px; }
+.mission-eg {
+  font-family: var(--font-mono);
+  font-size: 12.5px; color: var(--ink-3);
+  margin: 0 0 16px;
+}
+.mission-eg:empty { display: none; }
+
+.hint {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: var(--r-ctrl);
+  background: color-mix(in oklab, var(--accent), transparent 92%);
+  border-left: 3px solid var(--accent);
+  display: flex; gap: 10px;
+  font-size: 13.5px; line-height: 1.45;
+  color: var(--ink);
+}
+[data-theme="dark"] .hint {
+  background: color-mix(in oklab, var(--accent-hi), transparent 90%);
+  border-left-color: var(--accent-hi);
+  color: var(--ink-2);
+}
+.hint .h-lbl {
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.2em; font-weight: 700;
+  color: var(--accent);
+  display: block; margin-bottom: 3px;
+  text-transform: uppercase;
+}
+[data-theme="dark"] .hint .h-lbl { color: var(--accent-hi); }
+.hint b, .hint strong { color: var(--ink); }
+
+.mark-done {
+  appearance: none; border: 0; width: 100%;
+  margin-top: 14px; padding: 14px 12px;
+  background: color-mix(in oklab, var(--accent), transparent 90%);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 12px; font-weight: 700; letter-spacing: 0.16em;
+  border-radius: var(--r-ctrl);
+  cursor: pointer; text-transform: uppercase;
+  transition: transform 120ms ease, background 160ms ease;
+}
+.mark-done:active { transform: scale(0.985); }
+[data-theme="dark"] .mark-done {
+  background: color-mix(in oklab, var(--accent-hi), transparent 88%);
+  color: var(--accent-hi);
+}
+.mission.done .mark-done {
+  background: color-mix(in oklab, var(--accent), transparent 78%);
+  color: var(--accent);
+}
+
+/* 04 · CARD-SPECIFIC */
+/* AI copy */
+.ai-prompt-row { display: flex; gap: 10px; align-items: stretch; margin-top: 4px; }
+.ai-copy {
+  appearance: none; border: 0;
+  padding: 0 18px; height: 52px;
+  background: linear-gradient(180deg, var(--violet-hi), var(--violet));
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 12px; font-weight: 700; letter-spacing: 0.06em;
+  border-radius: var(--r-ctrl); cursor: pointer;
+  display: inline-flex; align-items: center; gap: 8px;
+  box-shadow: 0 8px 20px -8px color-mix(in oklab, var(--violet), transparent 50%);
+  transition: transform 120ms ease, box-shadow 180ms ease;
+  flex-shrink: 0;
+}
+[data-theme="dark"] .ai-copy {
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--violet-hi), transparent 60%),
+              0 12px 28px -8px color-mix(in oklab, var(--violet-hi), transparent 50%);
+}
+.ai-copy:active { transform: scale(0.97); }
+.ai-copy.copied { background: linear-gradient(180deg, var(--mint-hi), var(--mint)); color: var(--on-mint); }
+
+/* Math */
+.math-input-wrap { display: flex; gap: 10px; align-items: stretch; position: relative; }
+.math-input {
+  flex: 1; height: 54px;
+  border-radius: var(--r-ctrl);
+  border: 1.5px solid var(--rule);
+  background: var(--card-sub);
+  padding: 0 16px;
+  font-family: var(--font-mono);
+  font-size: 17px; font-weight: 600;
+  color: var(--ink);
+  outline: none; caret-color: var(--accent);
+  -webkit-appearance: none; appearance: none;
+  min-width: 0;
+}
+[data-theme="dark"] .math-input {
+  caret-color: var(--accent-hi);
+  border-color: rgba(255,255,255,0.06);
+}
+.math-input::placeholder { color: var(--ink-3); }
+.math-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent), transparent 80%);
+}
+[data-theme="dark"] .math-input:focus {
+  border-color: var(--accent-hi);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent-hi), transparent 80%);
+}
+
+.math-check {
+  appearance: none; border: 0;
+  height: 54px; padding: 0 22px;
+  background: linear-gradient(180deg, var(--mint-hi), var(--mint));
+  color: var(--on-mint);
+  font-family: var(--font-mono);
+  font-size: 13px; font-weight: 800; letter-spacing: 0.06em;
+  border-radius: var(--r-ctrl); cursor: pointer;
+  display: inline-flex; align-items: center; gap: 8px;
+  box-shadow: 0 8px 20px -8px color-mix(in oklab, var(--mint), transparent 40%);
+  transition: transform 120ms ease, filter 180ms ease;
+  flex-shrink: 0;
+}
+[data-theme="dark"] .math-check {
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--mint-hi), transparent 60%),
+              0 12px 28px -8px color-mix(in oklab, var(--mint-hi), transparent 40%);
+}
+.math-check:active { transform: scale(0.97); }
+.math-check:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.math-state {
+  margin-top: 12px; min-height: 0;
+  font-family: var(--font-mono);
+  font-size: 12.5px; letter-spacing: 0.06em;
+  display: none;
+}
+.math-state.show { display: block; animation: pop-in 280ms cubic-bezier(.34,1.56,.64,1); }
+.math-state.correct { color: var(--mint); }
+[data-theme="dark"] .math-state.correct { color: var(--mint-hi); }
+.math-state.wrong { color: var(--pink); }
+[data-theme="dark"] .math-state.wrong { color: var(--pink-hi); }
+.math-state .reveal-link {
+  margin-left: 8px;
+  color: var(--violet);
+  cursor: pointer; text-decoration: underline;
+  font-weight: 700;
+}
+[data-theme="dark"] .math-state .reveal-link { color: var(--violet-hi); }
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.xp-burst {
+  position: absolute; right: 8px; top: -6px;
+  font-family: var(--font-mono);
+  font-size: 13px; font-weight: 800; letter-spacing: 0.14em;
+  color: var(--gold);
+  text-shadow: 0 0 14px color-mix(in oklab, var(--gold), transparent 50%);
+  pointer-events: none;
+  opacity: 0; transform: translateY(0) scale(0.9);
+  white-space: nowrap;
+}
+.xp-burst.fire { animation: xp-fly 1100ms cubic-bezier(.2,.7,.2,1) forwards; }
+@keyframes xp-fly {
+  0%   { opacity: 0; transform: translateY(8px) scale(0.85); }
+  20%  { opacity: 1; transform: translateY(-4px) scale(1.08); }
+  100% { opacity: 0; transform: translateY(-72px) scale(0.95); }
+}
+.mission.celebrate::before { animation: stripe-pulse 900ms ease-out 1; }
+@keyframes stripe-pulse {
+  0%   { filter: brightness(1) saturate(1); }
+  35%  { filter: brightness(1.6) saturate(1.4); }
+  100% { filter: brightness(1) saturate(1); }
+}
+.math-input-wrap.shake { animation: shake 380ms ease; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(2px); }
+}
+
+/* Trivia */
+.trivia-options {
+  display: flex; flex-direction: column; gap: 8px;
+  margin-top: 8px;
+}
+.trivia-opt {
+  appearance: none; border: 0;
+  display: flex; align-items: center; gap: 14px;
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--card-sub);
+  border: 1.5px solid transparent;
+  border-radius: var(--r-ctrl);
+  font: inherit; font-size: 15px; font-weight: 600;
+  color: var(--ink); cursor: pointer; text-align: left;
+  letter-spacing: -0.005em;
+  transition: transform 120ms ease, border-color 160ms ease, background 160ms ease;
+}
+.trivia-opt:active { transform: scale(0.99); }
+.trivia-opt .key {
+  font-family: var(--font-mono);
+  font-size: 12px; font-weight: 800; letter-spacing: 0.1em;
+  width: 26px; height: 26px;
+  border-radius: 8px;
+  display: grid; place-items: center;
+  background: color-mix(in oklab, var(--accent), transparent 85%);
+  color: var(--accent);
+  flex-shrink: 0;
+}
+[data-theme="dark"] .trivia-opt .key {
+  background: color-mix(in oklab, var(--accent-hi), transparent 80%);
+  color: var(--accent-hi);
+}
+.trivia-opt[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: color-mix(in oklab, var(--accent), transparent 92%);
+}
+.trivia-opt.correct {
+  border-color: var(--mint);
+  background: color-mix(in oklab, var(--mint), transparent 88%);
+}
+.trivia-opt.correct .key { background: var(--mint); color: var(--on-mint); }
+.trivia-opt.wrong {
+  border-color: var(--pink);
+  background: color-mix(in oklab, var(--pink), transparent 90%);
+}
+.trivia-opt.wrong .key { background: var(--pink); color: #fff; }
+
+.trivia-reveal {
+  display: none;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: var(--r-ctrl);
+  background: color-mix(in oklab, var(--accent), transparent 92%);
+  border-left: 3px solid var(--accent);
+  font-size: 13.5px; line-height: 1.45;
+  color: var(--ink);
+}
+[data-theme="dark"] .trivia-reveal {
+  background: color-mix(in oklab, var(--accent-hi), transparent 90%);
+  border-left-color: var(--accent-hi);
+  color: var(--ink-2);
+}
+.trivia-reveal.show { display: block; animation: pop-in 280ms cubic-bezier(.34,1.56,.64,1); }
+.trivia-reveal .h-lbl {
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.2em; font-weight: 700;
+  color: var(--accent);
+  display: block; margin-bottom: 3px;
+  text-transform: uppercase;
+}
+[data-theme="dark"] .trivia-reveal .h-lbl { color: var(--accent-hi); }
+
+/* Quote */
+.quote-text {
+  font-size: 20px; font-weight: 700;
+  line-height: 1.35; letter-spacing: -0.01em;
+  margin: 8px 0 12px;
+  font-style: italic;
+}
+.quote-text::before, .quote-text::after {
+  font-family: var(--font-mono);
+  font-style: normal;
+  color: var(--accent);
+  font-weight: 800;
+}
+.quote-text::before { content: "\201C"; margin-right: 2px; }
+.quote-text::after  { content: "\201D"; margin-left: 2px; }
+.quote-author {
+  font-family: var(--font-mono);
+  font-size: 12px; letter-spacing: 0.06em;
+  color: var(--ink-2);
+  margin-bottom: 4px;
+}
+.quote-author::before { content: "— "; color: var(--ink-3); }
+.favorite-btn {
+  appearance: none; border: 1.5px solid var(--rule);
+  background: transparent;
+  color: var(--ink-2);
+  margin-top: 14px;
+  padding: 10px 16px;
+  border-radius: var(--r-pill);
+  font-family: var(--font-mono);
+  font-size: 11.5px; font-weight: 700; letter-spacing: 0.14em;
+  cursor: pointer;
+  display: inline-flex; align-items: center; gap: 8px;
+  text-transform: uppercase;
+  transition: transform 120ms ease, border-color 160ms ease, color 160ms ease, background 160ms ease;
+}
+.favorite-btn:active { transform: scale(0.97); }
+.favorite-btn .heart { transition: transform 220ms cubic-bezier(.34,1.56,.64,1); }
+.favorite-btn[aria-pressed="true"] {
+  background: color-mix(in oklab, var(--pink-hi), transparent 86%);
+  border-color: var(--pink-hi);
+  color: var(--pink-hi);
+}
+.favorite-btn[aria-pressed="true"] .heart { transform: scale(1.25); }
+
+/* New missions hero */
+.new-missions {
+  appearance: none; border: 0;
+  display: block; width: 100%;
+  margin-top: 22px; padding: 18px 22px;
+  background: linear-gradient(135deg, var(--violet-hi) 0%, var(--pink-hi) 50%, var(--gold) 100%);
+  color: #0c0d18;
+  font-size: 17px; font-weight: 800; letter-spacing: 0.02em;
+  border-radius: 18px; cursor: pointer;
+  box-shadow:
+    0 18px 32px -16px color-mix(in oklab, var(--violet), transparent 30%),
+    0 1px 0 rgba(255,255,255,0.4) inset;
+  position: relative; overflow: hidden;
+  transition: transform 140ms ease;
+}
+.new-missions:active { transform: scale(0.985); }
+.new-missions::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.55) 50%, transparent 70%);
+  transform: translateX(-100%);
+  animation: stripe-shine 4s linear infinite;
+  pointer-events: none;
+}
+[data-theme="dark"] .new-missions {
+  color: #0c0d18;
+  box-shadow:
+    0 18px 32px -10px color-mix(in oklab, var(--pink-hi), transparent 40%),
+    0 0 0 1px rgba(255,255,255,0.18) inset;
+}
+.new-missions .label { position: relative; z-index: 1; }
+
+.status-line {
+  font-family: var(--font-mono);
+  font-size: 11px; letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  text-align: center;
+  margin-top: 14px;
+}
+.status-line .streak { color: var(--gold); font-weight: 700; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mission::after, .new-missions::after { animation: none; }
+  .xp-burst.fire { animation-duration: 1ms; }
+  .math-input-wrap.shake { animation: none; }
+}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <button id="themeBtn" class="theme-toggle" aria-label="Toggle light/dark mode" title="Toggle light/dark">🌙</button>
-  <header>
-    <div class="badge">Daily Missions</div>
-    <h1>Daniel's Daily Missions</h1>
-    <p class="sub">Three quick missions + a quote. Let's go!</p>
-    <div class="date" id="date"></div>
+<main>
+  <header class="app-header">
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode">
+      <span class="knob">
+        <span class="icon-sun" aria-hidden="true">☀</span>
+        <span class="icon-moon" aria-hidden="true">🌙</span>
+      </span>
+    </button>
+    <div class="eyebrow"><span class="pip"></span><span id="dateLabel">DAILY</span> · STREAK <span class="streak" id="streakNum">00</span></div>
+    <h1 class="title">Mission&nbsp;Brief<span class="slash"> /04</span></h1>
+    <div class="sub">DANIEL · LV.<span id="lvNum">01</span> · <span id="xpNum">0</span> XP TODAY</div>
   </header>
 
-  <div class="celebrate" id="celebrate"></div>
+  <!-- AI MISSION -->
+  <article class="mission ai" id="card-ai">
+    <div class="mission-inner">
+      <div class="mission-head">
+        <div class="mission-label">AI Mission</div>
+        <div class="mission-meta">01/04</div>
+      </div>
+      <p class="mission-q" id="aiTask"></p>
+      <div class="hint">
+        <span aria-hidden="true">💡</span>
+        <div><span class="h-lbl">Tip</span><span id="aiHint"></span></div>
+      </div>
+      <div class="ai-prompt-row">
+        <button class="ai-copy" type="button" id="aiCopy">
+          <span class="copy-label">▸ Copy prompt</span>
+        </button>
+        <button class="mark-done" type="button" data-mark="ai">Mark done</button>
+      </div>
+    </div>
+  </article>
 
-  <section class="card ai" id="aiCard">
-    <div class="row">
-      <div class="icon ai">🤖</div>
-      <div class="tag">AI Mission</div>
+  <!-- MATH MISSION -->
+  <article class="mission math" id="card-math">
+    <div class="mission-inner">
+      <div class="mission-head">
+        <div class="mission-label">Math Mission</div>
+        <div class="mission-meta">02/04</div>
+      </div>
+      <p class="mission-q" id="mathTask"></p>
+      <p class="mission-eg" id="mathEg"></p>
+      <div class="math-input-wrap" id="mathInputWrap">
+        <input class="math-input" id="mathInput" type="text" inputmode="text" autocomplete="off"
+               autocorrect="off" autocapitalize="none" spellcheck="false"
+               placeholder="Type your answer" aria-label="Your answer" />
+        <button class="math-check" type="button" id="mathCheck">CHECK ▸</button>
+        <div class="xp-burst" id="xpBurst">+ 100 XP ▴</div>
+      </div>
+      <div class="math-state" id="mathState"></div>
+      <div class="hint">
+        <span aria-hidden="true">💡</span>
+        <div><span class="h-lbl">Hint</span><span id="mathHint"></span></div>
+      </div>
     </div>
-    <div class="task" id="aiTask"></div>
-    <div class="hint" id="aiHint"></div>
-    <div class="done-row">
-      <button class="mark" data-mark="ai">Mark done ✓</button>
-    </div>
-  </section>
+  </article>
 
-  <section class="card math" id="mathCard">
-    <div class="row">
-      <div class="icon math">🧮</div>
-      <div class="tag math">Math Mission</div>
+  <!-- TRIVIA MISSION -->
+  <article class="mission trivia" id="card-trivia">
+    <div class="mission-inner">
+      <div class="mission-head">
+        <div class="mission-label">Trivia Mission</div>
+        <div class="mission-meta">03/04</div>
+      </div>
+      <p class="mission-q" id="triviaQ"></p>
+      <div class="trivia-options" id="triviaOpts"></div>
+      <div class="trivia-reveal" id="triviaReveal">
+        <span class="h-lbl">Did you know</span>
+        <span id="triviaFact"></span>
+      </div>
+      <button class="mark-done" type="button" data-mark="trivia">Mark done</button>
     </div>
-    <div class="task" id="mathTask"></div>
-    <div class="answer-row">
-      <input id="mathInput" class="answer-input" type="text" inputmode="text"
-             autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-             placeholder="Type your answer" />
-      <button class="check-btn" id="checkBtn">Check</button>
-    </div>
-    <div class="feedback" id="mathFeedback"></div>
-    <div class="hint" id="mathHint"></div>
-    <div class="done-row">
-      <button class="mark" data-mark="math">Mark done ✓</button>
-    </div>
-  </section>
+  </article>
 
-  <section class="card trivia" id="triviaCard">
-    <div class="row">
-      <div class="icon trivia">🎯</div>
-      <div class="tag trivia">Trivia Mission</div>
+  <!-- DAILY QUOTE -->
+  <article class="mission quote" id="card-quote">
+    <div class="mission-inner">
+      <div class="mission-head">
+        <div class="mission-label">Daily Quote</div>
+        <div class="mission-meta">04/04</div>
+      </div>
+      <p class="quote-text" id="quoteText"></p>
+      <p class="quote-author" id="quoteAuthor"></p>
+      <button class="favorite-btn" id="favBtn" type="button" aria-pressed="false">
+        <span class="heart" aria-hidden="true">♡</span>
+        <span class="fav-label">Favorite</span>
+      </button>
     </div>
-    <div class="task" id="triviaQ"></div>
-    <div class="options" id="triviaOpts"></div>
-    <div class="funfact" id="triviaFact"></div>
-    <div class="done-row">
-      <button class="mark" data-mark="trivia">Mark done ✓</button>
-    </div>
-  </section>
+  </article>
 
-  <section class="card quote" id="quoteCard">
-    <div class="row">
-      <div class="icon quote">✨</div>
-      <div class="tag quote">Daily Quote</div>
-    </div>
-    <div class="quote-text" id="quoteText"></div>
-    <div class="quote-author" id="quoteAuthor"></div>
-    <div class="done-row">
-      <button class="fav-btn" id="favBtn">♡ Favorite</button>
-    </div>
-  </section>
+  <button class="new-missions" type="button" id="newMissions">
+    <span class="label">✦ NEW MISSIONS</span>
+  </button>
+  <div class="status-line">Missions refresh anytime · No score, no pressure</div>
 
-  <div class="actions">
-    <button class="btn-primary" id="newBtn">✨ New missions</button>
-  </div>
-
-  <footer>
-    Missions refresh anytime. No score, no pressure — just fun.
-    <div style="margin-top:10px; opacity:0.85;">Created with love from Dad for Daniel ❤️</div>
-  </footer>
-</div>
+  <footer class="app-footer">CREATED WITH <span class="heart">♥</span> FROM DAD FOR DANIEL</footer>
+</main>
 
 <script>
 /* =========================================================================
@@ -2047,56 +2193,67 @@ function buildQuote() {
   return { text, author };
 }
 
-/* Math combinatorial space: each builder uses randomized ranges giving
-   anywhere from ~60 to thousands of variants each. Easily > 1000 unique
-   problems across the bank of ${MATH_BUILDERS.length} templates. */
-
-/* ---------- APP ---------- */
+/* =============================================================
+   UI LAYER — wires the preserved data banks above to the
+   Arcade Glow markup. All state in localStorage.
+   ============================================================= */
 
 const els = {
-  aiTask: document.getElementById("aiTask"),
-  aiHint: document.getElementById("aiHint"),
-  mathTask: document.getElementById("mathTask"),
-  mathHint: document.getElementById("mathHint"),
-  mathInput: document.getElementById("mathInput"),
-  checkBtn: document.getElementById("checkBtn"),
-  mathFeedback: document.getElementById("mathFeedback"),
-  triviaQ: document.getElementById("triviaQ"),
-  triviaOpts: document.getElementById("triviaOpts"),
-  triviaFact: document.getElementById("triviaFact"),
-  triviaCard: document.getElementById("triviaCard"),
-  quoteText: document.getElementById("quoteText"),
+  // header
+  themeToggle: document.getElementById("themeToggle"),
+  dateLabel:   document.getElementById("dateLabel"),
+  streakNum:   document.getElementById("streakNum"),
+  lvNum:       document.getElementById("lvNum"),
+  xpNum:       document.getElementById("xpNum"),
+  // AI
+  aiCard:  document.getElementById("card-ai"),
+  aiTask:  document.getElementById("aiTask"),
+  aiHint:  document.getElementById("aiHint"),
+  aiCopy:  document.getElementById("aiCopy"),
+  // Math
+  mathCard:      document.getElementById("card-math"),
+  mathTask:      document.getElementById("mathTask"),
+  mathEg:        document.getElementById("mathEg"),
+  mathHint:      document.getElementById("mathHint"),
+  mathInput:     document.getElementById("mathInput"),
+  mathCheck:     document.getElementById("mathCheck"),
+  mathState:     document.getElementById("mathState"),
+  mathInputWrap: document.getElementById("mathInputWrap"),
+  xpBurst:       document.getElementById("xpBurst"),
+  // Trivia
+  triviaCard:   document.getElementById("card-trivia"),
+  triviaQ:      document.getElementById("triviaQ"),
+  triviaOpts:   document.getElementById("triviaOpts"),
+  triviaReveal: document.getElementById("triviaReveal"),
+  triviaFact:   document.getElementById("triviaFact"),
+  // Quote
+  quoteCard:   document.getElementById("card-quote"),
+  quoteText:   document.getElementById("quoteText"),
   quoteAuthor: document.getElementById("quoteAuthor"),
-  quoteCard: document.getElementById("quoteCard"),
-  favBtn: document.getElementById("favBtn"),
-  newBtn: document.getElementById("newBtn"),
-  celebrate: document.getElementById("celebrate"),
-  aiCard: document.getElementById("aiCard"),
-  mathCard: document.getElementById("mathCard"),
-  date: document.getElementById("date")
+  favBtn:      document.getElementById("favBtn"),
+  // Hero
+  newMissions: document.getElementById("newMissions"),
 };
 
 const state = {
+  current: { ai: null, math: null, trivia: null, quote: null },
+  attempts: 0,
+  triviaAnswered: false,
   doneAI: false, doneMath: false, doneTrivia: false,
-  lastAI: "", lastMath: "", lastTrivia: "", lastQuote: "",
-  currentMath: null, attempts: 0,
-  currentTrivia: null, triviaAnswered: false,
-  currentQuote: null
 };
 
-/* Favorites persisted in localStorage */
+/* ---------- Favorites (quotes) ---------- */
+const FAV_KEY = "ddm-fav-quotes";
 function loadFavs() {
-  try { return new Set(JSON.parse(localStorage.getItem("ddm_favs") || "[]")); }
+  try { return new Set(JSON.parse(localStorage.getItem(FAV_KEY) || "[]")); }
   catch (e) { return new Set(); }
 }
 function saveFavs(set) {
-  try { localStorage.setItem("ddm_favs", JSON.stringify([...set])); } catch (e) {}
+  try { localStorage.setItem(FAV_KEY, JSON.stringify([...set])); } catch (e) {}
 }
 let favs = loadFavs();
 
-/* Seen-history per category (persisted, sliding window).
-   Each bucket holds the last N unique IDs Daniel saw. Picker re-rolls
-   until it finds one NOT in the bucket (with a safety cap). */
+/* ---------- Cross-session no-repeat tracking ---------- */
 const SEEN_CAPS = { ai: 200, math: 200, trivia: 110, quote: 130 };
 function loadSeen(k) {
   try { return JSON.parse(localStorage.getItem("ddm_seen_" + k) || "[]"); }
@@ -2109,289 +2266,386 @@ const SEEN = {
   ai: loadSeen("ai"),
   math: loadSeen("math"),
   trivia: loadSeen("trivia"),
-  quote: loadSeen("quote")
+  quote: loadSeen("quote"),
 };
 function markSeen(kind, id) {
   const arr = SEEN[kind];
-  // remove if already present (move to end)
   const idx = arr.indexOf(id);
   if (idx !== -1) arr.splice(idx, 1);
   arr.push(id);
-  // trim from the front
-  const cap = SEEN_CAPS[kind];
-  while (arr.length > cap) arr.shift();
+  while (arr.length > SEEN_CAPS[kind]) arr.shift();
   saveSeen(kind, arr);
 }
-function isSeen(kind, id) {
-  return SEEN[kind].indexOf(id) !== -1;
-}
+function isSeen(kind, id) { return SEEN[kind].indexOf(id) !== -1; }
 function pickUnseen(kind, builder, idOf, maxTries) {
   let best = null;
   for (let i = 0; i < (maxTries || 40); i++) {
-    const candidate = builder();
-    const id = idOf(candidate);
-    if (!isSeen(kind, id)) return candidate;
-    if (!best) best = candidate; // fallback if every try is seen
+    const c = builder();
+    const id = idOf(c);
+    if (!isSeen(kind, id)) return c;
+    if (!best) best = c;
   }
   return best;
 }
 
-function setDate() {
+/* ---------- Streak / XP ---------- */
+function todayStr() {
   const d = new Date();
-  const opts = { weekday: "long", month: "long", day: "numeric" };
-  els.date.textContent = d.toLocaleDateString(undefined, opts);
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+}
+function yesterdayStr() {
+  const d = new Date(); d.setDate(d.getDate() - 1);
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+}
+function initDailyCounters() {
+  const today = todayStr();
+  const lastXpDate = localStorage.getItem("ddm_xp_date");
+  if (lastXpDate !== today) {
+    localStorage.setItem("ddm_xp", "0");
+    localStorage.setItem("ddm_xp_date", today);
+    // gap check for streak
+    const lastStreak = localStorage.getItem("ddm_streak_last");
+    if (lastStreak && lastStreak !== yesterdayStr() && lastStreak !== today) {
+      // missed a day — reset streak
+      localStorage.setItem("ddm_streak", "0");
+    }
+  }
+}
+function getXp()     { return parseInt(localStorage.getItem("ddm_xp") || "0", 10); }
+function getStreak() { return parseInt(localStorage.getItem("ddm_streak") || "0", 10); }
+function paintCounters() {
+  const xp = getXp();
+  const streak = getStreak();
+  // Level: 1 per 200 XP earned ever (simple lifetime counter)
+  const lvFromXp = Math.max(1, Math.floor(getLifetimeXp() / 200) + 1);
+  els.streakNum.textContent = String(streak).padStart(2, "0");
+  els.lvNum.textContent     = String(lvFromXp).padStart(2, "0");
+  els.xpNum.textContent     = String(xp);
+}
+function getLifetimeXp() { return parseInt(localStorage.getItem("ddm_xp_total") || "0", 10); }
+function awardMissionXp() {
+  // +25 per mission completed, capped at 100/day
+  const cur = Math.min(100, getXp() + 25);
+  localStorage.setItem("ddm_xp", String(cur));
+  const total = getLifetimeXp() + 25;
+  localStorage.setItem("ddm_xp_total", String(total));
+  // streak: bump once per day at first completion
+  const today = todayStr();
+  const lastStreak = localStorage.getItem("ddm_streak_last");
+  if (lastStreak !== today) {
+    const s = getStreak() + 1;
+    localStorage.setItem("ddm_streak", String(s));
+    localStorage.setItem("ddm_streak_last", today);
+  }
+  paintCounters();
 }
 
-function refresh() {
-  const ai = pickUnseen("ai", buildAITask, t => t.task);
-  const math = pickUnseen("math", buildMathTask, t => t.task);
-  const trivia = pickUnseen("trivia", buildTrivia, t => t.q);
-  const quote = pickUnseen("quote", buildQuote, q => q.text + "|" + q.author);
+/* ---------- Date header ---------- */
+function paintDate() {
+  const d = new Date();
+  const days   = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
+  const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+  els.dateLabel.textContent = `DAILY · ${days[d.getDay()]} ${months[d.getMonth()]} ${d.getDate()}`;
+}
 
-  markSeen("ai", ai.task);
-  markSeen("math", math.task);
-  markSeen("trivia", trivia.q);
-  markSeen("quote", quote.text + "|" + quote.author);
+/* ---------- AI: derive a clean copyable prompt ---------- */
+function deriveAIPrompt(task) {
+  let p = String(task || "").trim();
+  // strip prefixes
+  p = p.replace(/^Ask AI to /i, "");
+  p = p.replace(/^Ask AI for /i, "Give me ");
+  p = p.replace(/^Ask AI:\s*/i, "");
+  // strip wrapping quotes
+  p = p.replace(/^["“'']+/, "").replace(/["”'']+$/, "");
+  // strip trailing period for cleaner pasting? keep — feels more natural
+  if (p.length) p = p.charAt(0).toUpperCase() + p.slice(1);
+  return p;
+}
 
-  state.lastAI = ai.task; state.lastMath = math.task;
-  state.lastTrivia = trivia.q; state.lastQuote = quote.text;
-  state.currentMath = math;
-  state.currentTrivia = trivia;
-  state.currentQuote = quote;
-  state.attempts = 0;
-  state.triviaAnswered = false;
-
-  [els.aiCard, els.mathCard, els.triviaCard, els.quoteCard].forEach(c => {
-    c.style.animation = "none"; void c.offsetWidth; c.style.animation = "";
-  });
-
+/* ---------- Renders ---------- */
+function renderAI(ai) {
   els.aiTask.textContent = ai.task;
-  els.aiHint.innerHTML = "💡 " + ai.hint;
-  els.mathTask.textContent = math.task;
-  els.mathHint.innerHTML = "💡 " + math.hint;
+  els.aiHint.innerHTML = ai.hint;
+  els.aiCopy.dataset.prompt = deriveAIPrompt(ai.task);
+  els.aiCopy.classList.remove("copied");
+  els.aiCopy.querySelector(".copy-label").textContent = "▸ Copy prompt";
+}
 
+function renderMath(math) {
+  els.mathTask.textContent = math.task;
+  els.mathEg.textContent = ""; // no per-task example for v1
+  els.mathHint.innerHTML = math.hint;
   els.mathInput.value = "";
   els.mathInput.disabled = false;
-  els.mathInput.classList.remove("ok", "no");
-  els.checkBtn.disabled = false;
-  els.checkBtn.textContent = "Check";
-  els.mathFeedback.textContent = "";
-  els.mathFeedback.className = "feedback";
-
-  renderTrivia();
-  renderQuote();
-
-  state.doneAI = false; state.doneMath = false; state.doneTrivia = false;
-  document.querySelectorAll(".mark").forEach(b => {
-    b.classList.remove("is-done");
-    b.textContent = "Mark done ✓";
-  });
-  els.celebrate.classList.remove("show");
-  els.celebrate.textContent = "";
+  els.mathCheck.disabled = false;
+  els.mathState.className = "math-state";
+  els.mathState.textContent = "";
+  els.mathInputWrap.classList.remove("shake");
+  els.mathCard.classList.remove("celebrate");
+  els.xpBurst.classList.remove("fire");
+  state.attempts = 0;
 }
 
-function renderTrivia() {
-  const t = state.currentTrivia;
+function renderTrivia(t) {
   els.triviaQ.textContent = t.q;
   els.triviaOpts.innerHTML = "";
-  els.triviaFact.classList.remove("show");
-  els.triviaFact.innerHTML = "";
-  const letters = ["A", "B", "C", "D"];
+  els.triviaOpts.dataset.correct = ""; // will set per render
+  els.triviaReveal.classList.remove("show");
+  els.triviaFact.textContent = t.fact;
+  state.triviaAnswered = false;
+
+  const letters = ["A","B","C","D"];
   t.opts.forEach((opt, i) => {
+    const key = letters[i];
     const btn = document.createElement("button");
-    btn.className = "opt";
-    btn.innerHTML = `<span class="letter">${letters[i]}</span><span>${opt}</span>`;
-    btn.addEventListener("click", () => handleTrivia(btn, opt));
+    btn.type = "button";
+    btn.className = "trivia-opt";
+    btn.dataset.key = key;
+    btn.setAttribute("aria-pressed", "false");
+    btn.innerHTML = `<span class="key">${key}</span><span></span>`;
+    btn.querySelector("span:last-child").textContent = opt;
+    if (opt === t.correct) els.triviaOpts.dataset.correct = key;
+    btn.addEventListener("click", () => handleTrivia(btn));
     els.triviaOpts.appendChild(btn);
   });
 }
 
-function handleTrivia(btn, choice) {
-  if (state.triviaAnswered) return;
-  state.triviaAnswered = true;
-  const t = state.currentTrivia;
-  const correct = choice === t.correct;
-  // lock all, mark correct one, mark chosen if wrong
-  document.querySelectorAll(".opt").forEach(b => {
-    b.classList.add("locked");
-    const label = b.querySelector("span:last-child").textContent;
-    if (label === t.correct) b.classList.add("correct");
-    else if (b === btn && !correct) b.classList.add("wrong");
-  });
-  // reveal fun fact
-  els.triviaFact.innerHTML = (correct ? "🎉 " : "💡 ") + `<b>Did you know?</b> ${t.fact}`;
-  els.triviaFact.classList.add("show");
-  // auto-mark done on correct
-  if (correct && !state.doneTrivia) {
-    const markBtn = document.querySelector('.mark[data-mark="trivia"]');
-    state.doneTrivia = true;
-    markBtn.classList.add("is-done");
-    markBtn.textContent = "Done! ✓";
-    updateCelebrate();
-  }
-}
-
-function quoteKey(q) { return q.text + "|" + q.author; }
-
-function renderQuote() {
-  const q = state.currentQuote;
+function renderQuote(q) {
   els.quoteText.textContent = q.text;
   els.quoteAuthor.textContent = q.author;
-  const isFav = favs.has(quoteKey(q));
-  els.favBtn.classList.toggle("is-fav", isFav);
-  els.favBtn.textContent = isFav ? "♥ Favorited" : "♡ Favorite";
+  paintFav();
 }
 
-function toggleFav() {
-  const key = quoteKey(state.currentQuote);
-  if (favs.has(key)) favs.delete(key);
-  else favs.add(key);
-  saveFavs(favs);
-  renderQuote();
+function quoteKey(q) { return q.author + "::" + q.text; }
+function paintFav() {
+  const q = state.current.quote;
+  if (!q) return;
+  const on = favs.has(quoteKey(q));
+  els.favBtn.setAttribute("aria-pressed", on ? "true" : "false");
+  els.favBtn.querySelector(".heart").textContent = on ? "♥" : "♡";
+  els.favBtn.querySelector(".fav-label").textContent = on ? "Favorited" : "Favorite";
 }
 
-const WRONG_NUDGES = [
-  "Not quite — take another shot! 💪",
-  "Close one. Try again!",
-  "Almost! Check the hint 👇",
-  "Not yet — you've got this.",
-  "Hmm, not it. Give it one more try!"
-];
-const RIGHT_CHEERS = [
-  "✓ Correct! Nice one. 🎉",
-  "✓ Boom — nailed it! 💥",
-  "✓ That's it! 🧠",
-  "✓ Yes! Crushed it. 🔥",
-  "✓ You got it. 🏆"
-];
-
+/* ---------- Math check ---------- */
 function checkMath() {
   const raw = els.mathInput.value;
   if (!raw.trim()) return;
-  const task = state.currentMath;
+  const task = state.current.math;
   if (!task || !task.answer) return;
-
-  const ok = task.answer.check(raw);
   state.attempts++;
-
-  if (ok) {
-    els.mathInput.classList.remove("no");
-    els.mathInput.classList.add("ok");
-    els.mathInput.disabled = true;
-    els.checkBtn.disabled = true;
-    els.checkBtn.textContent = "✓";
-    els.mathFeedback.textContent = pick(RIGHT_CHEERS);
-    els.mathFeedback.className = "feedback show ok";
-    // auto-mark done
-    if (!state.doneMath) {
-      const btn = document.querySelector('.mark[data-mark="math"]');
-      state.doneMath = true;
-      btn.classList.add("is-done");
-      btn.textContent = "Done! ✓";
-      updateCelebrate();
-    }
+  els.mathState.className = "math-state"; // reset
+  if (task.answer.check(raw)) {
+    addCorrectFx(task);
   } else {
-    els.mathInput.classList.remove("ok");
-    els.mathInput.classList.add("no");
-    let msg = pick(WRONG_NUDGES);
-    if (state.attempts >= 3) {
-      msg += ` <span class="reveal-link" id="revealLink">Show answer</span>`;
-    }
-    els.mathFeedback.innerHTML = msg;
-    els.mathFeedback.className = "feedback show no";
-    const rl = document.getElementById("revealLink");
-    if (rl) rl.addEventListener("click", revealAnswer);
-    // Clear the red state shortly after so they can type again
-    setTimeout(() => els.mathInput.classList.remove("no"), 800);
-    els.mathInput.select();
+    addWrongFx();
   }
 }
-
+function addCorrectFx(task) {
+  els.mathState.textContent = `✓ NICE WORK — ${task.answer.canonical}`;
+  els.mathState.classList.add("show", "correct");
+  els.mathCard.classList.add("celebrate");
+  els.xpBurst.classList.remove("fire");
+  void els.xpBurst.offsetWidth; // reflow to retrigger
+  els.xpBurst.classList.add("fire");
+  if (navigator.vibrate) navigator.vibrate(10);
+  setTimeout(() => els.mathCard.classList.remove("celebrate"), 900);
+  els.mathInput.disabled = true;
+  els.mathCheck.disabled = true;
+  if (!state.doneMath) {
+    state.doneMath = true;
+    awardMissionXp();
+  }
+}
+function addWrongFx() {
+  const msg = state.attempts >= 3
+    ? `Not quite — keep trying! <span class="reveal-link" id="revealLink">Show answer</span>`
+    : pickWrongNudge();
+  els.mathState.innerHTML = msg;
+  els.mathState.classList.add("show", "wrong");
+  els.mathInputWrap.classList.remove("shake");
+  void els.mathInputWrap.offsetWidth;
+  els.mathInputWrap.classList.add("shake");
+  els.mathInput.select();
+  const rl = document.getElementById("revealLink");
+  if (rl) rl.addEventListener("click", revealAnswer);
+}
 function revealAnswer() {
-  const task = state.currentMath;
+  const task = state.current.math;
   if (!task) return;
-  els.mathFeedback.innerHTML = `Answer: <b>${task.answer.canonical}</b>`;
-  els.mathFeedback.className = "feedback show no";
   els.mathInput.value = task.answer.canonical;
   els.mathInput.disabled = true;
-  els.checkBtn.disabled = true;
+  els.mathCheck.disabled = true;
+  els.mathState.innerHTML = `Answer: <b>${task.answer.canonical}</b>`;
+  els.mathState.className = "math-state show wrong";
 }
-
-const CHEERS = [
-  "Nice work! 🎉", "Boom — crushed it! 💥", "Legendary. 🏆",
-  "You're on fire! 🔥", "Mission complete, agent. 🕶️",
-  "Level up! ⬆️", "Sharp thinking! ⚡", "Two for two. Huge. 🚀"
+const WRONG_NUDGES = [
+  "Not quite — take another shot!",
+  "Close one. Try again!",
+  "Almost! Check the hint 👇",
+  "Not yet — you've got this.",
+  "Hmm, not it. Give it one more try!",
 ];
+function pickWrongNudge() { return WRONG_NUDGES[Math.floor(Math.random() * WRONG_NUDGES.length)]; }
 
-function updateCelebrate() {
-  if (state.doneAI && state.doneMath && state.doneTrivia) {
-    els.celebrate.textContent = pick(CHEERS);
-    els.celebrate.classList.add("show");
+/* ---------- Trivia handler ---------- */
+function handleTrivia(btn) {
+  if (state.triviaAnswered) return;
+  state.triviaAnswered = true;
+  const correctKey = els.triviaOpts.dataset.correct;
+  const isCorrect = btn.dataset.key === correctKey;
+  els.triviaOpts.querySelectorAll(".trivia-opt").forEach(o => {
+    o.setAttribute("aria-pressed", o === btn ? "true" : "false");
+    o.classList.remove("correct", "wrong");
+    if (o.dataset.key === correctKey) o.classList.add("correct");
+  });
+  if (!isCorrect) btn.classList.add("wrong");
+  els.triviaReveal.classList.add("show");
+  if (isCorrect && navigator.vibrate) navigator.vibrate(10);
+  if (isCorrect && !state.doneTrivia) {
+    state.doneTrivia = true;
+    const markBtn = els.triviaCard.querySelector('.mark-done');
+    els.triviaCard.classList.add("done");
+    markBtn.textContent = "Done";
+    awardMissionXp();
   }
 }
 
-document.querySelectorAll(".mark").forEach(btn => {
+/* ---------- Mark-done buttons (AI + Trivia manual) ---------- */
+document.querySelectorAll(".mark-done").forEach(btn => {
   btn.addEventListener("click", () => {
     const kind = btn.dataset.mark;
-    if (kind === "ai") state.doneAI = !state.doneAI;
-    else if (kind === "math") state.doneMath = !state.doneMath;
-    else if (kind === "trivia") state.doneTrivia = !state.doneTrivia;
-    const on = kind === "ai" ? state.doneAI : kind === "math" ? state.doneMath : state.doneTrivia;
-    btn.classList.toggle("is-done", on);
-    btn.textContent = on ? "Done! ✓" : "Mark done ✓";
-    updateCelebrate();
+    const card = btn.closest(".mission");
+    if (kind === "ai") {
+      state.doneAI = !state.doneAI;
+      card.classList.toggle("done", state.doneAI);
+      btn.textContent = state.doneAI ? "Done" : "Mark done";
+      if (state.doneAI) awardMissionXp();
+    } else if (kind === "trivia") {
+      state.doneTrivia = !state.doneTrivia;
+      card.classList.toggle("done", state.doneTrivia);
+      btn.textContent = state.doneTrivia ? "Done" : "Mark done";
+      if (state.doneTrivia) awardMissionXp();
+    }
   });
 });
 
-els.favBtn.addEventListener("click", toggleFav);
+/* ---------- AI copy prompt ---------- */
+els.aiCopy.addEventListener("click", async () => {
+  const prompt = els.aiCopy.dataset.prompt || "";
+  let copied = false;
+  try { await navigator.clipboard.writeText(prompt); copied = true; } catch (e) {}
+  if (!copied) {
+    // Fallback for older Safari without clipboard API
+    const ta = document.createElement("textarea");
+    ta.value = prompt; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); copied = true; } catch (e) {}
+    document.body.removeChild(ta);
+  }
+  els.aiCopy.classList.add("copied");
+  els.aiCopy.querySelector(".copy-label").textContent = "✓ Copied";
+  setTimeout(() => {
+    els.aiCopy.classList.remove("copied");
+    els.aiCopy.querySelector(".copy-label").textContent = "▸ Copy prompt";
+  }, 1600);
+});
 
-/* ---------- Theme (light/dark) ---------- */
-const THEME_KEY = "ddm_theme";
-function getInitialTheme() {
-  try {
-    const saved = localStorage.getItem(THEME_KEY);
-    if (saved === "light" || saved === "dark") return saved;
-  } catch (e) {}
-  if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
-  return "light";
-}
-function applyTheme(t) {
-  document.documentElement.setAttribute("data-theme", t);
-  const btn = document.getElementById("themeBtn");
-  if (btn) btn.textContent = t === "dark" ? "☀️" : "🌙";
-  // Match the iOS status bar to the active theme
-  const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute("content", t === "dark" ? "#0e0a26" : "#5b47e0");
-}
-function toggleTheme() {
-  const cur = document.documentElement.getAttribute("data-theme") || "light";
-  const next = cur === "dark" ? "light" : "dark";
-  try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
-  applyTheme(next);
-}
-document.getElementById("themeBtn").addEventListener("click", toggleTheme);
-applyTheme(getInitialTheme());
-// Follow system changes if the user hasn't picked an explicit theme yet.
-if (window.matchMedia) {
-  window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", e => {
-    try {
-      if (!localStorage.getItem(THEME_KEY)) applyTheme(e.matches ? "dark" : "light");
-    } catch (err) {}
-  });
-}
+/* ---------- Favorite ---------- */
+els.favBtn.addEventListener("click", () => {
+  const q = state.current.quote;
+  if (!q) return;
+  const k = quoteKey(q);
+  if (favs.has(k)) favs.delete(k); else favs.add(k);
+  saveFavs(favs);
+  paintFav();
+});
 
-els.newBtn.addEventListener("click", refresh);
-els.checkBtn.addEventListener("click", checkMath);
+/* ---------- Math input ---------- */
+els.mathCheck.addEventListener("click", checkMath);
 els.mathInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter") { e.preventDefault(); checkMath(); }
 });
 
-setDate();
-refresh();
+/* ---------- Refresh (new missions) ---------- */
+function refresh() {
+  // pull new tasks (cross-session no-repeat)
+  const ai     = pickUnseen("ai",     buildAITask,    t => t.task);
+  const math   = pickUnseen("math",   buildMathTask,  t => t.task);
+  const trivia = pickUnseen("trivia", buildTrivia,    t => t.q);
+  const quote  = pickUnseen("quote",  buildQuote,     q => q.author + "::" + q.text);
 
-// Console sanity (dev): log bank size so we can confirm > 1000 combos.
-console.log("AI task combinations available:", aiBankSize().toLocaleString());
-console.log("Math templates:", MATH_BUILDERS.length, "(each randomized into hundreds+ of variants)");
+  markSeen("ai",     ai.task);
+  markSeen("math",   math.task);
+  markSeen("trivia", trivia.q);
+  markSeen("quote",  quote.author + "::" + quote.text);
+
+  state.current.ai = ai;
+  state.current.math = math;
+  state.current.trivia = trivia;
+  state.current.quote = quote;
+  state.doneAI = state.doneMath = state.doneTrivia = false;
+
+  renderAI(ai);
+  renderMath(math);
+  renderTrivia(trivia);
+  renderQuote(quote);
+
+  // reset card "done" classes + mark-done labels
+  document.querySelectorAll(".mission.done").forEach(c => c.classList.remove("done"));
+  document.querySelectorAll(".mark-done").forEach(b => b.textContent = "Mark done");
+}
+
+els.newMissions.addEventListener("click", () => {
+  // dim + restore animation + then swap content
+  const cards = document.querySelectorAll(".mission");
+  cards.forEach((c, i) => {
+    c.style.transition = "opacity 200ms ease, transform 200ms ease";
+    c.style.opacity = "0.3";
+    c.style.transform = "translateY(4px) scale(0.995)";
+  });
+  if (navigator.vibrate) navigator.vibrate(8);
+  setTimeout(() => {
+    refresh();
+    cards.forEach((c, i) => {
+      setTimeout(() => {
+        c.style.opacity = ""; c.style.transform = ""; c.style.transition = "";
+      }, i * 60);
+    });
+  }, 220);
+});
+
+/* ---------- Theme ---------- */
+(function initTheme() {
+  const STORAGE_KEY = "ddm-theme";
+  const root = document.documentElement;
+  const themeMeta = document.querySelector('meta[name="theme-color"]:not([media])');
+  function paintMeta(t) {
+    if (themeMeta) themeMeta.setAttribute("content", t === "dark" ? "#06060d" : "#f6f2e9");
+  }
+  paintMeta(root.getAttribute("data-theme"));
+  els.themeToggle.addEventListener("click", () => {
+    const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem(STORAGE_KEY, next); } catch (e) {}
+    paintMeta(next);
+  });
+  if (window.matchMedia) {
+    matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", e => {
+      try {
+        if (localStorage.getItem(STORAGE_KEY)) return;
+        const next = e.matches ? "dark" : "light";
+        root.setAttribute("data-theme", next);
+        paintMeta(next);
+      } catch (err) {}
+    });
+  }
+})();
+
+/* ---------- Boot ---------- */
+initDailyCounters();
+paintCounters();
+paintDate();
+refresh();
 </script>
 </body>
 </html>

@@ -370,10 +370,115 @@
     .wrap { padding-top: 40px; }
     h1 { font-size: 34px; }
   }
+
+  /* Theme toggle button */
+  .wrap { position: relative; }
+  .theme-toggle {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: #fff;
+    font-size: 20px;
+    border: 0;
+    cursor: pointer;
+    z-index: 10;
+    display: grid;
+    place-items: center;
+    line-height: 1;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  .theme-toggle:active { transform: scale(0.92); }
+
+  /* =========================  DARK MODE  ========================= */
+  [data-theme="dark"] {
+    --card: #1d1940;
+    --ink: #ece8ff;
+    --ink-soft: #aea7d4;
+    --accent: #b3a3ff;
+    --accent-2: #ff85c4;
+    --chip: #2c2658;
+    --chip-ink: #c8bcff;
+    --shadow: 0 14px 36px rgba(0, 0, 0, 0.5);
+  }
+  [data-theme="dark"] body {
+    background:
+      radial-gradient(1200px 800px at 10% -10%, #3a1f7a 0%, transparent 60%),
+      radial-gradient(900px 700px at 110% 10%, #5a1f6e 0%, transparent 55%),
+      linear-gradient(160deg, #0e0a26 0%, #1e1140 60%, #38113f 100%);
+  }
+  [data-theme="dark"] .tag { background: #2c2658; color: #c8bcff; }
+  [data-theme="dark"] .tag.math   { background: #143b30; color: #6fe4b6; }
+  [data-theme="dark"] .tag.trivia { background: #3d2417; color: #ffb88a; }
+  [data-theme="dark"] .tag.quote  { background: #3d2e10; color: #ffd97a; }
+  [data-theme="dark"] .icon.ai     { background: linear-gradient(135deg, #2a2454, #3a2058); }
+  [data-theme="dark"] .icon.math   { background: linear-gradient(135deg, #143b30, #3d2e10); }
+  [data-theme="dark"] .icon.trivia { background: linear-gradient(135deg, #3d2417, #3a1f2e); }
+  [data-theme="dark"] .icon.quote  { background: linear-gradient(135deg, #3d2e10, #3a1f2e); }
+  [data-theme="dark"] .hint {
+    background: #14112e;
+    color: #aea7d4;
+    border-left-color: #b3a3ff;
+  }
+  [data-theme="dark"] .card.math .hint {
+    background: #102a23;
+    border-left-color: #2fd8a8;
+  }
+  [data-theme="dark"] .mark {
+    background: #2c2658; color: #c8bcff;
+  }
+  [data-theme="dark"] .card.math   .mark { background: #143b30; color: #6fe4b6; }
+  [data-theme="dark"] .card.trivia .mark { background: #3d2417; color: #ffb88a; }
+  [data-theme="dark"] .answer-input {
+    background: #14112e;
+    border-color: #2e2755;
+    color: #ece8ff;
+  }
+  [data-theme="dark"] .answer-input::placeholder { color: #6c6594; }
+  [data-theme="dark"] .answer-input:focus { background: #1c1841; border-color: #2fd8a8; }
+  [data-theme="dark"] .answer-input.ok { background: #102a23; border-color: #2fd8a8; }
+  [data-theme="dark"] .answer-input.no { background: #3a1828; border-color: #ff7a9a; }
+  [data-theme="dark"] .opt {
+    background: #251f4d;
+    color: #ece8ff;
+  }
+  [data-theme="dark"] .opt:hover { background: #2e2759; }
+  [data-theme="dark"] .opt .letter { background: #3d2417; color: #ffb88a; }
+  [data-theme="dark"] .opt.correct {
+    background: #102a23; border-color: #2fd8a8; color: #6fe4b6;
+  }
+  [data-theme="dark"] .opt.correct .letter { background: #2fd8a8; color: #0e0a26; }
+  [data-theme="dark"] .opt.wrong {
+    background: #3a1828; border-color: #ff7a9a; color: #ff9bb5;
+  }
+  [data-theme="dark"] .opt.wrong .letter { background: #ff7a9a; color: #0e0a26; }
+  [data-theme="dark"] .funfact {
+    background: #14112e;
+    color: #aea7d4;
+  }
+  [data-theme="dark"] .fav-btn { background: #3d2e10; color: #ffd97a; }
+  [data-theme="dark"] .feedback.ok { color: #6fe4b6; }
+  [data-theme="dark"] .feedback.no { color: #ff9bb5; }
+  [data-theme="dark"] .feedback .reveal-link { color: #b3a3ff; }
+  [data-theme="dark"] footer { color: rgba(255,255,255,0.65); }
+  [data-theme="dark"] .badge { background: rgba(255,255,255,0.12); }
+  [data-theme="dark"] .btn-ghost { background: rgba(255,255,255,0.9); }
+  [data-theme="dark"] .theme-toggle { background: rgba(255,255,255,0.12); }
+
+  /* Smooth transitions when toggling */
+  body, .card, .hint, .opt, .answer-input, .mark, .tag, .funfact, .fav-btn, .theme-toggle {
+    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
+  <button id="themeBtn" class="theme-toggle" aria-label="Toggle light/dark mode" title="Toggle light/dark">🌙</button>
   <header>
     <div class="badge">Daily Missions</div>
     <h1>Daniel's Daily Missions</h1>
@@ -2239,6 +2344,41 @@ document.querySelectorAll(".mark").forEach(btn => {
 });
 
 els.favBtn.addEventListener("click", toggleFav);
+
+/* ---------- Theme (light/dark) ---------- */
+const THEME_KEY = "ddm_theme";
+function getInitialTheme() {
+  try {
+    const saved = localStorage.getItem(THEME_KEY);
+    if (saved === "light" || saved === "dark") return saved;
+  } catch (e) {}
+  if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
+  return "light";
+}
+function applyTheme(t) {
+  document.documentElement.setAttribute("data-theme", t);
+  const btn = document.getElementById("themeBtn");
+  if (btn) btn.textContent = t === "dark" ? "☀️" : "🌙";
+  // Match the iOS status bar to the active theme
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute("content", t === "dark" ? "#0e0a26" : "#5b47e0");
+}
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute("data-theme") || "light";
+  const next = cur === "dark" ? "light" : "dark";
+  try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+  applyTheme(next);
+}
+document.getElementById("themeBtn").addEventListener("click", toggleTheme);
+applyTheme(getInitialTheme());
+// Follow system changes if the user hasn't picked an explicit theme yet.
+if (window.matchMedia) {
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", e => {
+    try {
+      if (!localStorage.getItem(THEME_KEY)) applyTheme(e.matches ? "dark" : "light");
+    } catch (err) {}
+  });
+}
 
 els.newBtn.addEventListener("click", refresh);
 els.checkBtn.addEventListener("click", checkMath);

@@ -65,10 +65,27 @@
   --on-mint:   #04261d;
   --on-gold:   #1a1820;
 
+  /* slot-1 variant accents */
+  --coral:    #ff5470;
+  --coral-hi: #ff8a99;
+  --cyan:     #0bc4d1;
+  --cyan-hi:  #4de1ec;
+  --indigo:   #5b8def;
+  --joke:     #ffb13b;
+  --joke-hi:  #ffd24a;
+  /* boss battle */
+  --boss:     #d12454;
+  --boss-hi:  #ff4d7f;
+  --boss-deep:#3a0c2c;
+
   --stripe-ai:     linear-gradient(90deg, var(--violet-hi) 0%, var(--violet) 100%);
+  --stripe-photo:  linear-gradient(90deg, var(--coral-hi) 0%, var(--coral) 100%);
+  --stripe-riddle: linear-gradient(90deg, var(--cyan-hi) 0%, var(--indigo) 100%);
+  --stripe-joke:   linear-gradient(90deg, var(--joke-hi) 0%, var(--orange) 100%);
   --stripe-math:   linear-gradient(90deg, var(--mint-hi) 0%, var(--gold) 100%);
   --stripe-trivia: linear-gradient(90deg, var(--orange) 0%, var(--pink) 100%);
   --stripe-quote:  linear-gradient(90deg, var(--gold) 0%, var(--pink-hi) 100%);
+  --stripe-boss:   linear-gradient(90deg, var(--violet) 0%, var(--boss) 50%, var(--gold) 100%);
 
   --r-card:  22px;
   --r-ctrl:  14px;
@@ -220,6 +237,9 @@ main {
 }
 
 .mission.ai     { --stripe: var(--stripe-ai);     --accent: var(--violet); --accent-hi: var(--violet-hi); }
+.mission.photo  { --stripe: var(--stripe-photo);  --accent: var(--coral);  --accent-hi: var(--coral-hi);  }
+.mission.riddle { --stripe: var(--stripe-riddle); --accent: var(--indigo); --accent-hi: var(--cyan-hi);   }
+.mission.joke   { --stripe: var(--stripe-joke);   --accent: var(--orange); --accent-hi: var(--joke-hi);   }
 .mission.math   { --stripe: var(--stripe-math);   --accent: var(--mint);   --accent-hi: var(--mint-hi);   }
 .mission.trivia { --stripe: var(--stripe-trivia); --accent: var(--pink);   --accent-hi: var(--pink-hi);   }
 .mission.quote  { --stripe: var(--stripe-quote);  --accent: var(--gold);   --accent-hi: var(--pink-hi);   }
@@ -552,6 +572,239 @@ main {
 }
 .favorite-btn[aria-pressed="true"] .heart { transform: scale(1.25); }
 
+/* Slot-1 variant action buttons (Photo/Riddle/Joke share patterns with AI) */
+.slot1-action {
+  appearance: none; border: 0;
+  padding: 0 18px; height: 52px;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 12px; font-weight: 700; letter-spacing: 0.06em;
+  border-radius: var(--r-ctrl); cursor: pointer;
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: transform 120ms ease, box-shadow 180ms ease;
+  flex-shrink: 0;
+}
+.slot1-action:active { transform: scale(0.97); }
+.mission.photo  .slot1-action { background: linear-gradient(180deg, var(--coral-hi), var(--coral));   color: #2a0010; box-shadow: 0 8px 20px -8px color-mix(in oklab, var(--coral),  transparent 50%); }
+.mission.riddle .slot1-action { background: linear-gradient(180deg, var(--cyan-hi),  var(--indigo));  color: #fff;    box-shadow: 0 8px 20px -8px color-mix(in oklab, var(--indigo), transparent 50%); }
+.mission.joke   .slot1-action { background: linear-gradient(180deg, var(--joke-hi),  var(--orange));  color: #2a1400; box-shadow: 0 8px 20px -8px color-mix(in oklab, var(--orange), transparent 50%); }
+.slot1-action.revealed { background: linear-gradient(180deg, #d6d4cd, #b8b6ae) !important; color: #0c0d18 !important; }
+
+.slot1-reveal {
+  display: none;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: var(--r-ctrl);
+  background: color-mix(in oklab, var(--accent), transparent 92%);
+  border-left: 3px solid var(--accent);
+  font-size: 15px; line-height: 1.4;
+  color: var(--ink);
+  font-weight: 600;
+}
+[data-theme="dark"] .slot1-reveal {
+  background: color-mix(in oklab, var(--accent-hi), transparent 90%);
+  border-left-color: var(--accent-hi);
+  color: var(--ink);
+}
+.slot1-reveal.show { display: block; animation: pop-in 280ms cubic-bezier(.34,1.56,.64,1); }
+.slot1-reveal .h-lbl {
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.2em; font-weight: 700;
+  color: var(--accent);
+  display: block; margin-bottom: 4px;
+  text-transform: uppercase;
+}
+[data-theme="dark"] .slot1-reveal .h-lbl { color: var(--accent-hi); }
+.slot1-action-row { display: flex; gap: 10px; align-items: stretch; margin-top: 14px; flex-wrap: wrap; }
+.slot1-action-row .mark-done { margin-top: 0; flex: 1; min-width: 140px; }
+
+/* ============== BOSS BATTLE ============== */
+.boss-card {
+  position: relative;
+  background: var(--card);
+  border-radius: var(--r-card);
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  margin-bottom: 18px;
+  isolation: isolate;
+}
+.boss-card::before {
+  content: ""; position: absolute;
+  inset: 0 0 auto 0; height: 4px;
+  background: var(--stripe-boss); z-index: 2;
+}
+.boss-card::after {
+  content: ""; position: absolute;
+  inset: 0 0 auto 0; height: 4px;
+  z-index: 3;
+  background: linear-gradient(90deg, transparent 0%, transparent 60%, rgba(255,255,255,0.7) 78%, transparent 100%);
+  transform: translateX(-100%);
+  animation: stripe-shine 5s linear infinite;
+  pointer-events: none;
+}
+.boss-inner { padding: 18px 22px 20px; }
+.boss-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10.5px; font-weight: 800; letter-spacing: 0.22em;
+  color: var(--boss);
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+[data-theme="dark"] .boss-eyebrow {
+  color: var(--boss-hi);
+  text-shadow: 0 0 10px color-mix(in oklab, var(--boss-hi), transparent 70%);
+}
+.boss-eyebrow .boss-day {
+  color: var(--ink-2);
+  font-weight: 700;
+}
+.boss-title {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.018em;
+  line-height: 1.15;
+  margin: 4px 0 4px;
+  color: var(--ink);
+}
+.boss-tagline {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-3);
+  margin: 0 0 10px;
+}
+.boss-dots {
+  display: flex; gap: 8px;
+  margin: 8px 0 14px;
+}
+.boss-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--boss), transparent 86%);
+  border: 1.5px solid color-mix(in oklab, var(--boss), transparent 60%);
+  transition: all 200ms ease;
+}
+.boss-dot.filled {
+  background: var(--boss);
+  border-color: var(--boss);
+  box-shadow: 0 0 10px color-mix(in oklab, var(--boss-hi), transparent 50%);
+}
+[data-theme="dark"] .boss-dot.filled {
+  background: var(--boss-hi);
+  border-color: var(--boss-hi);
+  box-shadow: 0 0 14px color-mix(in oklab, var(--boss-hi), transparent 40%);
+}
+.boss-dot.today {
+  background: color-mix(in oklab, var(--gold), transparent 50%);
+  border-color: var(--gold);
+  animation: boss-dot-pulse 1.8s ease-in-out infinite;
+}
+@keyframes boss-dot-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.18); box-shadow: 0 0 14px var(--gold); }
+}
+.boss-nudge {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+  margin: 4px 0 14px;
+  color: var(--ink);
+}
+.boss-nudge .today-tag {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  font-weight: 800;
+  color: var(--boss);
+  background: color-mix(in oklab, var(--boss), transparent 88%);
+  padding: 3px 8px;
+  border-radius: 6px;
+  margin-right: 8px;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+[data-theme="dark"] .boss-nudge .today-tag {
+  color: var(--boss-hi);
+  background: color-mix(in oklab, var(--boss-hi), transparent 84%);
+}
+.boss-mark {
+  appearance: none; border: 0;
+  width: 100%;
+  padding: 15px 16px;
+  background: linear-gradient(135deg, var(--boss-hi) 0%, var(--boss) 100%);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 13px; font-weight: 800; letter-spacing: 0.14em;
+  border-radius: var(--r-ctrl);
+  cursor: pointer;
+  text-transform: uppercase;
+  box-shadow: 0 10px 22px -10px color-mix(in oklab, var(--boss), transparent 30%);
+  transition: transform 120ms ease;
+}
+.boss-mark:active { transform: scale(0.985); }
+.boss-mark.done-today {
+  background: color-mix(in oklab, var(--boss), transparent 82%);
+  color: var(--boss);
+  cursor: default;
+  box-shadow: none;
+}
+[data-theme="dark"] .boss-mark.done-today {
+  background: color-mix(in oklab, var(--boss-hi), transparent 80%);
+  color: var(--boss-hi);
+}
+.boss-card.defeated {
+  background: linear-gradient(135deg, color-mix(in oklab, var(--boss), transparent 90%) 0%, color-mix(in oklab, var(--gold), transparent 92%) 100%);
+}
+[data-theme="dark"] .boss-card.defeated {
+  background: linear-gradient(135deg, color-mix(in oklab, var(--boss-hi), transparent 80%) 0%, color-mix(in oklab, var(--gold), transparent 84%) 100%);
+}
+.boss-card.defeated .boss-eyebrow { color: var(--gold); }
+[data-theme="dark"] .boss-card.defeated .boss-eyebrow {
+  color: var(--gold);
+  text-shadow: 0 0 14px color-mix(in oklab, var(--gold), transparent 50%);
+}
+.boss-defeated-stamp {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--gold);
+  text-transform: uppercase;
+  text-shadow: 0 0 24px color-mix(in oklab, var(--gold), transparent 50%);
+  margin: 10px 0 4px;
+}
+.boss-next-up {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  margin-top: 10px;
+}
+
+/* Big celebration XP burst (boss finale) */
+.xp-burst-boss {
+  position: fixed;
+  left: 50%; top: 40%;
+  transform: translate(-50%, -50%) scale(0.8);
+  font-family: var(--font-mono);
+  font-size: 32px; font-weight: 800; letter-spacing: 0.1em;
+  color: var(--gold);
+  text-shadow: 0 0 24px color-mix(in oklab, var(--gold), transparent 30%),
+               0 0 60px color-mix(in oklab, var(--boss-hi), transparent 50%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1000;
+  white-space: nowrap;
+}
+.xp-burst-boss.fire { animation: boss-xp-fly 1800ms cubic-bezier(.2,.7,.2,1) forwards; }
+@keyframes boss-xp-fly {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+  15%  { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+  60%  { opacity: 1; transform: translate(-50%, -60%) scale(1.0); }
+  100% { opacity: 0; transform: translate(-50%, -120%) scale(0.95); }
+}
+
 /* New missions hero */
 .new-missions {
   appearance: none; border: 0;
@@ -602,6 +855,13 @@ main {
 </head>
 <body>
 <main>
+  <!-- BOSS BATTLE (above Mission Brief) -->
+  <section class="boss-card" id="bossCard">
+    <div class="boss-inner" id="bossInner">
+      <!-- populated by JS -->
+    </div>
+  </section>
+
   <header class="app-header">
     <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode">
       <span class="knob">
@@ -614,23 +874,24 @@ main {
     <div class="sub">DANIEL · LV.<span id="lvNum">01</span> · <span id="xpNum">0</span> XP TODAY</div>
   </header>
 
-  <!-- AI MISSION -->
-  <article class="mission ai" id="card-ai">
+  <!-- SLOT 01 — daily rotating: AI / Photo / Riddle / Joke -->
+  <article class="mission ai" id="card-slot1">
     <div class="mission-inner">
       <div class="mission-head">
-        <div class="mission-label">AI Mission</div>
+        <div class="mission-label" id="slot1Label">AI Mission</div>
         <div class="mission-meta">01/04</div>
       </div>
-      <p class="mission-q" id="aiTask"></p>
-      <div class="hint">
+      <p class="mission-q" id="slot1Task"></p>
+      <div class="hint" id="slot1HintWrap">
         <span aria-hidden="true">💡</span>
-        <div><span class="h-lbl">Tip</span><span id="aiHint"></span></div>
+        <div><span class="h-lbl" id="slot1HintLabel">Tip</span><span id="slot1Hint"></span></div>
       </div>
-      <div class="ai-prompt-row">
-        <button class="ai-copy" type="button" id="aiCopy">
-          <span class="copy-label">▸ Copy prompt</span>
-        </button>
-        <button class="mark-done" type="button" data-mark="ai">Mark done</button>
+      <div class="slot1-reveal" id="slot1Reveal">
+        <span class="h-lbl" id="slot1RevealLabel">Answer</span>
+        <span id="slot1RevealText"></span>
+      </div>
+      <div class="slot1-action-row" id="slot1ActionRow">
+        <!-- buttons inserted by JS per variant; mark-done is always last -->
       </div>
     </div>
   </article>
@@ -928,6 +1189,417 @@ function aiBankSize() {
   }
   return total;
 }
+
+/* ---------- PHOTO MISSIONS ---------- */
+const PHOTO_MISSIONS = [
+  { task: "Take a photo of something blue you'd never normally notice.", hint: "Hunt around the house — laundry, food packaging, marker caps, sky." },
+  { task: "Take a photo of your shadow doing something silly.", hint: "Strike a pose, jump, or hold a weird object — make the shadow tell a story." },
+  { task: "Photograph 3 things that are the same shape but different sizes.", hint: "Cups, balls, plates, coins — anything sharing a circle or square." },
+  { task: "Find and photograph the smallest plant you can.", hint: "Cracks in sidewalks, moss on walls — tiny life hides everywhere." },
+  { task: "Take a photo from an angle you've never tried before.", hint: "Lie on the floor, climb on a chair, point straight up." },
+  { task: "Photograph something you think is beautiful that nobody talks about.", hint: "A doorknob, a stain on the ceiling, a scratched-up sticker." },
+  { task: "Take a photo that has exactly 5 things in it.", hint: "Count carefully. Crop if you need to." },
+  { task: "Take a photo where the main subject is NOT in the middle.", hint: "Try the rule of thirds — push your subject to a corner." },
+  { task: "Photograph something red, yellow, and green all in one shot.", hint: "Traffic light, fruit bowl, a cluttered shelf — anywhere with all three." },
+  { task: "Take a close-up so close the object is almost unrecognizable.", hint: "Get within an inch. Then back off slightly until it's barely guessable." },
+  { task: "Photograph a reflection — water, mirror, screen, anything shiny.", hint: "Puddles after rain are gold. Bonus if your face shows up." },
+  { task: "Take a photo through something (a glass, a hole, leaves).", hint: "Foreground frames change the whole feeling of a shot." },
+  { task: "Photograph the messiest thing in your house.", hint: "Junk drawer, garage corner, under your bed. Be honest." },
+  { task: "Take a photo of something taller than you.", hint: "Tree, lamp, door, sibling, statue. Look up." },
+  { task: "Photograph 3 textures next to each other — smooth, rough, soft.", hint: "Wood, stone, fabric, fur, paper — combos make great shots." },
+  { task: "Take a photo that looks like it could be a postcard.", hint: "Wide, balanced, golden hour if you can wait for it." },
+  { task: "Photograph the same thing 3 times from 3 different distances.", hint: "Far, medium, close. See how the story changes." },
+  { task: "Take a photo of a face — human, pet, doll, statue, drawing.", hint: "Eyes matter. Get them in focus." },
+  { task: "Photograph something old.", hint: "Books, coins, photos, family heirlooms — texture tells the story." },
+  { task: "Take a photo with NO people in it but that feels like people are nearby.", hint: "An unmade bed, a half-finished puzzle, abandoned shoes." },
+  { task: "Photograph water in any form — drop, glass, puddle, river.", hint: "Movement vs. stillness changes the whole mood." },
+  { task: "Take a photo of food before you eat it.", hint: "Top-down or 45° angle works best. Natural light beats flash." },
+  { task: "Photograph something that makes a sound.", hint: "Instrument, bell, kettle, speaker, phone — but show the silence." },
+  { task: "Take a photo with a strong shadow as the main subject.", hint: "Strong sun + bold object = drama." },
+  { task: "Photograph the inside of something you don't usually open.", hint: "Drawer, cupboard, pocket, jewelry box, fridge." },
+  { task: "Take a photo of something that's about to fall, melt, or break.", hint: "Action in waiting — capture the suspense." },
+  { task: "Photograph someone or something from behind.", hint: "Backs of heads tell stories your face can't." },
+  { task: "Take a photo of light leaking in from somewhere.", hint: "Window blinds, doorway, hole, lampshade — chase the rays." },
+  { task: "Photograph two things that don't usually belong together.", hint: "A toy on a bookshelf, a vegetable on the floor — make a weird pairing." },
+  { task: "Take a photo of something that smells nice.", hint: "Flowers, food, fresh laundry — sight in service of another sense." },
+  { task: "Photograph a path or road from where you stand.", hint: "Lead the eye somewhere. Stay low if you can." },
+  { task: "Take a photo with one main bright color and everything else dull.", hint: "One bright shirt in a dull room. One flower in a dirt path." },
+  { task: "Photograph an animal — pet, bird, bug, even a stuffed one.", hint: "Get on its eye level. Patience pays off." },
+  { task: "Take a photo of a clock or watch.", hint: "Try to capture motion if you can — second hand sweep." },
+  { task: "Photograph 3 things shaped like circles.", hint: "Plate, button, eye, coin, lid, bottle bottom." },
+  { task: "Take a photo where you're touching something interesting.", hint: "Your hand becomes the storyteller — selfies of fingers." },
+  { task: "Photograph a window from the inside, with the world outside.", hint: "Focus on what's inside OR outside, not both." },
+  { task: "Take a photo of someone laughing.", hint: "Tell them a joke first. Capture the second the laugh starts." },
+  { task: "Photograph yourself in a mirror — but make it look intentional.", hint: "Frame it like art. Hide or include the camera deliberately." },
+  { task: "Take a photo where movement is happening (blur is OK).", hint: "Running, jumping, water, fan, car. Embrace the blur." },
+  { task: "Photograph the corner of a room you've never paid attention to.", hint: "Look up at ceiling corners. Look down at floor edges." },
+  { task: "Take a photo of something with a number on it.", hint: "Page, sign, license plate, jersey, clock — get the digit clear." },
+  { task: "Photograph 5 different colors in a single frame.", hint: "Look at a crowded shelf or a packed drawer." },
+  { task: "Take a photo of feet — yours, others', animal paws.", hint: "Standing on something interesting? Better." },
+  { task: "Photograph something that's symmetrical.", hint: "Architecture, leaves, faces (with the right angle). Center it." },
+  { task: "Take a photo where the sky takes up at least half the frame.", hint: "Crouch low. Make the sky the hero." },
+  { task: "Photograph a stack of things.", hint: "Books, pillows, plates, pancakes, blocks — stacks have rhythm." },
+  { task: "Take a photo that tells a story in one shot.", hint: "Toys mid-battle, food half-eaten, laundry mid-fold." },
+  { task: "Photograph the same spot today and tomorrow at the same time.", hint: "Notice what's different — light, weather, who's there." },
+  { task: "Take a photo of something you made today.", hint: "Drawing, Lego, recipe, sandcastle. Show it off." },
+  { task: "Photograph an object pretending to be something else.", hint: "Spoon as a mirror, banana as a phone, sock as a puppet." },
+  { task: "Take a photo of the night sky or a dark room with a light.", hint: "Hold the phone still — rest it on something." },
+  { task: "Photograph rain, snow, fog, or wind in motion.", hint: "Tricky — try shooting toward a streetlight or window light." },
+  { task: "Take a photo where the colors all match (analogous palette).", hint: "All blues, all warm reds — pick a corner that already does this." },
+  { task: "Photograph something that's hidden but you can see hints of.", hint: "A cat's tail under a couch, a wrapped gift, a foot poking out." },
+  { task: "Take a photo of your favorite room from a brand new angle.", hint: "From the ground? From the doorway? Standing on a chair?" },
+  { task: "Photograph hands doing something interesting.", hint: "Building, drawing, typing, holding, gesturing." },
+  { task: "Take a photo where the subject is tiny in a big frame.", hint: "One small thing way over there. Lots of empty space around." },
+  { task: "Photograph a meal you didn't make but want to remember.", hint: "Restaurant dish, school lunch, snack art." },
+  { task: "Take a photo of a sign that confuses or amuses you.", hint: "Weird wording, broken letters, misplaced arrows." },
+  { task: "Photograph stairs — yours, neighbors', mall, library.", hint: "Looking up or down both work. Patterns pop." },
+  { task: "Take a photo of a plant from underneath its leaves.", hint: "Look up. Light filters beautifully through green." },
+  { task: "Photograph a cluttered desk, drawer, or shelf — make it look organized.", hint: "Frame it tight. Cropping is everything." },
+  { task: "Take a photo that uses leading lines (road, fence, hallway).", hint: "Stand where the lines converge to a single point." },
+  { task: "Photograph something that's heavier than it looks.", hint: "Old book, dense fruit, big rock — hint at weight in the shot." },
+  { task: "Take a photo of someone (or yourself) pretending to be a statue.", hint: "Hold still. Pretend you're in a museum." },
+  { task: "Photograph an everyday object as if it were a museum artifact.", hint: "Plain background, dramatic light, careful angle. Make it precious." },
+  { task: "Take a photo of food shaped like a face (or make it).", hint: "Berries for eyes, pasta for hair, banana for mouth." },
+  { task: "Photograph the contents of your pocket or bag laid out neatly.", hint: "Flat lay. Pull it all out, line it up, top-down." },
+  { task: "Take a photo of a book open to a meaningful page.", hint: "Underline a sentence with light or angle." },
+  { task: "Photograph something orange.", hint: "Pumpkins, traffic cones, oranges, sunsets — orange is everywhere in fall." },
+  { task: "Take a photo of someone's hands without showing their face.", hint: "Hands tell more than people realize." },
+  { task: "Photograph a footprint — yours, a pet's, a stranger's in mud or sand.", hint: "Tracks tell tiny stories." },
+  { task: "Take a photo that has a triangle shape hidden in it.", hint: "Roofs, slices of pizza, pyramids of stuff, two arms making a frame." },
+  { task: "Photograph something you'd put in a time capsule.", hint: "What would future-you want to see from today?" },
+  { task: "Take a photo where the focus is intentionally blurry.", hint: "Blur the main subject, focus on the background." },
+  { task: "Photograph a doorway.", hint: "Open or closed? Through it or away from it?" },
+  { task: "Take a photo of a single object on a plain background.", hint: "Like an ad. White paper or a clean wall behind." },
+  { task: "Photograph someone reading.", hint: "Profile, hands on the page, eyes down — let them concentrate." },
+  { task: "Take a photo of yourself or someone you love (selfie counts).", hint: "Don't force a smile — try a quieter expression." },
+  { task: "Photograph the most ordinary thing in your house, but make it look extraordinary.", hint: "Light it well, angle it weird, crop it tight." },
+  { task: "Take a photo from inside something looking out (box, blanket fort, car).", hint: "Frame within a frame — the opening becomes part of the shot." },
+  { task: "Photograph 3 photos that together tell a tiny story.", hint: "Beginning, middle, end. Three frames, one mini-movie." }
+];
+function buildPhoto() { return pick(PHOTO_MISSIONS); }
+
+/* ---------- RIDDLES ---------- */
+const RIDDLES = [
+  { task: "I have keys but no locks. I have space but no rooms. What am I?", answer: "A keyboard", hint: "You use it every day on a screen." },
+  { task: "What has a heart but no other organs?", answer: "A deck of cards", hint: "Think games, not biology." },
+  { task: "I have hands but cannot clap. What am I?", answer: "A clock", hint: "Tick. Tick." },
+  { task: "The more you take, the more you leave behind. What am I?", answer: "Footsteps", hint: "Look down when you walk." },
+  { task: "What gets wetter the more it dries?", answer: "A towel", hint: "Bathroom item." },
+  { task: "I have cities but no people, mountains but no trees. What am I?", answer: "A map", hint: "Folded, often in a glove box." },
+  { task: "What has a thumb and four fingers but is not alive?", answer: "A glove", hint: "You wear one in winter." },
+  { task: "What can travel around the world while staying in a corner?", answer: "A stamp", hint: "On a postcard." },
+  { task: "What has many teeth but cannot bite?", answer: "A comb", hint: "In the bathroom drawer." },
+  { task: "I'm tall when I'm young and short when I'm old. What am I?", answer: "A candle", hint: "It melts as it burns." },
+  { task: "What goes up but never comes down?", answer: "Your age", hint: "Birthday after birthday." },
+  { task: "What's full of holes but still holds water?", answer: "A sponge", hint: "Sink-side hero." },
+  { task: "I'm light as a feather, but the strongest person can't hold me for more than 5 minutes. What am I?", answer: "Breath", hint: "You're using me right now." },
+  { task: "What has to be broken before you can use it?", answer: "An egg", hint: "Breakfast." },
+  { task: "What has a head and a tail but no body?", answer: "A coin", hint: "Flip me." },
+  { task: "What's always in front of you but can't be seen?", answer: "The future", hint: "Tomorrow." },
+  { task: "What runs but never walks, has a mouth but never speaks?", answer: "A river", hint: "Flows downhill." },
+  { task: "If you have me, you want to share me. If you share me, you don't have me. What am I?", answer: "A secret", hint: "Whisper it." },
+  { task: "I have branches but no leaves, trunk, or fruit. What am I?", answer: "A bank", hint: "Money lives in me." },
+  { task: "What can you catch but not throw?", answer: "A cold", hint: "Tissues required." },
+  { task: "What kind of room has no doors or windows?", answer: "A mushroom", hint: "It's in the kitchen, but it's also a fungus." },
+  { task: "What invention lets you look right through a wall?", answer: "A window", hint: "Squarish." },
+  { task: "I have a face and two hands but no arms or legs. What am I?", answer: "A clock", hint: "Telling time." },
+  { task: "What has many keys but can't open a single lock?", answer: "A piano", hint: "Black and white." },
+  { task: "I'm bought by the yard but worn by the foot. What am I?", answer: "Carpet", hint: "On the floor." },
+  { task: "What gets bigger the more you take away from it?", answer: "A hole", hint: "Dig." },
+  { task: "What two things can you never eat for breakfast?", answer: "Lunch and dinner", hint: "It's a trick." },
+  { task: "I have lakes with no water, mountains with no stone, and cities with no buildings. What am I?", answer: "A map", hint: "Paper, folded." },
+  { task: "What word becomes shorter when you add two letters to it?", answer: "Short (short + er)", hint: "Think of comparative adjectives." },
+  { task: "What kind of band never plays music?", answer: "A rubber band", hint: "Stretchy." },
+  { task: "What goes through cities and fields but never moves?", answer: "A road", hint: "You drive on it." },
+  { task: "I have wings but I am not a bird. I am usually inside. What am I?", answer: "A building (or an airplane)", hint: "Like a 'wing of a hospital'." },
+  { task: "What's so fragile that saying its name breaks it?", answer: "Silence", hint: "Shh." },
+  { task: "What can fill a room but takes up no space?", answer: "Light", hint: "Flip a switch." },
+  { task: "The more there is, the less you see. What am I?", answer: "Darkness (or fog)", hint: "Lights out." },
+  { task: "I'm not alive but I grow. I don't have lungs but I need air. I don't have a mouth but water kills me. What am I?", answer: "Fire", hint: "Don't blow on me." },
+  { task: "I have a neck but no head. What am I?", answer: "A bottle", hint: "Twist the cap." },
+  { task: "What kind of tree can you carry in your hand?", answer: "A palm", hint: "Look at your hand." },
+  { task: "Forward I am heavy, backward I am not. What am I?", answer: "The word 'ton' (ton/not)", hint: "Read it backward." },
+  { task: "What has 13 hearts but no other organs?", answer: "A deck of cards (the hearts suit has 13)", hint: "Think cards again." },
+  { task: "I get smaller every time I take a bath. What am I?", answer: "Soap", hint: "Shower shelf." },
+  { task: "I'm orange, I'm a vegetable, and rabbits love me. What am I?", answer: "A carrot", hint: "Bugs Bunny's favorite." },
+  { task: "What flies without wings?", answer: "Time", hint: "Tick tock." },
+  { task: "I'm always hungry and must always be fed. The finger I lick will soon turn red. What am I?", answer: "Fire", hint: "Don't touch." },
+  { task: "What has one eye but cannot see?", answer: "A needle", hint: "Used with thread." },
+  { task: "What can be cracked, made, told, and played?", answer: "A joke", hint: "Laughter." },
+  { task: "What disappears the moment you say its name?", answer: "Silence", hint: "Quiet!" },
+  { task: "I have a spine but no bones. What am I?", answer: "A book", hint: "Library." },
+  { task: "What is so delicate that even mentioning it can break it?", answer: "A promise (or silence)", hint: "Word of honor." },
+  { task: "What can run but never walks?", answer: "Water (or a nose)", hint: "Faucet on." },
+  { task: "Take away my first letter, then my second letter. Take away all my letters and I remain the same. What am I?", answer: "A mailman/postman", hint: "Read it literally." },
+  { task: "I'm an odd number. Take away one letter and I become even. What number am I?", answer: "Seven (remove 's' = even)", hint: "Word trick." },
+  { task: "What kind of cup doesn't hold water?", answer: "A cupcake (or cupboard)", hint: "It has 'cup' in the name." },
+  { task: "What can you serve but never eat?", answer: "A volleyball/tennis ball", hint: "Sport." },
+  { task: "I have rivers but no water, forests but no trees, deserts but no sand. What am I?", answer: "A map", hint: "Folded paper." },
+  { task: "What word is spelled wrong in every dictionary?", answer: "'Wrong'", hint: "Trick question — it's literally spelled W-R-O-N-G." },
+  { task: "I'm yellow, I have a peel, monkeys love me. What am I?", answer: "A banana", hint: "Fruit bowl." },
+  { task: "What goes up and down but doesn't move?", answer: "A staircase", hint: "Floors." },
+  { task: "What has roots that nobody sees, is taller than trees, up it goes, but it never grows?", answer: "A mountain", hint: "Hiking goal." },
+  { task: "What 5-letter word becomes shorter when you add 2 letters?", answer: "Short", hint: "Same one!" },
+  { task: "What has 88 keys but can't open any door?", answer: "A piano", hint: "Same one but reframed." },
+  { task: "I am taken from a mine and shut up in a wooden case, from which I am never released, and yet I am used by almost everybody. What am I?", answer: "Pencil lead", hint: "Writing tool." },
+  { task: "What kind of dog has no tail?", answer: "A hot dog", hint: "Food." },
+  { task: "What word starts with 'e' and ends with 'e' and contains only one letter?", answer: "Envelope", hint: "Mail." },
+  { task: "I have four legs in the morning, two at noon, and three at night. What am I?", answer: "A human (crawling, walking, walking with a cane)", hint: "Classic Sphinx riddle." },
+  { task: "I get sharper the more you use me. What am I?", answer: "Your brain (or a pencil)", hint: "Use it or lose it." },
+  { task: "What weighs more — a pound of feathers or a pound of bricks?", answer: "Same", hint: "Read carefully." },
+  { task: "I never ask questions but am always answered. What am I?", answer: "A doorbell (or phone)", hint: "Ding-dong." },
+  { task: "What kind of bee makes milk?", answer: "A boo-bee (boo-bee → Booby)", hint: "Wordplay." },
+  { task: "What goes around the world but stays in the corner?", answer: "A stamp", hint: "Postage." },
+  { task: "I have legs but cannot walk. What am I?", answer: "A table (or chair)", hint: "In every dining room." },
+  { task: "What word in English is always pronounced wrong?", answer: "'Wrong'", hint: "Trick." },
+  { task: "What gets sharper as you use it but never gets used up?", answer: "Your mind", hint: "Reading sharpens it." },
+  { task: "I have one head, one foot, and four legs. What am I?", answer: "A bed", hint: "You sleep on me." },
+  { task: "What is at the end of a rainbow?", answer: "The letter 'W'", hint: "Look at the word 'rainbow'." },
+  { task: "What can you hold without ever touching?", answer: "A conversation (or your breath)", hint: "Talking." },
+  { task: "What is light as a feather but no one can hold it for long?", answer: "Breath", hint: "Inhale… exhale…" },
+  { task: "What flies forever and rests never?", answer: "Time", hint: "It moves on." },
+  { task: "What can speak without a mouth and hear without ears?", answer: "An echo", hint: "Yell in a canyon." },
+  { task: "What runs but has no legs?", answer: "Water (a river)", hint: "It flows." },
+  { task: "What gets passed down but is never held?", answer: "A name (or a tradition)", hint: "Family." },
+  { task: "I have a tongue but cannot taste. What am I?", answer: "A shoe", hint: "Look down." },
+  { task: "What word, if pronounced right, is wrong; but if pronounced wrong, is right?", answer: "'Wrong'", hint: "Wordplay." },
+  { task: "I'm full of letters but can't read. What am I?", answer: "The alphabet (or a mailbox)", hint: "26 of one or stacks of the other." },
+  { task: "What goes through cities and fields, mountains and valleys, but never moves?", answer: "A road (or a river)", hint: "You drive on it." },
+  { task: "What has a face and two hands but no arms or legs?", answer: "A clock", hint: "On the wall." },
+  { task: "I'm made of water, but if you put me in water, I die. What am I?", answer: "Ice (or a snowflake)", hint: "Cold." },
+  { task: "I follow you all day, but at night I'm gone. What am I?", answer: "Your shadow", hint: "Sunny day." },
+  { task: "I have lakes but no water, mountains but no trees. What am I?", answer: "A map", hint: "Folded." },
+  { task: "I have an ear but cannot hear. What am I?", answer: "An ear of corn", hint: "On the cob." },
+  { task: "What kind of coat is always wet when you put it on?", answer: "A coat of paint", hint: "Painting day." },
+  { task: "What 3-letter word starts and ends with E and has only one letter?", answer: "Eye", hint: "Body part." }
+];
+function buildRiddle() { return pick(RIDDLES); }
+
+/* ---------- JOKES (kid-friendly, 11yo appropriate) ---------- */
+const JOKES = [
+  { setup: "Why don't scientists trust atoms?", punchline: "Because they make up everything!", hint: "Pause for a beat before the punchline." },
+  { setup: "What do you call a fake noodle?", punchline: "An impasta!", hint: "Say it with a goofy Italian accent." },
+  { setup: "Why did the scarecrow win an award?", punchline: "He was outstanding in his field.", hint: "Outstanding — out, standing." },
+  { setup: "Why don't eggs tell jokes?", punchline: "They'd crack each other up.", hint: "Egg pun." },
+  { setup: "What do you call cheese that isn't yours?", punchline: "Nacho cheese!", hint: "Nacho. Not your." },
+  { setup: "Why did the math book look sad?", punchline: "Because it had too many problems.", hint: "Math problems → problems." },
+  { setup: "What's brown and sticky?", punchline: "A stick.", hint: "Anti-joke." },
+  { setup: "Why did the cookie cry?", punchline: "Because his mom was a wafer so long.", hint: "Wafer → away for." },
+  { setup: "What do you call a bear with no teeth?", punchline: "A gummy bear!", hint: "Gummy candy." },
+  { setup: "Why did the bicycle fall over?", punchline: "Because it was two-tired.", hint: "Two-tired = too tired." },
+  { setup: "How do you organize a space party?", punchline: "You planet.", hint: "Planet = plan it." },
+  { setup: "What did the ocean say to the shore?", punchline: "Nothing. It just waved.", hint: "Waves." },
+  { setup: "Why did the golfer bring two pairs of pants?", punchline: "In case he got a hole in one.", hint: "Golf term." },
+  { setup: "What do you call a snowman with a six-pack?", punchline: "An abdominal snowman.", hint: "Abdominal → abominable." },
+  { setup: "What's orange and sounds like a parrot?", punchline: "A carrot.", hint: "Sound it out." },
+  { setup: "What did the grape say when it got stepped on?", punchline: "Nothing — it just let out a little wine.", hint: "Wine = whine." },
+  { setup: "Why don't oysters share their pearls?", punchline: "Because they're shellfish.", hint: "Shellfish = selfish." },
+  { setup: "What did one wall say to the other?", punchline: "Meet me at the corner.", hint: "Walls have corners." },
+  { setup: "Why did the computer go to the doctor?", punchline: "Because it had a virus.", hint: "Computer virus." },
+  { setup: "What kind of music do mummies listen to?", punchline: "Wrap music.", hint: "Wrap → rap." },
+  { setup: "Why was the math teacher always tired?", punchline: "Because she had too many problems to solve.", hint: "Problems again." },
+  { setup: "Why did the banana go to the doctor?", punchline: "Because it wasn't peeling well.", hint: "Peel → feel." },
+  { setup: "What do you call an alligator detective?", punchline: "An investi-gator.", hint: "Investi-gator." },
+  { setup: "Why was the broom late?", punchline: "It over-swept.", hint: "Over-swept = overslept." },
+  { setup: "What do you call a fish wearing a crown?", punchline: "A king-fisher.", hint: "Fish + king." },
+  { setup: "Why don't skeletons fight each other?", punchline: "They don't have the guts.", hint: "No guts." },
+  { setup: "What's a tornado's favorite game?", punchline: "Twister.", hint: "Spin." },
+  { setup: "Why are ghosts bad liars?", punchline: "Because you can see right through them.", hint: "Transparent." },
+  { setup: "What do you call a sleeping bull?", punchline: "A bulldozer.", hint: "Bull + dozer." },
+  { setup: "Why did the cookie go to the hospital?", punchline: "Because he felt crummy.", hint: "Crumbs." },
+  { setup: "What do you call a dinosaur with an extensive vocabulary?", punchline: "A thesaurus.", hint: "The-saurus." },
+  { setup: "Why did the picture go to jail?", punchline: "It was framed.", hint: "Framed = setup." },
+  { setup: "What did the buffalo say to his son when he left for school?", punchline: "Bison!", hint: "Bison = bye son." },
+  { setup: "Why was the math test so easy?", punchline: "It had too many easy 'sums'.", hint: "Sums → some." },
+  { setup: "What do you call a pile of cats?", punchline: "A meowtain.", hint: "Mountain of meows." },
+  { setup: "Why did the chicken join a band?", punchline: "Because it had drumsticks.", hint: "Drumsticks = chicken legs." },
+  { setup: "What's a vampire's favorite fruit?", punchline: "A blood orange.", hint: "Vampire + orange." },
+  { setup: "Why was 6 afraid of 7?", punchline: "Because 7, 8, 9.", hint: "Seven ate nine." },
+  { setup: "What did the zero say to the eight?", punchline: "Nice belt!", hint: "8 looks like 0 with a belt." },
+  { setup: "Why don't scientists trust stairs?", punchline: "They're always up to something.", hint: "Up to something." },
+  { setup: "What kind of shoes do ninjas wear?", punchline: "Sneakers.", hint: "Sneak-ers." },
+  { setup: "What do you get when you cross a snowman and a vampire?", punchline: "Frostbite.", hint: "Frost + bite." },
+  { setup: "Why was the belt arrested?", punchline: "For holding up a pair of pants.", hint: "Holding up." },
+  { setup: "Why did the kid bring a ladder to school?", punchline: "Because he wanted to go to high school.", hint: "High school." },
+  { setup: "What did the cat say to the fish?", punchline: "I'm hooked.", hint: "Fish hook." },
+  { setup: "What do you call a dog magician?", punchline: "A labra-cadabra-dor.", hint: "Labrador + abracadabra." },
+  { setup: "Why don't programmers like nature?", punchline: "It has too many bugs.", hint: "Code bugs." },
+  { setup: "What did the duck say after buying lipstick?", punchline: "Put it on my bill.", hint: "Bill = beak + invoice." },
+  { setup: "Why don't elephants use computers?", punchline: "They're afraid of the mouse.", hint: "Mouse = small rodent + computer device." },
+  { setup: "What kind of tree fits in your hand?", punchline: "A palm tree.", hint: "Palm of your hand." },
+  { setup: "What did the janitor say when he jumped out of the closet?", punchline: "Supplies!", hint: "Supplies = surprise!" },
+  { setup: "What do you call a fish with no eyes?", punchline: "Fsh.", hint: "Take the i's out." },
+  { setup: "What do you call a fish wearing a bowtie?", punchline: "So-fish-ticated.", hint: "Sophisticated." },
+  { setup: "Why did the tomato turn red?", punchline: "Because it saw the salad dressing.", hint: "Dressing → naked." },
+  { setup: "Why did the orange stop rolling down the hill?", punchline: "It ran out of juice.", hint: "Out of juice = out of energy." },
+  { setup: "What did the calculator say to the kid?", punchline: "You can count on me!", hint: "Count → numbers." },
+  { setup: "Why don't seagulls fly over the bay?", punchline: "Because then they'd be bay-gulls.", hint: "Bagels." },
+  { setup: "What's a frog's favorite drink?", punchline: "Croak-a-Cola.", hint: "Coca-Cola." },
+  { setup: "Why was the cucumber stressed?", punchline: "Because it was in a pickle.", hint: "Pickle = problem." },
+  { setup: "What's a pirate's favorite letter?", punchline: "You'd think R, but it's the C.", hint: "Sea." },
+  { setup: "Why did the student eat his homework?", punchline: "Because the teacher said it was a piece of cake.", hint: "Piece of cake = easy." },
+  { setup: "Why did the bee get married?", punchline: "Because he found his honey.", hint: "Honey = sweetheart." },
+  { setup: "What do clouds wear under their pants?", punchline: "Thunderwear.", hint: "Thunder + underwear." },
+  { setup: "Why are pirates great at boxing?", punchline: "Because of their right hooks.", hint: "Hook hands." },
+  { setup: "What do you call a dog at the beach?", punchline: "A hot dog.", hint: "Hot dog." },
+  { setup: "Why was the broomstick promoted?", punchline: "It was outstanding in its field of sweeping.", hint: "Outstanding." },
+  { setup: "What's the best time to go to the dentist?", punchline: "Tooth-hurty.", hint: "2:30." },
+  { setup: "Why don't crabs share?", punchline: "Because they're shellfish.", hint: "Shellfish = selfish." },
+  { setup: "What kind of music do planets like?", punchline: "Nep-tunes.", hint: "Neptune." },
+  { setup: "Why did the egg refuse to fight?", punchline: "Because it didn't want to crack under pressure.", hint: "Eggs crack." },
+  { setup: "What do you call an old snowman?", punchline: "Water.", hint: "Melts." },
+  { setup: "Why don't pirates take baths before walking the plank?", punchline: "They'll just wash up on shore later.", hint: "Wash up." },
+  { setup: "Why did the smartphone need glasses?", punchline: "It lost all its contacts.", hint: "Contacts = lenses + saved numbers." },
+  { setup: "What do you call a pig that does karate?", punchline: "A pork chop.", hint: "Karate chop." },
+  { setup: "Why did the kid throw a clock out the window?", punchline: "To see time fly.", hint: "Time flies." },
+  { setup: "What do you get from a pampered cow?", punchline: "Spoiled milk.", hint: "Spoiled = pampered + bad." },
+  { setup: "Why was the football coach yelling at the vending machine?", punchline: "He wanted his quarter back.", hint: "Quarterback." },
+  { setup: "Why did the math teacher break up with the science teacher?", punchline: "They had no chemistry.", hint: "Chemistry." },
+  { setup: "What do you call a sad strawberry?", punchline: "A blueberry.", hint: "Sad = blue." },
+  { setup: "What's a skeleton's least favorite room?", punchline: "The living room.", hint: "Living = alive." },
+  { setup: "Why don't elephants need suitcases?", punchline: "They already have trunks.", hint: "Trunks." },
+  { setup: "Why do bees have sticky hair?", punchline: "They use honey combs.", hint: "Honeycomb." },
+  { setup: "What do you call a sleeping dinosaur?", punchline: "A dino-snore.", hint: "Snore." },
+  { setup: "Why did the man put his money in the freezer?", punchline: "He wanted cold hard cash.", hint: "Cold cash." },
+  { setup: "What do you call a fish in a tuxedo?", punchline: "So-fish-ticated.", hint: "Sophisticated again." },
+  { setup: "Why are basketball players messy eaters?", punchline: "They're always dribbling.", hint: "Dribble." },
+  { setup: "Why did the orange go to the doctor?", punchline: "Because it wasn't peeling well.", hint: "Peeling = feeling." },
+  { setup: "What do you call a bee that can't make up its mind?", punchline: "A maybe.", hint: "May-bee." },
+  { setup: "Why do ducks always say 'quack'?", punchline: "Because they can't tell jokes.", hint: "Quack = bad doctor." },
+  { setup: "What did one volcano say to the other?", punchline: "I lava you.", hint: "Lava = love ya." },
+  { setup: "Why was Cinderella so bad at soccer?", punchline: "She kept running away from the ball.", hint: "The ball = soccer + royal dance." },
+  { setup: "What do you call a fish that needs help with its vocals?", punchline: "Auto-tuna.", hint: "Auto-tune." },
+  { setup: "Why did the kid get fired from the orange juice factory?", punchline: "He couldn't concentrate.", hint: "Concentrate = juice term." },
+  { setup: "What's a robot's favorite snack?", punchline: "Computer chips.", hint: "Chips." },
+  { setup: "Why was the math worksheet sad?", punchline: "It was full of problems.", hint: "Problems." },
+  { setup: "Why don't mountains catch colds?", punchline: "They peak in winter.", hint: "Peak." },
+  { setup: "What do you call a dinosaur that crashes his car?", punchline: "Tyrannosaurus wrecks.", hint: "T-Rex." },
+  { setup: "Why don't ants ever get sick?", punchline: "Because they have little anty-bodies.", hint: "Antibodies." },
+  { setup: "Why did the chicken cross the playground?", punchline: "To get to the other slide.", hint: "Slide = side." }
+];
+function buildJoke() { return pick(JOKES); }
+
+/* ---------- BOSS BATTLES ---------- */
+const BOSSES = [
+  {
+    id: "paper-airplane",
+    title: "Paper Airplane Engineer",
+    tagline: "Build one that flies 20+ feet",
+    days: 4,
+    nudges: [
+      "Fold 3 different designs",
+      "Test each one, measure distances",
+      "Modify your best design",
+      "Final flight test — beat Day 2"
+    ]
+  },
+  {
+    id: "magic-trick",
+    title: "Magic Trick Master",
+    tagline: "Learn a trick well enough to fool someone",
+    days: 4,
+    nudges: [
+      "Pick your trick, watch a tutorial",
+      "Practice 20 times in the mirror",
+      "Practice the patter",
+      "Perform it for real — fool them"
+    ]
+  },
+  {
+    id: "map-neighborhood",
+    title: "Map Your Neighborhood",
+    tagline: "Draw it from memory, then check",
+    days: 3,
+    nudges: [
+      "Draw it from memory",
+      "Walk or bike it, note what you missed",
+      "Draw the final accurate version"
+    ]
+  },
+  {
+    id: "cook-meal",
+    title: "Cook a Meal",
+    tagline: "Make one full meal for the family",
+    days: 3,
+    nudges: [
+      "Pick the recipe, make the list",
+      "Get the ingredients",
+      "Cook it and serve it"
+    ]
+  },
+  {
+    id: "free-throws",
+    title: "100 Free Throws",
+    tagline: "Shoot 100 a day, track your makes",
+    days: 5,
+    nudges: [
+      "100 shots — log your makes",
+      "100 shots — beat yesterday",
+      "100 shots — keep climbing",
+      "100 shots — push the %",
+      "100 shots — final score"
+    ]
+  },
+  {
+    id: "build-moving",
+    title: "Build Something That Moves",
+    tagline: "Cardboard, tape, must have a moving part",
+    days: 4,
+    nudges: [
+      "Sketch the design",
+      "Gather materials",
+      "Build it",
+      "Show it off, explain how it works"
+    ]
+  },
+  {
+    id: "teach-dad",
+    title: "Teach Dad Something",
+    tagline: "Pick something you know that he doesn't",
+    days: 3,
+    nudges: [
+      "Pick the topic, plan the lesson",
+      "Teach Dad (10 minutes)",
+      "Quiz Dad — did he learn it?"
+    ]
+  },
+  {
+    id: "stop-motion",
+    title: "Stop-Motion Movie",
+    tagline: "Make a 30-second video",
+    days: 4,
+    nudges: [
+      "Story idea and characters",
+      "Set up the scene",
+      "Shoot the frames",
+      "Edit and share"
+    ]
+  },
+  {
+    id: "interview",
+    title: "The Interview",
+    tagline: "Interview someone older than 60",
+    days: 3,
+    nudges: [
+      "Pick the person, write 5 questions",
+      "Do the interview",
+      "Write up the best story you heard"
+    ]
+  },
+  {
+    id: "invent-game",
+    title: "Invent a Game",
+    tagline: "Brand new game, rules, name, the works",
+    days: 5,
+    nudges: [
+      "Concept and name",
+      "Write the rules",
+      "Make any pieces or board",
+      "Playtest, fix what doesn't work",
+      "Final play — declare a winner"
+    ]
+  }
+];
 
 /* ---------- MATH TASK BANK ---------- */
 
@@ -3776,11 +4448,19 @@ const els = {
   streakNum:   document.getElementById("streakNum"),
   lvNum:       document.getElementById("lvNum"),
   xpNum:       document.getElementById("xpNum"),
-  // AI
-  aiCard:  document.getElementById("card-ai"),
-  aiTask:  document.getElementById("aiTask"),
-  aiHint:  document.getElementById("aiHint"),
-  aiCopy:  document.getElementById("aiCopy"),
+  // Boss
+  bossCard:   document.getElementById("bossCard"),
+  bossInner:  document.getElementById("bossInner"),
+  // Slot 1 (AI / Photo / Riddle / Joke — daily rotation)
+  slot1Card:        document.getElementById("card-slot1"),
+  slot1Label:       document.getElementById("slot1Label"),
+  slot1Task:        document.getElementById("slot1Task"),
+  slot1HintLabel:   document.getElementById("slot1HintLabel"),
+  slot1Hint:        document.getElementById("slot1Hint"),
+  slot1Reveal:      document.getElementById("slot1Reveal"),
+  slot1RevealLabel: document.getElementById("slot1RevealLabel"),
+  slot1RevealText:  document.getElementById("slot1RevealText"),
+  slot1ActionRow:   document.getElementById("slot1ActionRow"),
   // Math
   mathCard:      document.getElementById("card-math"),
   mathTask:      document.getElementById("mathTask"),
@@ -3807,10 +4487,13 @@ const els = {
 };
 
 const state = {
-  current: { ai: null, math: null, trivia: null, quote: null },
+  current: { slot1: null, math: null, trivia: null, quote: null },
+  slot1Variant: "ai",     // "ai" | "photo" | "riddle" | "joke" — pinned at page load
+  slot1Revealed: false,
   attempts: 0,
   triviaAnswered: false,
-  doneAI: false, doneMath: false, doneTrivia: false,
+  doneSlot1: false, doneMath: false, doneTrivia: false,
+  boss: null,             // { boss, progress, dayIndex, totalDays, defeatedToday, markedToday }
 };
 
 /* ---------- Favorites (quotes) ---------- */
@@ -3825,7 +4508,7 @@ function saveFavs(set) {
 let favs = loadFavs();
 
 /* ---------- Cross-session no-repeat tracking ---------- */
-const SEEN_CAPS = { ai: 200, math: 200, trivia: 110, quote: 130 };
+const SEEN_CAPS = { ai: 200, math: 200, trivia: 110, quote: 130, photo: 60, riddle: 70, joke: 70 };
 function loadSeen(k) {
   try { return JSON.parse(localStorage.getItem("ddm_seen_" + k) || "[]"); }
   catch (e) { return []; }
@@ -3838,6 +4521,9 @@ const SEEN = {
   math: loadSeen("math"),
   trivia: loadSeen("trivia"),
   quote: loadSeen("quote"),
+  photo: loadSeen("photo"),
+  riddle: loadSeen("riddle"),
+  joke: loadSeen("joke"),
 };
 function markSeen(kind, id) {
   const arr = SEEN[kind];
@@ -3934,12 +4620,131 @@ function deriveAIPrompt(task) {
 }
 
 /* ---------- Renders ---------- */
-function renderAI(ai) {
-  els.aiTask.textContent = ai.task;
-  els.aiHint.innerHTML = ai.hint;
-  els.aiCopy.dataset.prompt = deriveAIPrompt(ai.task);
-  els.aiCopy.classList.remove("copied");
-  els.aiCopy.querySelector(".copy-label").textContent = "▸ Copy prompt";
+/* Slot 1 daily rotation: AI → Photo → Riddle → Joke (4-day cycle).
+   First-install day is locked to AI by recording the install day. */
+const SLOT1_VARIANTS = ["ai", "photo", "riddle", "joke"];
+const SLOT1_META = {
+  ai:     { label: "AI Mission",     hintLabel: "Tip",      revealLabel: "Reveal" },
+  photo:  { label: "Photo Mission",  hintLabel: "Idea",     revealLabel: "Reveal" },
+  riddle: { label: "Riddle Mission", hintLabel: "Hint",     revealLabel: "Answer" },
+  joke:   { label: "Joke Mission",   hintLabel: "Delivery", revealLabel: "Punchline" }
+};
+function daysSinceEpoch(date) {
+  const d = date || new Date();
+  return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000);
+}
+function getSlot1Variant() {
+  const today = daysSinceEpoch();
+  let installDay = parseInt(localStorage.getItem("ddm_slot1_install_day") || "", 10);
+  if (!Number.isFinite(installDay)) {
+    installDay = today;
+    try { localStorage.setItem("ddm_slot1_install_day", String(installDay)); } catch (e) {}
+  }
+  const idx = ((today - installDay) % 4 + 4) % 4;
+  return SLOT1_VARIANTS[idx];
+}
+
+function renderSlot1() {
+  const variant = state.slot1Variant;
+  const data = state.current.slot1;
+  // class swap on the article
+  els.slot1Card.className = "mission " + variant;
+  // label
+  els.slot1Label.textContent = SLOT1_META[variant].label;
+  els.slot1HintLabel.textContent = SLOT1_META[variant].hintLabel;
+  els.slot1RevealLabel.textContent = SLOT1_META[variant].revealLabel;
+  // task text + hint
+  if (variant === "joke") {
+    els.slot1Task.textContent = data.setup;
+  } else {
+    els.slot1Task.textContent = data.task;
+  }
+  els.slot1Hint.innerHTML = data.hint || "";
+  // reset reveal
+  state.slot1Revealed = false;
+  els.slot1Reveal.classList.remove("show");
+  els.slot1RevealText.textContent = "";
+  // build action row
+  els.slot1ActionRow.innerHTML = "";
+  if (variant === "ai") {
+    const btn = mkActionBtn("▸ Copy prompt");
+    btn.dataset.prompt = deriveAIPrompt(data.task);
+    btn.addEventListener("click", () => copyPromptText(btn, btn.dataset.prompt));
+    els.slot1ActionRow.appendChild(btn);
+  } else if (variant === "riddle") {
+    const btn = mkActionBtn("▸ Reveal answer");
+    btn.addEventListener("click", () => {
+      revealSlot1(data.answer);
+      btn.classList.add("revealed");
+      btn.querySelector(".copy-label").textContent = "✓ Revealed";
+    });
+    els.slot1ActionRow.appendChild(btn);
+  } else if (variant === "joke") {
+    const btn1 = mkActionBtn("▸ Reveal punchline");
+    btn1.addEventListener("click", () => {
+      revealSlot1(data.punchline);
+      btn1.classList.add("revealed");
+      btn1.querySelector(".copy-label").textContent = "✓ Punchline";
+    });
+    const btn2 = mkActionBtn("⧉ Copy joke");
+    btn2.addEventListener("click", () => {
+      const text = data.setup + "\n\n" + data.punchline;
+      copyPromptText(btn2, text, "✓ Copied joke", "⧉ Copy joke");
+    });
+    els.slot1ActionRow.appendChild(btn1);
+    els.slot1ActionRow.appendChild(btn2);
+  }
+  // Mark done always appended
+  const mark = document.createElement("button");
+  mark.type = "button";
+  mark.className = "mark-done";
+  mark.dataset.mark = "slot1";
+  mark.textContent = "Mark done";
+  mark.addEventListener("click", () => {
+    state.doneSlot1 = !state.doneSlot1;
+    els.slot1Card.classList.toggle("done", state.doneSlot1);
+    mark.textContent = state.doneSlot1 ? "Done" : "Mark done";
+    if (state.doneSlot1) awardMissionXp();
+  });
+  els.slot1ActionRow.appendChild(mark);
+}
+
+function mkActionBtn(labelText) {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "slot1-action";
+  const span = document.createElement("span");
+  span.className = "copy-label";
+  span.textContent = labelText;
+  btn.appendChild(span);
+  return btn;
+}
+
+function revealSlot1(text) {
+  els.slot1RevealText.textContent = text;
+  els.slot1Reveal.classList.add("show");
+  state.slot1Revealed = true;
+}
+
+async function copyPromptText(btn, text, doneLabel, restoreLabel) {
+  let copied = false;
+  try { await navigator.clipboard.writeText(text); copied = true; } catch (e) {}
+  if (!copied) {
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); copied = true; } catch (e) {}
+    document.body.removeChild(ta);
+  }
+  const originalLabel = btn.querySelector(".copy-label").textContent;
+  const okLabel = doneLabel || "✓ Copied";
+  const back = restoreLabel || originalLabel;
+  btn.classList.add("copied");
+  btn.querySelector(".copy-label").textContent = okLabel;
+  setTimeout(() => {
+    btn.classList.remove("copied");
+    btn.querySelector(".copy-label").textContent = back;
+  }, 1600);
 }
 
 function renderMath(math) {
@@ -4081,44 +4886,15 @@ function handleTrivia(btn) {
   }
 }
 
-/* ---------- Mark-done buttons (AI + Trivia manual) ---------- */
-document.querySelectorAll(".mark-done").forEach(btn => {
+/* ---------- Mark-done (Trivia's static mark-done; slot 1's is wired in renderSlot1) ---------- */
+document.querySelectorAll('.mark-done[data-mark="trivia"]').forEach(btn => {
   btn.addEventListener("click", () => {
-    const kind = btn.dataset.mark;
     const card = btn.closest(".mission");
-    if (kind === "ai") {
-      state.doneAI = !state.doneAI;
-      card.classList.toggle("done", state.doneAI);
-      btn.textContent = state.doneAI ? "Done" : "Mark done";
-      if (state.doneAI) awardMissionXp();
-    } else if (kind === "trivia") {
-      state.doneTrivia = !state.doneTrivia;
-      card.classList.toggle("done", state.doneTrivia);
-      btn.textContent = state.doneTrivia ? "Done" : "Mark done";
-      if (state.doneTrivia) awardMissionXp();
-    }
+    state.doneTrivia = !state.doneTrivia;
+    card.classList.toggle("done", state.doneTrivia);
+    btn.textContent = state.doneTrivia ? "Done" : "Mark done";
+    if (state.doneTrivia) awardMissionXp();
   });
-});
-
-/* ---------- AI copy prompt ---------- */
-els.aiCopy.addEventListener("click", async () => {
-  const prompt = els.aiCopy.dataset.prompt || "";
-  let copied = false;
-  try { await navigator.clipboard.writeText(prompt); copied = true; } catch (e) {}
-  if (!copied) {
-    // Fallback for older Safari without clipboard API
-    const ta = document.createElement("textarea");
-    ta.value = prompt; ta.style.position = "fixed"; ta.style.opacity = "0";
-    document.body.appendChild(ta); ta.select();
-    try { document.execCommand("copy"); copied = true; } catch (e) {}
-    document.body.removeChild(ta);
-  }
-  els.aiCopy.classList.add("copied");
-  els.aiCopy.querySelector(".copy-label").textContent = "✓ Copied";
-  setTimeout(() => {
-    els.aiCopy.classList.remove("copied");
-    els.aiCopy.querySelector(".copy-label").textContent = "▸ Copy prompt";
-  }, 1600);
 });
 
 /* ---------- Favorite ---------- */
@@ -4138,38 +4914,48 @@ els.mathInput.addEventListener("keydown", (e) => {
 });
 
 /* ---------- Refresh (new missions) ---------- */
+function pickSlot1(variant) {
+  if (variant === "ai")     return pickUnseen("ai",     buildAITask, t => t.task);
+  if (variant === "photo")  return pickUnseen("photo",  buildPhoto,  t => t.task);
+  if (variant === "riddle") return pickUnseen("riddle", buildRiddle, t => t.task);
+  if (variant === "joke")   return pickUnseen("joke",   buildJoke,   t => t.setup);
+  return buildAITask();
+}
+function slot1Id(variant, data) {
+  return variant === "joke" ? data.setup : data.task;
+}
+
 function refresh() {
-  // pull new tasks (cross-session no-repeat)
-  const ai     = pickUnseen("ai",     buildAITask,    t => t.task);
-  const math   = pickUnseen("math",   buildMathTask,  t => t.task);
-  const trivia = pickUnseen("trivia", buildTrivia,    t => t.q);
-  const quote  = pickUnseen("quote",  buildQuote,     q => q.author + "::" + q.text);
+  const variant = state.slot1Variant;
+  const slot1   = pickSlot1(variant);
+  const math    = pickUnseen("math",   buildMathTask,  t => t.task);
+  const trivia  = pickUnseen("trivia", buildTrivia,    t => t.q);
+  const quote   = pickUnseen("quote",  buildQuote,     q => q.author + "::" + q.text);
 
-  markSeen("ai",     ai.task);
-  markSeen("math",   math.task);
-  markSeen("trivia", trivia.q);
-  markSeen("quote",  quote.author + "::" + quote.text);
+  markSeen(variant,   slot1Id(variant, slot1));
+  markSeen("math",    math.task);
+  markSeen("trivia",  trivia.q);
+  markSeen("quote",   quote.author + "::" + quote.text);
 
-  state.current.ai = ai;
+  state.current.slot1 = slot1;
   state.current.math = math;
   state.current.trivia = trivia;
   state.current.quote = quote;
-  state.doneAI = state.doneMath = state.doneTrivia = false;
+  state.doneSlot1 = state.doneMath = state.doneTrivia = false;
 
-  renderAI(ai);
+  renderSlot1();
   renderMath(math);
   renderTrivia(trivia);
   renderQuote(quote);
 
-  // reset card "done" classes + mark-done labels
+  // reset card "done" classes (slot1 mark-done is recreated per render, others stay)
   document.querySelectorAll(".mission.done").forEach(c => c.classList.remove("done"));
-  document.querySelectorAll(".mark-done").forEach(b => b.textContent = "Mark done");
+  document.querySelectorAll('.mark-done[data-mark="trivia"]').forEach(b => b.textContent = "Mark done");
 }
 
 els.newMissions.addEventListener("click", () => {
-  // dim + restore animation + then swap content
   const cards = document.querySelectorAll(".mission");
-  cards.forEach((c, i) => {
+  cards.forEach((c) => {
     c.style.transition = "opacity 200ms ease, transform 200ms ease";
     c.style.opacity = "0.3";
     c.style.transform = "translateY(4px) scale(0.995)";
@@ -4184,6 +4970,166 @@ els.newMissions.addEventListener("click", () => {
     });
   }, 220);
 });
+
+/* ============= BOSS BATTLE ============= */
+function findBossById(id) { return BOSSES.find(b => b.id === id); }
+function pickNextBossId(completedList) {
+  // Avoid the most-recent 5 done; cycle through the remaining.
+  const recent = (completedList || []).slice(-5);
+  const fresh  = BOSSES.filter(b => !recent.includes(b.id));
+  const pool   = fresh.length ? fresh : BOSSES;
+  return pool[Math.floor(Math.random() * pool.length)].id;
+}
+function loadBossProgress() {
+  try { return JSON.parse(localStorage.getItem("ddm_boss_progress") || "[]"); }
+  catch (e) { return []; }
+}
+function loadBossCompleted() {
+  try { return JSON.parse(localStorage.getItem("ddm_boss_completed") || "[]"); }
+  catch (e) { return []; }
+}
+function ensureActiveBoss() {
+  const today = todayStr();
+  let id  = localStorage.getItem("ddm_boss_active_id");
+  let boss = id ? findBossById(id) : null;
+  const lastDefeated = localStorage.getItem("ddm_boss_last_completed_date");
+
+  // If the active boss was just defeated today, hold the victory state.
+  if (boss && lastDefeated === today) {
+    return { boss, defeatedToday: true, progress: loadBossProgress() };
+  }
+  // If the active boss was defeated on a prior day, start a fresh boss.
+  if (!boss || lastDefeated) {
+    const completed = loadBossCompleted();
+    id = pickNextBossId(completed);
+    boss = findBossById(id);
+    try {
+      localStorage.setItem("ddm_boss_active_id", id);
+      localStorage.setItem("ddm_boss_progress", "[]");
+      localStorage.setItem("ddm_boss_started",  today);
+      localStorage.removeItem("ddm_boss_last_completed_date");
+    } catch (e) {}
+  }
+  return { boss, defeatedToday: false, progress: loadBossProgress() };
+}
+
+function renderBoss() {
+  const data = ensureActiveBoss();
+  state.boss = data;
+  const { boss, defeatedToday, progress } = data;
+  const today = todayStr();
+  const markedToday = progress.includes(today);
+  const dayIndex = markedToday ? progress.length : progress.length + 1; // 1-based
+  const totalDays = boss.days;
+  const nudge = boss.nudges[Math.min(progress.length, totalDays - 1)];
+  const completedCount = progress.length;
+  const isFinal = (dayIndex === totalDays);
+
+  els.bossCard.classList.toggle("defeated", defeatedToday);
+
+  if (defeatedToday) {
+    els.bossInner.innerHTML = `
+      <div class="boss-eyebrow"><span>BOSS BATTLE</span><span class="boss-day">DEFEATED</span></div>
+      <div class="boss-title">${escapeHtml(boss.title)}</div>
+      <div class="boss-defeated-stamp">★ VICTORY ★</div>
+      <div class="boss-tagline">${escapeHtml(boss.tagline)}</div>
+      <div class="boss-next-up">Next boss · tomorrow</div>
+    `;
+    return;
+  }
+
+  // Progress dots
+  let dotsHtml = "";
+  for (let i = 0; i < totalDays; i++) {
+    let cls = "boss-dot";
+    if (i < completedCount) cls += " filled";
+    else if (i === completedCount && !markedToday) cls += " today";
+    dotsHtml += `<span class="${cls}"></span>`;
+  }
+
+  const todayTag = isFinal ? `<span class="today-tag" style="color:var(--gold); background:color-mix(in oklab, var(--gold), transparent 86%);">FINAL DAY</span>` : `<span class="today-tag">TODAY</span>`;
+  const btnLabel = markedToday
+    ? (isFinal ? "✓ BOSS DEFEATED" : "✓ DONE FOR TODAY")
+    : (isFinal ? "FINISH IT · +125 XP" : "Mark today done");
+
+  els.bossInner.innerHTML = `
+    <div class="boss-eyebrow"><span>BOSS BATTLE</span><span class="boss-day">DAY ${dayIndex} / ${totalDays}</span></div>
+    <div class="boss-title">${escapeHtml(boss.title)}</div>
+    <div class="boss-tagline">${escapeHtml(boss.tagline)}</div>
+    <div class="boss-dots">${dotsHtml}</div>
+    <div class="boss-nudge">${todayTag}${escapeHtml(nudge)}</div>
+    <button id="bossMarkBtn" class="boss-mark${markedToday ? " done-today" : ""}" type="button" ${markedToday ? "disabled" : ""}>${btnLabel}</button>
+  `;
+  const btn = document.getElementById("bossMarkBtn");
+  if (btn && !markedToday) {
+    btn.addEventListener("click", () => markBossToday());
+  }
+}
+
+function escapeHtml(s) {
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+function markBossToday() {
+  const { boss, progress } = state.boss;
+  const today = todayStr();
+  if (progress.includes(today)) return;
+  progress.push(today);
+  try { localStorage.setItem("ddm_boss_progress", JSON.stringify(progress)); } catch (e) {}
+  const isFinal = progress.length >= boss.days;
+  if (isFinal) {
+    const completed = loadBossCompleted();
+    completed.push(boss.id);
+    // keep last 5 only to avoid runaway storage
+    while (completed.length > 5) completed.shift();
+    try {
+      localStorage.setItem("ddm_boss_completed", JSON.stringify(completed));
+      localStorage.setItem("ddm_boss_last_completed_date", today);
+    } catch (e) {}
+    awardBossFinaleXp(125);
+    fireBossVictory();
+  } else {
+    awardMissionXp();
+    if (navigator.vibrate) navigator.vibrate(10);
+  }
+  renderBoss();
+}
+
+function awardBossFinaleXp(amount) {
+  // Bypasses the 100/day cap.
+  const cur = getXp() + amount;
+  try { localStorage.setItem("ddm_xp", String(cur)); } catch (e) {}
+  const total = getLifetimeXp() + amount;
+  try { localStorage.setItem("ddm_xp_total", String(total)); } catch (e) {}
+  const today = todayStr();
+  const lastStreak = localStorage.getItem("ddm_streak_last");
+  if (lastStreak !== today) {
+    const s = getStreak() + 1;
+    try {
+      localStorage.setItem("ddm_streak", String(s));
+      localStorage.setItem("ddm_streak_last", today);
+    } catch (e) {}
+  }
+  paintCounters();
+}
+
+function fireBossVictory() {
+  // Big mid-screen XP burst
+  let burst = document.getElementById("bossVictoryBurst");
+  if (!burst) {
+    burst = document.createElement("div");
+    burst.id = "bossVictoryBurst";
+    burst.className = "xp-burst-boss";
+    document.body.appendChild(burst);
+  }
+  burst.textContent = "★ BOSS DEFEATED · +125 XP ★";
+  burst.classList.remove("fire");
+  void burst.offsetWidth;
+  burst.classList.add("fire");
+  if (navigator.vibrate) navigator.vibrate([30, 60, 30, 60, 60]);
+}
 
 /* ---------- Theme ---------- */
 (function initTheme() {
@@ -4216,6 +5162,8 @@ els.newMissions.addEventListener("click", () => {
 initDailyCounters();
 paintCounters();
 paintDate();
+state.slot1Variant = getSlot1Variant();   // pinned at page load (no mid-session flip)
+renderBoss();
 refresh();
 </script>
 </body>
